@@ -20,10 +20,9 @@
 		5F01B0101F79447B0049CD3A /* PrepareVideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B00F1F79447B0049CD3A /* PrepareVideoViewController.swift */; };
 		5F01B0131F7949080049CD3A /* VIPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0121F7949080049CD3A /* VIPlayerView.swift */; };
 		5F01B0151F794AD40049CD3A /* VIPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0141F794AD40049CD3A /* VIPlayer.swift */; };
-		5F01B0181F7BD1EF0049CD3A /* TimeRangePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0171F7BD1EF0049CD3A /* TimeRangePickerView.swift */; };
-		5F01B0211F7BDE540049CD3A /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0201F7BDE540049CD3A /* WaveformView.swift */; };
-		5F01B0231F7BF34E0049CD3A /* VIAudioFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0221F7BF34E0049CD3A /* VIAudioFile.swift */; };
 		5F01B0271F7BFC140049CD3A /* Moon River.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5F01B0261F7BFC0F0049CD3A /* Moon River.mp3 */; };
+		5F01B0351F7D334D0049CD3A /* WaveformScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0341F7D334D0049CD3A /* WaveformScrollView.swift */; };
+		5F01B0381F7D3E4E0049CD3A /* WaveformHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0371F7D3E4E0049CD3A /* WaveformHelper.swift */; };
 		5F29D2331F73F25B00D41F50 /* TrackItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2321F73F25B00D41F50 /* TrackItem.swift */; };
 		5F29D2351F73F41900D41F50 /* TrackConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */; };
 		5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2361F73FEE200D41F50 /* TrackResource.swift */; };
@@ -59,10 +58,19 @@
 		5F01B00F1F79447B0049CD3A /* PrepareVideoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrepareVideoViewController.swift; sourceTree = "<group>"; };
 		5F01B0121F7949080049CD3A /* VIPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VIPlayerView.swift; sourceTree = "<group>"; };
 		5F01B0141F794AD40049CD3A /* VIPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VIPlayer.swift; sourceTree = "<group>"; };
-		5F01B0171F7BD1EF0049CD3A /* TimeRangePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangePickerView.swift; sourceTree = "<group>"; };
-		5F01B0201F7BDE540049CD3A /* WaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
-		5F01B0221F7BF34E0049CD3A /* VIAudioFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VIAudioFile.swift; sourceTree = "<group>"; };
 		5F01B0261F7BFC0F0049CD3A /* Moon River.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "Moon River.mp3"; sourceTree = "<group>"; };
+		5F01B0291F7D31580049CD3A /* EZAudioFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EZAudioFile.h; sourceTree = "<group>"; };
+		5F01B02A1F7D31580049CD3A /* EZAudioFile.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EZAudioFile.m; sourceTree = "<group>"; };
+		5F01B02B1F7D31580049CD3A /* EZAudioFloatConverter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EZAudioFloatConverter.h; sourceTree = "<group>"; };
+		5F01B02C1F7D31580049CD3A /* EZAudioFloatConverter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EZAudioFloatConverter.m; sourceTree = "<group>"; };
+		5F01B02D1F7D31580049CD3A /* EZAudioFloatData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EZAudioFloatData.h; sourceTree = "<group>"; };
+		5F01B02E1F7D31580049CD3A /* EZAudioFloatData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EZAudioFloatData.m; sourceTree = "<group>"; };
+		5F01B02F1F7D31580049CD3A /* EZAudioUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EZAudioUtilities.h; sourceTree = "<group>"; };
+		5F01B0301F7D31580049CD3A /* EZAudioUtilities.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EZAudioUtilities.m; sourceTree = "<group>"; };
+		5F01B0321F7D31580049CD3A /* TimeRangePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangePickerView.swift; sourceTree = "<group>"; };
+		5F01B0331F7D31580049CD3A /* WaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
+		5F01B0341F7D334D0049CD3A /* WaveformScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformScrollView.swift; sourceTree = "<group>"; };
+		5F01B0371F7D3E4E0049CD3A /* WaveformHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformHelper.swift; sourceTree = "<group>"; };
 		5F29D2321F73F25B00D41F50 /* TrackItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackItem.swift; sourceTree = "<group>"; };
 		5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackConfiguration.swift; sourceTree = "<group>"; };
 		5F29D2361F73FEE200D41F50 /* TrackResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackResource.swift; sourceTree = "<group>"; };
@@ -133,7 +141,8 @@
 		5F01B0001F7794440049CD3A /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				5F01B0161F7BD1D00049CD3A /* TimeRangePickerView */,
+				5F01B0281F7D31580049CD3A /* EZAudio */,
+				5F01B0311F7D31580049CD3A /* TimeRangePicker */,
 				5F01B0111F7948DD0049CD3A /* Player */,
 				5F01B0051F77A07A0049CD3A /* Util */,
 				5F01B0011F7794740049CD3A /* ViewControllers */,
@@ -188,14 +197,38 @@
 			path = Player;
 			sourceTree = "<group>";
 		};
-		5F01B0161F7BD1D00049CD3A /* TimeRangePickerView */ = {
+		5F01B0281F7D31580049CD3A /* EZAudio */ = {
 			isa = PBXGroup;
 			children = (
-				5F01B0171F7BD1EF0049CD3A /* TimeRangePickerView.swift */,
-				5F01B0201F7BDE540049CD3A /* WaveformView.swift */,
-				5F01B0221F7BF34E0049CD3A /* VIAudioFile.swift */,
+				5F01B0361F7D3E330049CD3A /* Waveform */,
+				5F01B0291F7D31580049CD3A /* EZAudioFile.h */,
+				5F01B02A1F7D31580049CD3A /* EZAudioFile.m */,
+				5F01B02B1F7D31580049CD3A /* EZAudioFloatConverter.h */,
+				5F01B02C1F7D31580049CD3A /* EZAudioFloatConverter.m */,
+				5F01B02D1F7D31580049CD3A /* EZAudioFloatData.h */,
+				5F01B02E1F7D31580049CD3A /* EZAudioFloatData.m */,
+				5F01B02F1F7D31580049CD3A /* EZAudioUtilities.h */,
+				5F01B0301F7D31580049CD3A /* EZAudioUtilities.m */,
 			);
-			path = TimeRangePickerView;
+			path = EZAudio;
+			sourceTree = "<group>";
+		};
+		5F01B0311F7D31580049CD3A /* TimeRangePicker */ = {
+			isa = PBXGroup;
+			children = (
+				5F01B0321F7D31580049CD3A /* TimeRangePickerView.swift */,
+			);
+			path = TimeRangePicker;
+			sourceTree = "<group>";
+		};
+		5F01B0361F7D3E330049CD3A /* Waveform */ = {
+			isa = PBXGroup;
+			children = (
+				5F01B0331F7D31580049CD3A /* WaveformView.swift */,
+				5F01B0341F7D334D0049CD3A /* WaveformScrollView.swift */,
+				5F01B0371F7D3E4E0049CD3A /* WaveformHelper.swift */,
+			);
+			path = Waveform;
 			sourceTree = "<group>";
 		};
 		5F29D22B1F73E94500D41F50 /* CompositionCore */ = {
@@ -436,21 +469,20 @@
 			files = (
 				5F01B0151F794AD40049CD3A /* VIPlayer.swift in Sources */,
 				5F01AFFD1F741E0E0049CD3A /* TrackPanel.swift in Sources */,
+				5F01B0381F7D3E4E0049CD3A /* WaveformHelper.swift in Sources */,
 				5F29D2391F740D9300D41F50 /* TrackVideoResource.swift in Sources */,
 				5F01B0041F779BEF0049CD3A /* AssetCell.swift in Sources */,
+				5F01B0351F7D334D0049CD3A /* WaveformScrollView.swift in Sources */,
 				5F01B0131F7949080049CD3A /* VIPlayerView.swift in Sources */,
 				5F01B00A1F77A2460049CD3A /* AssetsViewModel.swift in Sources */,
 				5F01B00E1F77EDD30049CD3A /* TrackVideoAssetResource.swift in Sources */,
 				5F01AFFF1F7794370049CD3A /* AssetsViewController.swift in Sources */,
 				5F29D2331F73F25B00D41F50 /* TrackItem.swift in Sources */,
-				5F01B0231F7BF34E0049CD3A /* VIAudioFile.swift in Sources */,
 				5F01B00C1F77CF420049CD3A /* MBProgressExtension.swift in Sources */,
 				5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */,
 				5F3A1CB41F528FD5001895DB /* ViewController.swift in Sources */,
 				5F01AFFB1F741D570049CD3A /* TrackComposition.swift in Sources */,
-				5F01B0181F7BD1EF0049CD3A /* TimeRangePickerView.swift in Sources */,
 				5F3A1CB21F528FD5001895DB /* AppDelegate.swift in Sources */,
-				5F01B0211F7BDE540049CD3A /* WaveformView.swift in Sources */,
 				5F01B0071F77A08C0049CD3A /* StringExtension.swift in Sources */,
 				5F01B0101F79447B0049CD3A /* PrepareVideoViewController.swift in Sources */,
 				5F29D2351F73F41900D41F50 /* TrackConfiguration.swift in Sources */,
