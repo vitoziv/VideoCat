@@ -19,7 +19,7 @@ class WaveformView: UIView {
         return layer as! CAShapeLayer
     }
     
-    private var pointInfo = PointInfo()
+    private var pointInfo = [CGPoint]()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -39,26 +39,27 @@ class WaveformView: UIView {
         waveformLayer.strokeColor = UIColor.lightGray.cgColor
     }
     
-    func updateSampleData(data: UnsafePointer<Float>, length: Int) {
-        pointInfo = PointInfo(pointCount: length)
-        for index in 0..<length {
-            let point = CGPoint(x: CGFloat(index), y: CGFloat(data[index]))
-            pointInfo.points?[index] = point
+    // MARK: - Public
+    
+    func updateSampleData(data: [Float]) {
+        pointInfo.removeAll()
+        for (index, point) in data.enumerated() {
+            let point = CGPoint(x: CGFloat(index), y: CGFloat(point))
+            pointInfo.append(point)
         }
-        pointInfo.points?[0].y = 0
-        pointInfo.points?[length - 1].y = 0
     }
     
     func redraw() {
         let frame = waveformLayer.bounds
-        guard let points = pointInfo.points else {
-            return
+        DispatchQueue.global().async {
+            let path = self.createPath(with: self.pointInfo, pointCount: self.pointInfo.count, in: frame)
+            DispatchQueue.main.async {
+                self.waveformLayer.path = path
+            }
         }
-        let path = createPath(with: points, pointCount: pointInfo.pointCount, in: frame)
-        waveformLayer.path = path
     }
     
-    func createPath(with points: UnsafePointer<CGPoint>, pointCount: Int, in rect: CGRect) -> CGPath {
+    func createPath(with points: [CGPoint], pointCount: Int, in rect: CGRect) -> CGPath {
         let path = UIBezierPath()
         
         guard pointCount > 0 else {
@@ -78,7 +79,7 @@ class WaveformView: UIView {
             path.addLine(to: point)
         }
         
-        let scaleX = rect.width / CGFloat(pointCount)
+        let scaleX = rect.width / CGFloat(pointCount - 1)
         let halfHeight = rect.height / 2
         let scaleY = halfHeight
         var transform = CGAffineTransform(scaleX: scaleX, y: scaleY)

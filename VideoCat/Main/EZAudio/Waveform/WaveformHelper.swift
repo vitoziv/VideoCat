@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreGraphics
 
 struct PointInfo {
     var points: UnsafeMutablePointer<CGPoint>?

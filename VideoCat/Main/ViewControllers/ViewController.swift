@@ -11,10 +11,38 @@ import Photos
 import MBProgressHUD
 
 class ViewController: UIViewController {
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        testWaveformView()
+        
+    }
+    var audioFile: EZAudioFile!
+    var waveformView: WaveformScrollView!
+    func testWaveformView() {
+        let frame = CGRect(x: 20, y: 66, width: 300, height: 100)
+        waveformView = WaveformScrollView(frame: frame)
+        waveformView.backgroundColor = UIColor.orange.withAlphaComponent(0.5)
+        view.addSubview(waveformView)
+        
+        if let url = Bundle.main.url(forResource: "Moon River", withExtension: "mp3") {
+            audioFile = EZAudioFile(url: url)
+            audioFile?.getWaveformData(withNumberOfPoints: UInt32(frame.width), completion: { [weak self] (buffers, bufferSize) in
+                guard let strongSelf = self else { return }
+                if let points = buffers?[0] {
+                    var wavefromPoints = [Float]()
+                    for index in 0..<bufferSize {
+                        wavefromPoints.append(points[Int(index)])
+                    }
+                    strongSelf.waveformView.updatePoints(wavefromPoints)
+                }
+            })
+        }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
