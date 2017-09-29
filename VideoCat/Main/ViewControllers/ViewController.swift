@@ -20,27 +20,35 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         testWaveformView()
-        
+        textTimeRangePickerView()
     }
     
-    var waveformView: WaveformScrollView!
-    func testWaveformView() {
-        let frame = CGRect(x: 20, y: 66, width: 300, height: 100)
-        waveformView = WaveformScrollView(frame: frame)
-        waveformView.backgroundColor = UIColor.orange.withAlphaComponent(0.5)
-        view.addSubview(waveformView)
-        
-        if let url = Bundle.main.url(forResource: "Moon River", withExtension: "mp3") {
-            waveformView.loadVoice(from: url, secondsWidth: 1)
-        }
-    }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let viewController = segue.destination as? AssetsViewController {
             viewController.delegate = self
         }
     }
-
+    
+    // MARK: - Test
+    
+    var waveformView: WaveformScrollView!
+    func testWaveformView() {
+        waveformView = WaveformScrollView()
+        waveformView.backgroundColor = UIColor.orange.withAlphaComponent(0.5)
+        
+        if let url = Bundle.main.url(forResource: "Moon River", withExtension: "mp3") {
+            waveformView.loadVoice(from: url, secondsWidth: 10)
+        }
+    }
+    
+    
+    func textTimeRangePickerView() {
+        let frame = CGRect(x: 20, y: 66, width: 300, height: 100)
+        let timeRangePickerView = TimeRangePickerView(provider: waveformView)
+        timeRangePickerView.frame = frame
+        view.addSubview(timeRangePickerView)
+    }
 }
 
 extension ViewController: AssetsViewControllerDelegate {
