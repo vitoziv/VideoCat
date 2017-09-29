@@ -8,44 +8,23 @@
 
 import UIKit
 
-class WaveformScrollViewModel {
-    
-    var points = [Float]() {
-        didSet {
-            var items = [[Float]]()
-            
-            let itemCount = { () -> Int in
-                if points.count == 0 {
-                    return 0
+private var audioFile: EZAudioFile?
+
+extension WaveformScrollView {
+    func loadVoice(from url: URL, secondsWidth: CGFloat) {
+        audioFile = EZAudioFile(url: url)
+        let width = secondsWidth * CGFloat(audioFile?.duration ?? 0)
+        audioFile?.getWaveformData(withNumberOfPoints: UInt32(width), completion: { [weak self] (buffers, bufferSize) in
+            guard let strongSelf = self else { return }
+            if let points = buffers?[0] {
+                var wavefromPoints = [Float]()
+                for index in 0..<bufferSize {
+                    wavefromPoints.append(points[Int(index)])
                 }
-                return ((points.count - 1) / itemPointCount) + 1
-            }()
-            
-            for index in 0..<itemCount {
-                var item = [Float]()
-                let startPosition = index * itemPointCount
-                for i in startPosition..<(startPosition + itemPointCount) {
-                    if i >= points.count {
-                        item.append(0)
-                        break
-                    }
-                    
-                    if i == 0 {
-                        item.append(0)
-                    }
-                    
-                    let value = points[i]
-                    item.append(value)
-                }
-                items.append(item)
+                strongSelf.updatePoints(wavefromPoints)
             }
-            
-            self.items = items
-        }
+        })
     }
-    
-    var itemPointCount = 50
-    var items: [[Float]] = []
 }
 
 private let WaveFormCellIdentifier = "WaveFormCellIdentifier"
@@ -149,7 +128,46 @@ class WaveformCell: UICollectionViewCell {
     func configure(points: [Float]) {
         waveformView.updateSampleData(data: points)
         waveformView.layoutIfNeeded()
-        waveformView.redraw()
     }
     
+}
+
+class WaveformScrollViewModel {
+    
+    var points = [Float]() {
+        didSet {
+            var items = [[Float]]()
+            
+            let itemCount = { () -> Int in
+                if points.count == 0 {
+                    return 0
+                }
+                return ((points.count - 1) / itemPointCount) + 1
+            }()
+            
+            for index in 0..<itemCount {
+                var item = [Float]()
+                let startPosition = index * itemPointCount
+                for i in startPosition..<(startPosition + itemPointCount) {
+                    if i >= points.count {
+                        item.append(0)
+                        break
+                    }
+                    
+                    if i == 0 {
+                        item.append(0)
+                    }
+                    
+                    let value = points[i]
+                    item.append(value)
+                }
+                items.append(item)
+            }
+            
+            self.items = items
+        }
+    }
+    
+    var itemPointCount = 50
+    var items: [[Float]] = []
 }

@@ -39,6 +39,11 @@ class WaveformView: UIView {
         waveformLayer.strokeColor = UIColor.lightGray.cgColor
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        redraw()
+    }
+    
     // MARK: - Public
     
     func updateSampleData(data: [Float]) {

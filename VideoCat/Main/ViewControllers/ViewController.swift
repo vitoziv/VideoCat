@@ -22,7 +22,7 @@ class ViewController: UIViewController {
         testWaveformView()
         
     }
-    var audioFile: EZAudioFile!
+    
     var waveformView: WaveformScrollView!
     func testWaveformView() {
         let frame = CGRect(x: 20, y: 66, width: 300, height: 100)
@@ -31,17 +31,7 @@ class ViewController: UIViewController {
         view.addSubview(waveformView)
         
         if let url = Bundle.main.url(forResource: "Moon River", withExtension: "mp3") {
-            audioFile = EZAudioFile(url: url)
-            audioFile?.getWaveformData(withNumberOfPoints: UInt32(frame.width), completion: { [weak self] (buffers, bufferSize) in
-                guard let strongSelf = self else { return }
-                if let points = buffers?[0] {
-                    var wavefromPoints = [Float]()
-                    for index in 0..<bufferSize {
-                        wavefromPoints.append(points[Int(index)])
-                    }
-                    strongSelf.waveformView.updatePoints(wavefromPoints)
-                }
-            })
+            waveformView.loadVoice(from: url, secondsWidth: 1)
         }
     }
 
