@@ -10,11 +10,12 @@ import UIKit
 import AVFoundation
 
 protocol TimeRangeProvider: class {
-    func timeRangeAt(startValue: CGFloat, endValue: CGFloat) -> CMTimeRange
     func timeLineView() -> UIView
+    func timeLineScrollView() -> UIScrollView
+    var widthPerSecond: CGFloat { get }
 }
 
-class TimeRangePickerView: UIView {
+class TimeRangePickerView: UIControl {
 
     weak var timeRangeProvider: TimeRangeProvider? {
         didSet {
@@ -23,9 +24,14 @@ class TimeRangePickerView: UIView {
     }
     
     private(set) var timeLineView: UIView?
+    private var timeLineScrollView: UIScrollView?
     private(set) var rangeView: TimeRangeView!
     
-    var isContinuous: Bool = true // if set, value change events are generated any time the value changes due to dragging. default = YES
+    private(set) var timeRange: CMTimeRange = kCMTimeRangeZero
+    
+    deinit {
+        timeLineScrollView?.removeObserver(self, forKeyPath: "contentOffset")
+    }
     
     convenience init(provider: TimeRangeProvider) {
         self.init(frame: CGRect.zero)
@@ -56,8 +62,11 @@ class TimeRangePickerView: UIView {
     }
     
     private func updateTimeLineView() {
+        timeLineScrollView?.removeObserver(self, forKeyPath: "contentOffset")
         timeLineView?.removeFromSuperview()
-        if let view = timeRangeProvider?.timeLineView() {
+        
+        if let provider = timeRangeProvider {
+            let view = provider.timeLineView()
             timeLineView = view
             insertSubview(view, at: 0)
             
@@ -66,11 +75,63 @@ class TimeRangePickerView: UIView {
             view.rightAnchor.constraint(equalTo: rightAnchor, constant: -rangeView.earWidth).isActive = true
             view.topAnchor.constraint(equalTo: topAnchor).isActive = true
             view.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+            
+            timeLineScrollView = provider.timeLineScrollView()
+            timeLineScrollView?.addObserver(self, forKeyPath: "contentOffset", options: .new, context: nil)
+        } else {
+            timeLineView = nil
+            timeLineScrollView = nil
         }
     }
     
     @objc private func rangeViewValueChanged(_ rangeView: TimeRangeView) {
+        let timeRange = timeRangeAt(startValue: rangeView.startValue, endValue: rangeView.endValue)
+        self.timeRange = timeRange
+        sendActions(for: .valueChanged)
+    }
+    
+    private func timeRangeAt(startValue: CGFloat, endValue: CGFloat) -> CMTimeRange {
+        guard let provider = timeRangeProvider else {
+            return kCMTimeRangeZero
+        }
+        let scrollView = provider.timeLineScrollView()
+        let widthPerSecond = provider.widthPerSecond
         
+        let timeScale: CMTimeScale = 1000
+        
+        let startOffset = scrollView.contentOffset.x + scrollView.frame.width * startValue
+        let startSeconds = startOffset / widthPerSecond
+        let startTime = CMTime(seconds: Double(startSeconds * CGFloat(timeScale)), preferredTimescale: timeScale)
+        
+        let endOffset = scrollView.contentOffset.x + scrollView.frame.width * endValue
+        let endSeconds = endOffset / widthPerSecond
+        let endTime = CMTime(seconds: Double(endSeconds * CGFloat(timeScale)), preferredTimescale: timeScale)
+        
+        return CMTimeRange(start: startTime, duration: endTime)
+    }
+    
+    func moveTo(time: CMTime) {
+        guard let provider = timeRangeProvider else {
+            return
+        }
+        
+        let scrollView = provider.timeLineScrollView()
+        let widthPerSecond = provider.widthPerSecond
+        
+        let offsetX = widthPerSecond * CGFloat(time.seconds)
+        var offset = scrollView.contentOffset
+        offset.x = offsetX
+        scrollView.setContentOffset(offset, animated: false)
+    }
+    
+    // MARK: - KVO
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "contentOffset" {
+            rangeViewValueChanged(rangeView)
+        } else {
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        }
     }
     
 }
@@ -104,6 +165,13 @@ class TimeRangeView: UIControl {
     // Current range value, the value is super view's width percent
     private(set) var startValue: CGFloat = 0
     private(set) var endValue: CGFloat = 0
+    
+    func setRangeValue(start: CGFloat, end: CGFloat) {
+        let endValue = max(0.0, min(1.0, end))
+        self.startValue = min(end, start)
+        self.endValue = endValue
+        layoutSubviews()
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)

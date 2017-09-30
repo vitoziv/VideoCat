@@ -10,13 +10,15 @@ import UIKit
 import CoreMedia
 
 extension WaveformScrollView: TimeRangeProvider {
-    
-    func timeRangeAt(startValue: CGFloat, endValue: CGFloat) -> CMTimeRange {
-        return CMTimeRange(start: kCMTimeZero, duration: kCMTimeZero)
-    }
-    
+
     func timeLineView() -> UIView {
         return self
     }
+    
+    func timeLineScrollView() -> UIScrollView {
+        return collectionView
+    }
+    
+    
     
 }

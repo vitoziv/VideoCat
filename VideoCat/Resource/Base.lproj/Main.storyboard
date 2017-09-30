@@ -33,12 +33,31 @@
                         <viewLayoutGuide key="safeArea" id="IaK-It-gVs"/>
                     </view>
                     <navigationItem key="navigationItem" id="rOr-I4-lf2">
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="rFU-3d-y3p"/>
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="rFU-3d-y3p">
+                            <connections>
+                                <segue destination="Y8T-gY-EHA" kind="show" id="9mJ-SE-S8G"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="980" y="791"/>
+        </scene>
+        <!--Prepare Video View Controller-->
+        <scene sceneID="N4U-hv-x7b">
+            <objects>
+                <viewController storyboardIdentifier="PrepareVideoViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Y8T-gY-EHA" customClass="PrepareVideoViewController" customModule="VideoCat" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="e14-8g-OhO">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <viewLayoutGuide key="safeArea" id="blw-45-9r8"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="R5C-sa-rtu" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1735" y="791"/>
         </scene>
         <!--Assets View Controller-->
         <scene sceneID="kth-aG-YQ6">

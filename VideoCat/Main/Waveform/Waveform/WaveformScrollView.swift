@@ -8,31 +8,15 @@
 
 import UIKit
 
-private var audioFile: EZAudioFile?
-
-extension WaveformScrollView {
-    func loadVoice(from url: URL, secondsWidth: CGFloat) {
-        audioFile = EZAudioFile(url: url)
-        let width = secondsWidth * CGFloat(audioFile?.duration ?? 0)
-        audioFile?.getWaveformData(withNumberOfPoints: UInt32(width), completion: { [weak self] (buffers, bufferSize) in
-            guard let strongSelf = self else { return }
-            if let points = buffers?[0] {
-                var wavefromPoints = [Float]()
-                for index in 0..<bufferSize {
-                    wavefromPoints.append(points[Int(index)])
-                }
-                strongSelf.updatePoints(wavefromPoints)
-            }
-        })
-    }
-}
-
 private let WaveFormCellIdentifier = "WaveFormCellIdentifier"
 
 class WaveformScrollView: UIView {
 
+    private var audioFile: EZAudioFile?
+    fileprivate(set) var collectionView: UICollectionView!
+    
     fileprivate(set) var viewModel = WaveformScrollViewModel()
-    fileprivate var collectionView: UICollectionView!
+    var widthPerSecond: CGFloat = 5
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -73,6 +57,23 @@ class WaveformScrollView: UIView {
         collectionView.reloadData()
     }
     
+}
+
+extension WaveformScrollView {
+    func loadVoice(from url: URL) {
+        audioFile = EZAudioFile(url: url)
+        let width = widthPerSecond * CGFloat(audioFile?.duration ?? 0)
+        audioFile?.getWaveformData(withNumberOfPoints: UInt32(width), completion: { [weak self] (buffers, bufferSize) in
+            guard let strongSelf = self else { return }
+            if let points = buffers?[0] {
+                var wavefromPoints = [Float]()
+                for index in 0..<bufferSize {
+                    wavefromPoints.append(points[Int(index)])
+                }
+                strongSelf.updatePoints(wavefromPoints)
+            }
+        })
+    }
 }
 
 extension WaveformScrollView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
