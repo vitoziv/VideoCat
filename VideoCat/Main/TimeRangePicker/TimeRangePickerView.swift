@@ -22,8 +22,10 @@ class TimeRangePickerView: UIView {
         }
     }
     
-    var timeLineView: UIView?
-    var rangeView: TimeRangeView!
+    private(set) var timeLineView: UIView?
+    private(set) var rangeView: TimeRangeView!
+    
+    var isContinuous: Bool = true // if set, value change events are generated any time the value changes due to dragging. default = YES
     
     convenience init(provider: TimeRangeProvider) {
         self.init(frame: CGRect.zero)
@@ -43,6 +45,7 @@ class TimeRangePickerView: UIView {
     
     private func commonInit() {
         rangeView = TimeRangeView()
+        rangeView.addTarget(self, action: #selector(rangeViewValueChanged(_:)), for: .valueChanged)
         addSubview(rangeView)
         
         rangeView.translatesAutoresizingMaskIntoConstraints = false
@@ -66,16 +69,37 @@ class TimeRangePickerView: UIView {
         }
     }
     
+    @objc private func rangeViewValueChanged(_ rangeView: TimeRangeView) {
+        
+    }
+    
 }
 
-class TimeRangeView: UIView {
+class TimeRangeView: UIControl {
     
     private(set) var leftEarImageView: UIImageView!
     private(set) var rightEarImageView: UIImageView!
     private(set) var coverImageView: UIImageView!
     
     var earWidth: CGFloat = 12
-    var minmumValue: CGFloat = 0.05
+    var minmumValue: CGFloat = 0.05 {
+        didSet {
+            minmumValue = min(1.0, max(0.0, minmumValue))
+            if endValue - startValue > minmumValue {
+                let expectEndValue = startValue + minmumValue
+                if expectEndValue > 1 {
+                    endValue = 1
+                    startValue = 1 - minmumValue
+                } else {
+                    endValue = expectEndValue
+                }
+            }
+            layoutSubviews()
+        }
+        
+    }
+    
+    var isContinuous: Bool = true // if set, value change events are generated any time the value changes due to dragging. default = YES
     
     // Current range value, the value is super view's width percent
     private(set) var startValue: CGFloat = 0
@@ -92,6 +116,8 @@ class TimeRangeView: UIView {
     }
     
     func commonInit()  {
+        endValue = startValue + minmumValue
+        
         backgroundColor = UIColor.clear
         
         coverImageView = UIImageView()
@@ -143,19 +169,45 @@ class TimeRangeView: UIView {
         }()
     }
     
+    private var currentStartValue: CGFloat = 0
+    private var currentEndValue: CGFloat = 0
     @objc private func panEarAction(_ gesture: UIPanGestureRecognizer) {
         let valueWidth = frame.width - earWidth * 2
         
         let translation = gesture.translation(in: gesture.view)
-        let percent = translation.x / valueWidth
+        if gesture.state == .began {
+            currentStartValue = startValue
+            currentEndValue = endValue
+            sendActions(for: .touchDown)
+        }
+        
+        let percent = translation.x  / valueWidth
         if gesture.view == leftEarImageView {
-            startValue = min(endValue, max(0.0, startValue + percent))
+            startValue = min(endValue - minmumValue, max(0.0, currentStartValue + percent))
         } else {
-            endValue = min(1.0, max(startValue, endValue + percent))
+            endValue = min(1.0, max(startValue + minmumValue, currentEndValue + percent))
         }
         layoutSubviews()
         
-        gesture.setTranslation(CGPoint.zero, in: gesture.view)
+        if isContinuous {
+            sendActions(for: .valueChanged)
+        }
+        
+        if gesture.state == .ended {
+            currentStartValue = 0
+            currentEndValue = 0
+            
+            if !isContinuous {
+                sendActions(for: .valueChanged)
+            }
+            
+            let locationOfTouch = gesture.location(in: gesture.view)
+            if let view = gesture.view, view.bounds.contains(locationOfTouch) {
+                sendActions(for: .touchUpInside)
+            } else {
+                sendActions(for: .touchUpOutside)
+            }
+        }
     }
     
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
