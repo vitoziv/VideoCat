@@ -15,13 +15,12 @@ class PrepareVideoViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        testWaveformView()
+        textTimeRangePickerView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        testWaveformView()
-        textTimeRangePickerView()
     }
 
     // MARK: - Test
@@ -45,7 +44,7 @@ class PrepareVideoViewController: UIViewController {
     }
     
     @objc func valueChanged(_ sender: TimeRangePickerView) {
-        print("TimeRangePicker startTime: \(sender.timeRange.start), endTime: \(sender.timeRange.end)")
+//        print("TimeRangePicker startTime: \(sender.timeRange.start), endTime: \(sender.timeRange.end)")
     }
 
 }

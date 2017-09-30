@@ -19,6 +19,4 @@ extension WaveformScrollView: TimeRangeProvider {
         return collectionView
     }
     
-    
-    
 }
