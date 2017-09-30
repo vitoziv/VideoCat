@@ -12,11 +12,12 @@ private let WaveFormCellIdentifier = "WaveFormCellIdentifier"
 
 class WaveformScrollView: UIView {
 
-    private var audioFile: EZAudioFile?
+    private(set) var audioFile: EZAudioFile?
     fileprivate(set) var collectionView: UICollectionView!
     
     fileprivate(set) var viewModel = WaveformScrollViewModel()
     var widthPerSecond: CGFloat = 5
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -60,7 +61,7 @@ class WaveformScrollView: UIView {
 }
 
 extension WaveformScrollView {
-    func loadVoice(from url: URL) {
+    func loadVoice(from url: URL, completion: @escaping (() -> Void)) {
         audioFile = EZAudioFile(url: url)
         let width = widthPerSecond * CGFloat(audioFile?.duration ?? 0)
         audioFile?.getWaveformData(withNumberOfPoints: UInt32(width), completion: { [weak self] (buffers, bufferSize) in
@@ -71,6 +72,7 @@ extension WaveformScrollView {
                     wavefromPoints.append(points[Int(index)])
                 }
                 strongSelf.updatePoints(wavefromPoints)
+                completion()
             }
         })
     }
