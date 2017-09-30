@@ -41,6 +41,8 @@
 		5F6099BA1F7DFDC000EA44A0 /* EZAudioUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0301F7D31580049CD3A /* EZAudioUtilities.m */; };
 		5F6099BE1F7E557500EA44A0 /* WaveformTimeRangeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6099BD1F7E557500EA44A0 /* WaveformTimeRangeProvider.swift */; };
 		5F6099C01F7E576E00EA44A0 /* EnlargeImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6099BF1F7E576E00EA44A0 /* EnlargeImageView.swift */; };
+		5F6099C21F7F6BBD00EA44A0 /* AudioFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6099C11F7F6BBD00EA44A0 /* AudioFile.swift */; };
+		5F6099C71F7FA5AD00EA44A0 /* AudioBufferListOCHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F6099C61F7FA5AD00EA44A0 /* AudioBufferListOCHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +99,9 @@
 		5F6099BB1F7DFDED00EA44A0 /* VideoCat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoCat-Bridging-Header.h"; sourceTree = "<group>"; };
 		5F6099BD1F7E557500EA44A0 /* WaveformTimeRangeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WaveformTimeRangeProvider.swift; path = ../../../../Videocat/VideoCat/Main/TimeRangePicker/WaveformTimeRangeProvider.swift; sourceTree = "<group>"; };
 		5F6099BF1F7E576E00EA44A0 /* EnlargeImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EnlargeImageView.swift; path = ../../../../Videocat/VideoCat/Main/Util/EnlargeImageView.swift; sourceTree = "<group>"; };
+		5F6099C11F7F6BBD00EA44A0 /* AudioFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFile.swift; sourceTree = "<group>"; };
+		5F6099C51F7FA56B00EA44A0 /* AudioBufferListOCHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioBufferListOCHelper.h; sourceTree = "<group>"; };
+		5F6099C61F7FA5AD00EA44A0 /* AudioBufferListOCHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = AudioBufferListOCHelper.m; path = ../../../../../Videocat/VideoCat/Main/Waveform/Waveform/AudioBufferListOCHelper.m; sourceTree = "<group>"; };
 		630D23A14081B0921452CF60 /* Pods-VideoCat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoCat.release.xcconfig"; path = "Pods/Target Support Files/Pods-VideoCat/Pods-VideoCat.release.xcconfig"; sourceTree = "<group>"; };
 		8F389E46D65FD18BFE27928E /* Pods-VideoCat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoCat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VideoCat/Pods-VideoCat.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -237,9 +242,12 @@
 		5F01B0361F7D3E330049CD3A /* Waveform */ = {
 			isa = PBXGroup;
 			children = (
+				5F6099C11F7F6BBD00EA44A0 /* AudioFile.swift */,
 				5F01B0331F7D31580049CD3A /* WaveformView.swift */,
 				5F01B0341F7D334D0049CD3A /* WaveformScrollView.swift */,
 				5F01B0371F7D3E4E0049CD3A /* WaveformHelper.swift */,
+				5F6099C51F7FA56B00EA44A0 /* AudioBufferListOCHelper.h */,
+				5F6099C61F7FA5AD00EA44A0 /* AudioBufferListOCHelper.m */,
 			);
 			path = Waveform;
 			sourceTree = "<group>";
@@ -493,11 +501,13 @@
 				5F01AFFD1F741E0E0049CD3A /* TrackPanel.swift in Sources */,
 				5F6099B81F7DFDBB00EA44A0 /* EZAudioFloatConverter.m in Sources */,
 				5F01B0381F7D3E4E0049CD3A /* WaveformHelper.swift in Sources */,
+				5F6099C21F7F6BBD00EA44A0 /* AudioFile.swift in Sources */,
 				5F29D2391F740D9300D41F50 /* TrackVideoResource.swift in Sources */,
 				5F01B0041F779BEF0049CD3A /* AssetCell.swift in Sources */,
 				5F01B0351F7D334D0049CD3A /* WaveformScrollView.swift in Sources */,
 				5F01B0131F7949080049CD3A /* VIPlayerView.swift in Sources */,
 				5F6099B51F7DFD9800EA44A0 /* WaveformView.swift in Sources */,
+				5F6099C71F7FA5AD00EA44A0 /* AudioBufferListOCHelper.m in Sources */,
 				5F01B00A1F77A2460049CD3A /* AssetsViewModel.swift in Sources */,
 				5F01B00E1F77EDD30049CD3A /* TrackVideoAssetResource.swift in Sources */,
 				5F01AFFF1F7794370049CD3A /* AssetsViewController.swift in Sources */,

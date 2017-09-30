@@ -12,7 +12,7 @@ private let WaveFormCellIdentifier = "WaveFormCellIdentifier"
 
 class WaveformScrollView: UIView {
 
-    private(set) var audioFile: EZAudioFile?
+    private(set) var audioFile: AudioFile?
     fileprivate(set) var collectionView: UICollectionView!
     
     fileprivate(set) var viewModel = WaveformScrollViewModel()
@@ -62,19 +62,36 @@ class WaveformScrollView: UIView {
 
 extension WaveformScrollView {
     func loadVoice(from url: URL, completion: @escaping (() -> Void)) {
-        audioFile = EZAudioFile(url: url)
-        let width = widthPerSecond * CGFloat(audioFile?.duration ?? 0)
-        audioFile?.getWaveformData(withNumberOfPoints: UInt32(width), completion: { [weak self] (buffers, bufferSize) in
-            guard let strongSelf = self else { return }
-            if let points = buffers?[0] {
-                var wavefromPoints = [Float]()
-                for index in 0..<bufferSize {
-                    wavefromPoints.append(points[Int(index)])
+        do {
+            audioFile = try AudioFile(url: url)
+            if let audioFile = audioFile {
+                DispatchQueue.global().async { [weak self] in
+                    guard let strongSelf = self else { return }
+                    let width = strongSelf.widthPerSecond * CGFloat(audioFile.audioFile.duration)
+                    let buffers = audioFile.getWaveformData(pointsCount: Int(width))
+                    let points = buffers[0]
+                    DispatchQueue.main.async {
+                        strongSelf.updatePoints(points)
+                        completion()
+                    }
                 }
-                strongSelf.updatePoints(wavefromPoints)
-                completion()
             }
-        })
+        } catch {
+            print("error \(error.localizedDescription)")
+        }
+        
+        
+//        audioFile?.getWaveformData(withNumberOfPoints: UInt32(width), completion: { [weak self] (buffers, bufferSize) in
+//            guard let strongSelf = self else { return }
+//            if let points = buffers?[0] {
+//                var wavefromPoints = [Float]()
+//                for index in 0..<bufferSize {
+//                    wavefromPoints.append(points[Int(index)])
+//                }
+//                strongSelf.updatePoints(wavefromPoints)
+//                completion()
+//            }
+//        })
     }
 }
 
