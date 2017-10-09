@@ -32,13 +32,13 @@ class PrepareVideoViewController: UIViewController {
         waveformView.backgroundColor = UIColor.orange.withAlphaComponent(0.5)
         
         if let url = Bundle.main.url(forResource: "Moon River", withExtension: "mp3") {
-            waveformView.loadVoice(from: url, completion: { [weak self] in
+            waveformView.loadVoice(from: url, completion: { [weak self] (asset) in
                 guard let strongSelf = self else { return }
                 strongSelf.timeRangePickerView?.rangeView.setRangeValue(start: 0.25, end: 0.75)
                 
-//                let duration = strongSelf.waveformView.asset?.duration.seconds ?? 0
-//                let time = CMTime(seconds: duration / 2, preferredTimescale: 1000)
-//                strongSelf.timeRangePickerView?.moveTo(time: time)
+                let duration = asset.duration.seconds
+                let time = CMTime(seconds: duration / 2, preferredTimescale: 1000)
+                strongSelf.timeRangePickerView?.moveTo(time: time)
             })
         }
     }

@@ -17,8 +17,6 @@ class WaveformScrollView: UIView {
     
     fileprivate(set) var viewModel = WaveformScrollViewModel()
     var widthPerSecond: CGFloat = 5
-    var asset: AVURLAsset?
-    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -62,10 +60,9 @@ class WaveformScrollView: UIView {
 }
 
 extension WaveformScrollView {
-    func loadVoice(from url: URL, completion: @escaping (() -> Void)) {
+    func loadVoice(from url: URL, completion: @escaping ((AVURLAsset) -> Void)) {
         let operation = AudioSampleOperation(widthPerSecond: widthPerSecond)
         let asset = AVURLAsset(url: url)
-        self.asset = asset
         DispatchQueue.global().async { [weak self] in
             guard let strongSelf = self else { return }
             asset.loadValuesAsynchronously(forKeys: ["duration", "track"], completionHandler: {
@@ -76,12 +73,12 @@ extension WaveformScrollView {
                     }
                     DispatchQueue.main.async {
                         strongSelf.updatePoints(points)
-                        completion()
+                        completion(asset)
                     }
                 } catch {
                     print("load samples error \(error)")
                     DispatchQueue.main.async {
-                        completion()
+                        completion(asset)
                     }
                 }
             })

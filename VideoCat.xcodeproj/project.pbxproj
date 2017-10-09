@@ -22,7 +22,6 @@
 		5F01B0151F794AD40049CD3A /* VIPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0141F794AD40049CD3A /* VIPlayer.swift */; };
 		5F01B0271F7BFC140049CD3A /* Moon River.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5F01B0261F7BFC0F0049CD3A /* Moon River.mp3 */; };
 		5F01B0351F7D334D0049CD3A /* WaveformScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0341F7D334D0049CD3A /* WaveformScrollView.swift */; };
-		5F01B0381F7D3E4E0049CD3A /* WaveformHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0371F7D3E4E0049CD3A /* WaveformHelper.swift */; };
 		5F29D2331F73F25B00D41F50 /* TrackItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2321F73F25B00D41F50 /* TrackItem.swift */; };
 		5F29D2351F73F41900D41F50 /* TrackConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */; };
 		5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2361F73FEE200D41F50 /* TrackResource.swift */; };
@@ -67,7 +66,6 @@
 		5F01B0321F7D31580049CD3A /* TimeRangePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangePickerView.swift; sourceTree = "<group>"; };
 		5F01B0331F7D31580049CD3A /* WaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
 		5F01B0341F7D334D0049CD3A /* WaveformScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformScrollView.swift; sourceTree = "<group>"; };
-		5F01B0371F7D3E4E0049CD3A /* WaveformHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformHelper.swift; sourceTree = "<group>"; };
 		5F29D2321F73F25B00D41F50 /* TrackItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackItem.swift; sourceTree = "<group>"; };
 		5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackConfiguration.swift; sourceTree = "<group>"; };
 		5F29D2361F73FEE200D41F50 /* TrackResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackResource.swift; sourceTree = "<group>"; };
@@ -205,7 +203,6 @@
 				5F977C341F8B4CF90029156E /* AudioSampleOperation.swift */,
 				5F01B0331F7D31580049CD3A /* WaveformView.swift */,
 				5F01B0341F7D334D0049CD3A /* WaveformScrollView.swift */,
-				5F01B0371F7D3E4E0049CD3A /* WaveformHelper.swift */,
 			);
 			path = Waveform;
 			sourceTree = "<group>";
@@ -466,7 +463,6 @@
 			files = (
 				5F01B0151F794AD40049CD3A /* VIPlayer.swift in Sources */,
 				5F01AFFD1F741E0E0049CD3A /* TrackPanel.swift in Sources */,
-				5F01B0381F7D3E4E0049CD3A /* WaveformHelper.swift in Sources */,
 				5F29D2391F740D9300D41F50 /* TrackVideoResource.swift in Sources */,
 				5F977C351F8B4CF90029156E /* AudioSampleOperation.swift in Sources */,
 				5F01B0041F779BEF0049CD3A /* AssetCell.swift in Sources */,

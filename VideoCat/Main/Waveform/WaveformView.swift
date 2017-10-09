@@ -32,7 +32,7 @@ class WaveformView: UIView {
     }
     
     private func commonInit() {
-        waveformLayer.lineWidth = 1.0
+        waveformLayer.lineWidth = 1
         waveformLayer.fillColor = nil
         waveformLayer.backgroundColor = nil
         waveformLayer.isOpaque = true
@@ -75,11 +75,8 @@ class WaveformView: UIView {
         
         for index in 0..<pointCount {
             var point = points[index]
-            let originX = point.x
-            point.x = originX - 0.5
-            path.addLine(to: point)
+            path.move(to: point)
             
-            point.x = originX
             point.y = -point.y
             path.addLine(to: point)
         }
