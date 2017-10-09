@@ -202,7 +202,10 @@
 		5F01B0281F7D31580049CD3A /* Waveform */ = {
 			isa = PBXGroup;
 			children = (
-				5F01B0361F7D3E330049CD3A /* Waveform */,
+				5F977C341F8B4CF90029156E /* AudioSampleOperation.swift */,
+				5F01B0331F7D31580049CD3A /* WaveformView.swift */,
+				5F01B0341F7D334D0049CD3A /* WaveformScrollView.swift */,
+				5F01B0371F7D3E4E0049CD3A /* WaveformHelper.swift */,
 			);
 			path = Waveform;
 			sourceTree = "<group>";
@@ -214,17 +217,6 @@
 				5F6099BD1F7E557500EA44A0 /* WaveformTimeRangeProvider.swift */,
 			);
 			path = TimeRangePicker;
-			sourceTree = "<group>";
-		};
-		5F01B0361F7D3E330049CD3A /* Waveform */ = {
-			isa = PBXGroup;
-			children = (
-				5F977C341F8B4CF90029156E /* AudioSampleOperation.swift */,
-				5F01B0331F7D31580049CD3A /* WaveformView.swift */,
-				5F01B0341F7D334D0049CD3A /* WaveformScrollView.swift */,
-				5F01B0371F7D3E4E0049CD3A /* WaveformHelper.swift */,
-			);
-			path = Waveform;
 			sourceTree = "<group>";
 		};
 		5F29D22B1F73E94500D41F50 /* CompositionCore */ = {
