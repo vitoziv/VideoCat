@@ -36,9 +36,9 @@ class PrepareVideoViewController: UIViewController {
                 guard let strongSelf = self else { return }
                 strongSelf.timeRangePickerView?.rangeView.setRangeValue(start: 0.25, end: 0.75)
                 
-                let duration = strongSelf.waveformView.audioFile?.audioFile.duration ?? 0
-                let time = CMTime(seconds: duration / 2, preferredTimescale: 1000)
-                strongSelf.timeRangePickerView?.moveTo(time: time)
+//                let duration = strongSelf.waveformView.asset?.duration.seconds ?? 0
+//                let time = CMTime(seconds: duration / 2, preferredTimescale: 1000)
+//                strongSelf.timeRangePickerView?.moveTo(time: time)
             })
         }
     }

@@ -7,16 +7,17 @@
 //
 
 import UIKit
+import AVFoundation
 
 private let WaveFormCellIdentifier = "WaveFormCellIdentifier"
 
 class WaveformScrollView: UIView {
 
-    private(set) var audioFile: AudioFile?
     fileprivate(set) var collectionView: UICollectionView!
     
     fileprivate(set) var viewModel = WaveformScrollViewModel()
     var widthPerSecond: CGFloat = 5
+    var asset: AVURLAsset?
     
     
     override init(frame: CGRect) {
@@ -62,37 +63,29 @@ class WaveformScrollView: UIView {
 
 extension WaveformScrollView {
     func loadVoice(from url: URL, completion: @escaping (() -> Void)) {
-        do {
-            audioFile = try AudioFile(url: url)
-            if let audioFile = audioFile {
-                DispatchQueue.global().async { [weak self] in
-                    guard let strongSelf = self else { return }
-                    let width = strongSelf.widthPerSecond * CGFloat(audioFile.audioFile.duration)
-                    let buffers = audioFile.getWaveformData(pointsCount: Int(width))
-                    let points = buffers[0]
+        let operation = AudioSampleOperation(widthPerSecond: widthPerSecond)
+        let asset = AVURLAsset(url: url)
+        self.asset = asset
+        DispatchQueue.global().async { [weak self] in
+            guard let strongSelf = self else { return }
+            asset.loadValuesAsynchronously(forKeys: ["duration", "track"], completionHandler: {
+                do {
+                    try operation.loadSamples(from: asset)
+                    let points = operation.outputSamples.map { (sample) -> Float in
+                        return Float(sample / operation.sampleMax)
+                    }
                     DispatchQueue.main.async {
                         strongSelf.updatePoints(points)
                         completion()
                     }
+                } catch {
+                    print("load samples error \(error)")
+                    DispatchQueue.main.async {
+                        completion()
+                    }
                 }
-            }
-        } catch {
-            print("error \(error.localizedDescription)")
+            })
         }
-        
-//        audioFile = EZAudioFile(url: url)
-//        let width = widthPerSecond * CGFloat(audioFile?.duration ?? 0)
-//        audioFile?.getWaveformData(withNumberOfPoints: UInt32(width), completion: { [weak self] (buffers, bufferSize) in
-//            guard let strongSelf = self else { return }
-//            if let points = buffers?[0] {
-//                var wavefromPoints = [Float]()
-//                for index in 0..<bufferSize {
-//                    wavefromPoints.append(points[Int(index)])
-//                }
-//                strongSelf.updatePoints(wavefromPoints)
-//                completion()
-//            }
-//        })
     }
 }
 

@@ -105,9 +105,9 @@ class TimeRangePickerView: UIControl {
         
         let endOffset = scrollView.contentOffset.x + scrollView.frame.width * endValue
         let endSeconds = endOffset / widthPerSecond
-        let endTime = CMTime(seconds: Double(endSeconds), preferredTimescale: timeScale)
+        let duration = CMTime(seconds: Double(endSeconds - startSeconds), preferredTimescale: timeScale)
         
-        return CMTimeRange(start: startTime, duration: endTime)
+        return CMTimeRange(start: startTime, duration: duration)
     }
     
     func moveTo(time: CMTime) {
