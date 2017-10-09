@@ -80,7 +80,8 @@ extension WaveformScrollView {
             print("error \(error.localizedDescription)")
         }
         
-        
+//        audioFile = EZAudioFile(url: url)
+//        let width = widthPerSecond * CGFloat(audioFile?.duration ?? 0)
 //        audioFile?.getWaveformData(withNumberOfPoints: UInt32(width), completion: { [weak self] (buffers, bufferSize) in
 //            guard let strongSelf = self else { return }
 //            if let points = buffers?[0] {

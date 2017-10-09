@@ -22,84 +22,120 @@ class AudioFile {
     init(url: URL) throws {
         self.url = url
         try audioFile = AVAudioFile(forReading: url)
-        let status = ExtAudioFileOpenURL(url as CFURL, &fileInfo.fileRef)
+        var status = ExtAudioFileOpenURL(url as CFURL, &fileInfo.fileRef)
         if status != noErr {
             throw NSError(domain: "com.audiofile", code: 0, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("Can't open file for url '\(url)'", comment: "")])
         }
+//        var clientFormat = defaultAudioFormat()
+//        let size = MemoryLayout<AudioStreamBasicDescription>.stride
+//        status = ExtAudioFileSetProperty(fileInfo.fileRef!, kExtAudioFileProperty_ClientDataFormat, UInt32(size), &clientFormat)
+//        if status != noErr {
+//            throw NSError(domain: "com.audiofile", code: 0, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("Can't set absd description", comment: "")])
+//        }
     }
     
     func getWaveformData(pointsCount: Int) -> [[Float]] {
         guard let fileRef = fileInfo.fileRef else {
             return []
         }
-        let points = AudioBufferListOCHelper.getWaveformData(withFileRef: fileRef,
-                                                             totalFrames: Int(audioFile.length),
-                                                             channels: Int(audioFile.fileFormat.channelCount),
-                                                             interleaved: audioFile.fileFormat.isInterleaved,
-                                                             numberOfPoints: pointsCount)
+
+        let status = ExtAudioFileSeek(fileRef, 0)
+        if status != noErr {
+            return []
+        }
+
+        let channelCount = audioFile.fileFormat.channelCount
+        let framesPerBuffer = audioFile.length / Int64(pointsCount)
+        let framesPerChannel = framesPerBuffer / Int64(audioFile.fileFormat.channelCount)
+        let isInterleaved = audioFile.fileFormat.isInterleaved
+
+        let audioBufferList = createAudioBufferList(frameCount: Int(framesPerBuffer), channelCount: channelCount, isInterleaved: isInterleaved)
+        var data: [[Float]] = {
+            var data: [[Float]] = []
+            for _ in 0..<channelCount {
+                data.append([])
+            }
+            return data
+        }()
+
+        var bufferSize = UInt32(framesPerBuffer)
+        for _ in 0..<pointsCount {
+            let status = ExtAudioFileRead(fileRef, &bufferSize, audioBufferList.unsafeMutablePointer)
+            if status != noErr {
+                return []
+            }
+
+            if isInterleaved {
+                if let buffer = audioBufferList[0].mData?.assumingMemoryBound(to: Float.self) {
+                    for channel in 0..<channelCount {
+                        var rms: Float = 0
+                        for frame in 0..<framesPerChannel {
+                            rms += buffer[Int(frame) * Int(channelCount) + Int(channel)]
+                        }
+                        rms = rms / Float(framesPerChannel)
+                        data[Int(channel)].append(rms)
+                    }
+                }
+            } else {
+                for channel in 0..<Int(channelCount) {
+                    let buffer = audioBufferList[channel]
+                    if let channelData = buffer.mData?.assumingMemoryBound(to: Float.self) {
+                        var rms: Float = 0
+                        for i in 0..<Int(buffer.mDataByteSize) {
+                            rms += channelData[i]
+                        }
+                        rms = rms / Float(buffer.mDataByteSize)
+                        data[Int(channel)].append(rms)
+                    }
+                }
+            }
+        }
+
+        for i in 0..<audioBufferList.count {
+            free(audioBufferList[i].mData)
+        }
+        free(audioBufferList.unsafeMutablePointer)
+
+        return data
+    }
+    
+    private func createAudioBufferList(frameCount: Int, channelCount: UInt32, isInterleaved: Bool) -> UnsafeMutableAudioBufferListPointer {
+        var nbuffers: Int = 0
+        var bufferSize: Int = 0
+        var channelsPerBuffer: UInt32 = 0
         
-        if let points = points as? [[Float]] {
-            return points
+        if isInterleaved {
+            nbuffers = 1
+            bufferSize = MemoryLayout<Float>.stride * frameCount * Int(channelCount)
+            channelsPerBuffer = channelCount
+        } else {
+            nbuffers = Int(channelCount)
+            bufferSize = MemoryLayout<Float>.stride * frameCount
+            channelsPerBuffer = 1
         }
         
-        return []
-
-//        let status = ExtAudioFileSeek(fileRef, 0)
-//        if status != noErr {
-//            return []
-//        }
-//
-//        let channelCount = audioFile.fileFormat.channelCount
-//        let framesPerBuffer = audioFile.length / Int64(pointsCount)
-//        let framesPerChannel = framesPerBuffer / Int64(audioFile.fileFormat.channelCount)
-//        let isInterleaved = audioFile.fileFormat.isInterleaved
-//
-//        let audioBufferList =  AudioBufferList.init(mNumberBuffers: <#T##UInt32#>, mBuffers: <#T##(AudioBuffer)#>) AudioBufferListOCHelper.audioBufferList(withNumberOfFrames: UInt32(framesPerBuffer), numberOfChannels: channelCount, interleaved: isInterleaved)!
-//        let audioBufferListUnsafePoint = UnsafeMutableAudioBufferListPointer(audioBufferList)
-//        var data: [[Float]] = {
-//            var data: [[Float]] = []
-//            for _ in 0..<channelCount {
-//                data.append([])
-//            }
-//            return data
-//        }()
-//
-//        var bufferSize = UInt32(framesPerBuffer)
-//        for _ in 0..<pointsCount {
-//            let status = ExtAudioFileRead(fileRef, &bufferSize, audioBufferList)
-//            if status != noErr {
-//                return []
-//            }
-//
-//            if isInterleaved {
-//                if let buffer = audioBufferListUnsafePoint[0].mData?.assumingMemoryBound(to: Float.self) {
-//                    for channel in 0..<channelCount {
-//                        var rms: Float = 0
-//                        for frame in 0..<framesPerChannel {
-//                            let data = buffer[Int(frame) * Int(channelCount) + Int(channel)]
-//                        }
-//                        let rms = rms / Float(channelData.count)
-//                        data[Int(channel)].append(rms)
-//                    }
-//                }
-//            } else {
-//                for channel in 0..<Int(channelCount) {
-//                    let buffer = audioBufferListUnsafePoint[channel]
-//                    if let channelData = buffer.mData?.assumingMemoryBound(to: Float.self) {
-//                        var rms: Float = 0
-//                        for i in 0..<Int(buffer.mDataByteSize) {
-//                            rms += channelData[i]
-//                        }
-//                        rms = rms / Float(buffer.mDataByteSize)
-//                        data[Int(channel)].append(rms)
-//                    }
-//                }
-//            }
-//        }
-//
-//        free(audioBufferList)
-//
-//        return data
+        let audioBufferList = AudioBufferList.allocate(maximumBuffers: nbuffers)
+        for i in 0..<nbuffers {
+            audioBufferList[i].mData = calloc(bufferSize, 1)
+            audioBufferList[i].mDataByteSize = UInt32(bufferSize)
+            audioBufferList[i].mNumberChannels = channelsPerBuffer
+        }
+        
+        return audioBufferList
+    }
+    
+    private func defaultAudioFormat() -> AudioStreamBasicDescription {
+        var asbd = AudioStreamBasicDescription()
+        asbd.mSampleRate = 44100.0
+        asbd.mFormatFlags = kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved
+        asbd.mFormatID = kAudioFormatLinearPCM
+        let floatByteSize = MemoryLayout<Float>.stride
+        asbd.mBitsPerChannel = UInt32(floatByteSize) * 8
+        asbd.mBytesPerFrame = UInt32(floatByteSize)
+        asbd.mChannelsPerFrame = 2
+        asbd.mFramesPerPacket = 1
+        asbd.mBytesPerPacket = asbd.mFramesPerPacket * asbd.mBytesPerFrame
+        return asbd
     }
     
 }

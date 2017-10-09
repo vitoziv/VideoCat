@@ -42,10 +42,10 @@
 }
 
 + (NSArray *)getWaveformDataWithFileRef:(ExtAudioFileRef)fileRef
-                                        totalFrames:(NSInteger)totalFrames
-                                            channels:(NSInteger)channels
-                                        interleaved:(BOOL)interleaved
-                                     numberOfPoints:(NSInteger)numberOfPoints {
+                            totalFrames:(NSInteger)totalFrames
+                               channels:(NSInteger)channels
+                            interleaved:(BOOL)interleaved
+                         numberOfPoints:(NSInteger)numberOfPoints {
     
     float **data = (float **)malloc( sizeof(float*) * channels );
     for (int i = 0; i < channels; i++)
