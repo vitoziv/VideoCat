@@ -22,7 +22,6 @@ class ViewController: UIViewController {
         }
     }
     
-    
 }
 
 extension ViewController: AssetsViewControllerDelegate {

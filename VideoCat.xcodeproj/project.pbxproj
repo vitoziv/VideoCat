@@ -36,6 +36,7 @@
 		5F6099B61F7DFDA000EA44A0 /* TimeRangePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0321F7D31580049CD3A /* TimeRangePickerView.swift */; };
 		5F6099BE1F7E557500EA44A0 /* WaveformTimeRangeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6099BD1F7E557500EA44A0 /* WaveformTimeRangeProvider.swift */; };
 		5F6099C01F7E576E00EA44A0 /* EnlargeImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6099BF1F7E576E00EA44A0 /* EnlargeImageView.swift */; };
+		5F81A7F71F8D06B300D65DAA /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F81A7F61F8D06B300D65DAA /* VideoTimelineView.swift */; };
 		5F977C351F8B4CF90029156E /* AudioSampleOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F977C341F8B4CF90029156E /* AudioSampleOperation.swift */; };
 /* End PBXBuildFile section */
 
@@ -84,6 +85,7 @@
 		5F6099BB1F7DFDED00EA44A0 /* VideoCat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoCat-Bridging-Header.h"; sourceTree = "<group>"; };
 		5F6099BD1F7E557500EA44A0 /* WaveformTimeRangeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WaveformTimeRangeProvider.swift; path = ../../../../Videocat/VideoCat/Main/TimeRangePicker/WaveformTimeRangeProvider.swift; sourceTree = "<group>"; };
 		5F6099BF1F7E576E00EA44A0 /* EnlargeImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EnlargeImageView.swift; path = ../../../../Videocat/VideoCat/Main/Util/EnlargeImageView.swift; sourceTree = "<group>"; };
+		5F81A7F61F8D06B300D65DAA /* VideoTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
 		5F977C341F8B4CF90029156E /* AudioSampleOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSampleOperation.swift; sourceTree = "<group>"; };
 		630D23A14081B0921452CF60 /* Pods-VideoCat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoCat.release.xcconfig"; path = "Pods/Target Support Files/Pods-VideoCat/Pods-VideoCat.release.xcconfig"; sourceTree = "<group>"; };
 		8F389E46D65FD18BFE27928E /* Pods-VideoCat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoCat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VideoCat/Pods-VideoCat.debug.xcconfig"; sourceTree = "<group>"; };
@@ -140,12 +142,10 @@
 		5F01B0001F7794440049CD3A /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				5F01B0281F7D31580049CD3A /* Waveform */,
-				5F01B0311F7D31580049CD3A /* TimeRangePicker */,
-				5F01B0111F7948DD0049CD3A /* Player */,
-				5F01B0051F77A07A0049CD3A /* Util */,
-				5F01B0011F7794740049CD3A /* ViewControllers */,
 				5F3A1CB11F528FD5001895DB /* AppDelegate.swift */,
+				5F01B0011F7794740049CD3A /* ViewControllers */,
+				5F81A7F41F8D04F700D65DAA /* Component */,
+				5F01B0051F77A07A0049CD3A /* Util */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -284,6 +284,25 @@
 				5F3A1CBD1F528FD5001895DB /* Info.plist */,
 			);
 			path = SupportFiles;
+			sourceTree = "<group>";
+		};
+		5F81A7F41F8D04F700D65DAA /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				5F81A7F51F8D053B00D65DAA /* VideoTimeline */,
+				5F01B0281F7D31580049CD3A /* Waveform */,
+				5F01B0311F7D31580049CD3A /* TimeRangePicker */,
+				5F01B0111F7948DD0049CD3A /* Player */,
+			);
+			path = Component;
+			sourceTree = "<group>";
+		};
+		5F81A7F51F8D053B00D65DAA /* VideoTimeline */ = {
+			isa = PBXGroup;
+			children = (
+				5F81A7F61F8D06B300D65DAA /* VideoTimelineView.swift */,
+			);
+			path = VideoTimeline;
 			sourceTree = "<group>";
 		};
 		A83E6A44B66AA4509E5FB9FD /* Pods */ = {
@@ -472,6 +491,7 @@
 				5F01B00A1F77A2460049CD3A /* AssetsViewModel.swift in Sources */,
 				5F01B00E1F77EDD30049CD3A /* TrackVideoAssetResource.swift in Sources */,
 				5F01AFFF1F7794370049CD3A /* AssetsViewController.swift in Sources */,
+				5F81A7F71F8D06B300D65DAA /* VideoTimelineView.swift in Sources */,
 				5F29D2331F73F25B00D41F50 /* TrackItem.swift in Sources */,
 				5F01B00C1F77CF420049CD3A /* MBProgressExtension.swift in Sources */,
 				5F6099BE1F7E557500EA44A0 /* WaveformTimeRangeProvider.swift in Sources */,

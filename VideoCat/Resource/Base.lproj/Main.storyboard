@@ -33,11 +33,7 @@
                         <viewLayoutGuide key="safeArea" id="IaK-It-gVs"/>
                     </view>
                     <navigationItem key="navigationItem" id="rOr-I4-lf2">
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="rFU-3d-y3p">
-                            <connections>
-                                <segue destination="Y8T-gY-EHA" kind="show" id="9mJ-SE-S8G"/>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="rFU-3d-y3p"/>
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -51,13 +47,43 @@
                     <view key="view" contentMode="scaleToFill" id="e14-8g-OhO">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="O8n-wa-idq" customClass="VIPlayerView" customModule="VideoCat" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="64" width="375" height="483"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="XSC-GY-yx6" customClass="TimeRangePickerView" customModule="VideoCat" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="547" width="375" height="120"/>
+                                <color key="backgroundColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="120" id="Bxz-ln-CJ7"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="O8n-wa-idq" firstAttribute="leading" secondItem="blw-45-9r8" secondAttribute="leading" id="9iZ-Fz-nK4"/>
+                            <constraint firstItem="XSC-GY-yx6" firstAttribute="leading" secondItem="blw-45-9r8" secondAttribute="leading" id="Chu-hl-liP"/>
+                            <constraint firstItem="O8n-wa-idq" firstAttribute="top" secondItem="blw-45-9r8" secondAttribute="top" id="NCg-Ns-fbo"/>
+                            <constraint firstItem="XSC-GY-yx6" firstAttribute="top" secondItem="O8n-wa-idq" secondAttribute="bottom" id="PH9-Iz-Nvf"/>
+                            <constraint firstItem="XSC-GY-yx6" firstAttribute="bottom" secondItem="blw-45-9r8" secondAttribute="bottom" id="cTx-80-FQe"/>
+                            <constraint firstItem="XSC-GY-yx6" firstAttribute="trailing" secondItem="blw-45-9r8" secondAttribute="trailing" id="ieG-wT-hpT"/>
+                            <constraint firstItem="O8n-wa-idq" firstAttribute="trailing" secondItem="blw-45-9r8" secondAttribute="trailing" id="uuD-8y-gda"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="blw-45-9r8"/>
                     </view>
+                    <navigationItem key="navigationItem" id="FFa-hW-yrE">
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="g2i-WG-l1v"/>
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="1M3-U0-wZq"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="playerView" destination="O8n-wa-idq" id="RGY-rI-jJa"/>
+                        <outlet property="timeRangePickerView" destination="XSC-GY-yx6" id="2uL-Pf-s3O"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="R5C-sa-rtu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1735" y="791"/>
+            <point key="canvasLocation" x="1845.5999999999999" y="2270.9145427286358"/>
         </scene>
         <!--Assets View Controller-->
         <scene sceneID="kth-aG-YQ6">
@@ -171,6 +197,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LOu-Le-5GD" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="979.20000000000005" y="1537.3313343328336"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="rMa-vg-RBT">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="dv2-RJ-TnP" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="tqA-4P-6Zx">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Y8T-gY-EHA" kind="relationship" relationship="rootViewController" id="OXM-lr-72f"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="t9o-fn-hxb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="980" y="2271"/>
         </scene>
     </scenes>
 </document>

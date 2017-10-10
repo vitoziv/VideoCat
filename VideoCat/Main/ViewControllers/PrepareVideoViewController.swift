@@ -13,11 +13,17 @@ class PrepareVideoViewController: UIViewController {
     
     var trackItem: TrackItem!
 
+    @IBOutlet weak var playerView: VIPlayerView!
+    @IBOutlet weak var timeRangePickerView: TimeRangePickerView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        testWaveformView()
-        textTimeRangePickerView()
+        timeRangePickerView.addTarget(self, action: #selector(valueChanged(_:)), for: .valueChanged)
+        
+        // TODO: 实现视频滚动视图
+        
+        setupWaveformView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -27,7 +33,7 @@ class PrepareVideoViewController: UIViewController {
     // MARK: - Test
     
     var waveformView: WaveformScrollView!
-    func testWaveformView() {
+    func setupWaveformView() {
         waveformView = WaveformScrollView()
         waveformView.backgroundColor = UIColor.orange.withAlphaComponent(0.5)
         
@@ -41,17 +47,6 @@ class PrepareVideoViewController: UIViewController {
                 strongSelf.timeRangePickerView?.moveTo(time: time)
             })
         }
-    }
-    
-    var timeRangePickerView: TimeRangePickerView?
-    func textTimeRangePickerView() {
-        let frame = CGRect(x: 20, y: 66, width: 300, height: 100)
-        let timeRangePickerView = TimeRangePickerView(provider: waveformView)
-        timeRangePickerView.frame = frame
-        view.addSubview(timeRangePickerView)
-        timeRangePickerView.addTarget(self, action: #selector(valueChanged(_:)), for: .valueChanged)
-        
-        self.timeRangePickerView = timeRangePickerView
     }
     
     @objc func valueChanged(_ sender: TimeRangePickerView) {
