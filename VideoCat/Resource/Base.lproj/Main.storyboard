@@ -33,7 +33,11 @@
                         <viewLayoutGuide key="safeArea" id="IaK-It-gVs"/>
                     </view>
                     <navigationItem key="navigationItem" id="rOr-I4-lf2">
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="rFU-3d-y3p"/>
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="rFU-3d-y3p">
+                            <connections>
+                                <segue destination="dv2-RJ-TnP" kind="presentation" id="ou7-EK-lMi"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
@@ -73,8 +77,16 @@
                         <viewLayoutGuide key="safeArea" id="blw-45-9r8"/>
                     </view>
                     <navigationItem key="navigationItem" id="FFa-hW-yrE">
-                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="g2i-WG-l1v"/>
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="1M3-U0-wZq"/>
+                        <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="g2i-WG-l1v">
+                            <connections>
+                                <action selector="cancelAction:" destination="Y8T-gY-EHA" id="U0Q-9Q-XhE"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="1M3-U0-wZq">
+                            <connections>
+                                <action selector="doneAction:" destination="Y8T-gY-EHA" id="kU0-hL-L81"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
                         <outlet property="playerView" destination="O8n-wa-idq" id="RGY-rI-jJa"/>

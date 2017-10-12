@@ -23,13 +23,19 @@ class PrepareVideoViewController: UIViewController {
         
         // TODO: 实现视频滚动视图
         
-        setupWaveformView()
+        setupVideoTimeLineView()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
-
+    
+    @IBAction func cancelAction(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func doneAction(_ sender: UIBarButtonItem) {
+    }
     // MARK: - Test
     
     var waveformView: WaveformScrollView!
@@ -46,6 +52,19 @@ class PrepareVideoViewController: UIViewController {
                 let time = CMTime(seconds: duration / 2, preferredTimescale: 1000)
                 strongSelf.timeRangePickerView?.moveTo(time: time)
             })
+        }
+    }
+    
+    var videoTimeLineView: VideoTimelineView!
+    func setupVideoTimeLineView() {
+        videoTimeLineView = VideoTimelineView()
+        timeRangePickerView.timeRangeProvider = videoTimeLineView
+        
+        videoTimeLineView.backgroundColor = UIColor.lightGray
+        videoTimeLineView.viewModel.minWidth = UIScreen.main.bounds.width
+        
+        if let url = Bundle.main.url(forResource: "IMG_6119", withExtension: "MOV") {
+            videoTimeLineView.configure(with: url)
         }
     }
     

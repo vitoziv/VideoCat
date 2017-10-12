@@ -20,3 +20,19 @@ extension WaveformScrollView: TimeRangeProvider {
     }
     
 }
+
+extension VideoTimelineView: TimeRangeProvider {
+    
+    func timeLineView() -> UIView {
+        return self
+    }
+    
+    func timeLineScrollView() -> UIScrollView {
+        return collectionView
+    }
+    
+    var widthPerSecond: CGFloat {
+        return viewModel.actualWidthPerSecond
+    }
+    
+}
