@@ -19,6 +19,10 @@ extension WaveformScrollView: TimeRangeProvider {
         return collectionView
     }
     
+    var widthPerSecond: CGFloat {
+        return actualWidthPerSecond
+    }
+    
 }
 
 extension VideoTimelineView: TimeRangeProvider {

@@ -16,7 +16,11 @@ class WaveformScrollView: UIView {
     fileprivate(set) var collectionView: UICollectionView!
     
     fileprivate(set) var viewModel = WaveformScrollViewModel()
-    var widthPerSecond: CGFloat = 5
+    
+    fileprivate(set) var actualWidthPerSecond: CGFloat = 0
+    var minWidthPerSecond: CGFloat = 5
+    /// TimeLine Min width
+    var minWidth: CGFloat = 100
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -61,12 +65,21 @@ class WaveformScrollView: UIView {
 
 extension WaveformScrollView {
     func loadVoice(from url: URL, completion: @escaping ((AVURLAsset) -> Void)) {
-        let operation = AudioSampleOperation(widthPerSecond: widthPerSecond)
         let asset = AVURLAsset(url: url)
         DispatchQueue.global().async { [weak self] in
             guard let strongSelf = self else { return }
             asset.loadValuesAsynchronously(forKeys: ["duration", "track"], completionHandler: {
+                let duration = asset.duration.seconds
+
+                // if fill the timeline view don't have enough time, per point respresent less time
+                if CGFloat(duration) * strongSelf.minWidthPerSecond < strongSelf.minWidth {
+                    strongSelf.actualWidthPerSecond = strongSelf.minWidth / CGFloat(duration)
+                } else {
+                    strongSelf.actualWidthPerSecond = strongSelf.minWidthPerSecond
+                }
+                
                 do {
+                    let operation = AudioSampleOperation(widthPerSecond: strongSelf.actualWidthPerSecond)
                     try operation.loadSamples(from: asset)
                     let points = operation.outputSamples.map { (sample) -> Float in
                         return Float(sample / operation.sampleMax)

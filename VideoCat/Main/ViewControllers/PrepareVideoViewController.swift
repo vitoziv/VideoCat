@@ -21,8 +21,7 @@ class PrepareVideoViewController: UIViewController {
 
         timeRangePickerView.addTarget(self, action: #selector(valueChanged(_:)), for: .valueChanged)
         
-        // TODO: 实现视频滚动视图
-        
+//        setupWaveformView()
         setupVideoTimeLineView()
     }
     
@@ -41,7 +40,9 @@ class PrepareVideoViewController: UIViewController {
     var waveformView: WaveformScrollView!
     func setupWaveformView() {
         waveformView = WaveformScrollView()
+        timeRangePickerView.timeRangeProvider = waveformView
         waveformView.backgroundColor = UIColor.orange.withAlphaComponent(0.5)
+        waveformView.minWidth = UIScreen.main.bounds.width
         
         if let url = Bundle.main.url(forResource: "Moon River", withExtension: "mp3") {
             waveformView.loadVoice(from: url, completion: { [weak self] (asset) in
