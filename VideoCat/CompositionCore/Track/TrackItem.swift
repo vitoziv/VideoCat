@@ -33,11 +33,6 @@ extension AVMutableComposition {
                 }
             })
         }
-        
-        if let asset = item.resource.imageAsset {
-            // TODO: 实现图片资源插入
-            print("image asset: \(asset)")
-        }
     }
 }
 

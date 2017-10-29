@@ -12,10 +12,11 @@ class TrackComposition {
     func createComposition(from trackPanel: TrackPanel) -> AVAsset {
         let composition = AVMutableComposition(urlAssetInitializationOptions: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
         
+        var trackTime = kCMTimeZero
         trackPanel.trackItems.forEach { (trackItem) in
-            if let time = trackPanel.trackItemsTimeInfo[trackItem.identifier] {
-                composition.addMutableTrack(from: trackItem, at: time)
-            }
+            composition.addMutableTrack(from: trackItem, at: trackTime)
+            
+            trackTime = trackTime + trackItem.configuration.realDuration()
         }
         
         return composition

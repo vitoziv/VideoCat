@@ -71,12 +71,13 @@ class TimeRangePickerView: UIControl {
             insertSubview(view, at: 0)
             
             view.translatesAutoresizingMaskIntoConstraints = false
-            view.leftAnchor.constraint(equalTo: leftAnchor, constant: rangeView.earWidth).isActive = true
-            view.rightAnchor.constraint(equalTo: rightAnchor, constant: -rangeView.earWidth).isActive = true
+            view.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+            view.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
             view.topAnchor.constraint(equalTo: topAnchor).isActive = true
             view.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
             
             timeLineScrollView = provider.timeLineScrollView()
+            timeLineScrollView?.contentInset = UIEdgeInsetsMake(0, rangeView.earWidth, 0, rangeView.earWidth)
             timeLineScrollView?.addObserver(self, forKeyPath: "contentOffset", options: .new, context: nil)
         } else {
             timeLineView = nil
@@ -99,11 +100,11 @@ class TimeRangePickerView: UIControl {
         
         let timeScale: CMTimeScale = 1000
         
-        let startOffset = scrollView.contentOffset.x + scrollView.frame.width * startValue
+        let startOffset = (scrollView.contentOffset.x + scrollView.contentInset.left) + scrollView.frame.width * startValue
         let startSeconds = startOffset / widthPerSecond
         let startTime = CMTime(seconds: Double(startSeconds), preferredTimescale: timeScale)
         
-        let endOffset = scrollView.contentOffset.x + scrollView.frame.width * endValue
+        let endOffset = (scrollView.contentOffset.x + scrollView.contentInset.left) + scrollView.frame.width * endValue
         let endSeconds = endOffset / widthPerSecond
         let duration = CMTime(seconds: Double(endSeconds - startSeconds), preferredTimescale: timeScale)
         

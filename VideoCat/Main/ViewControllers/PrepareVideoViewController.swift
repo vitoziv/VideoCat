@@ -62,7 +62,7 @@ class PrepareVideoViewController: UIViewController {
         timeRangePickerView.timeRangeProvider = videoTimeLineView
         
         videoTimeLineView.backgroundColor = UIColor.lightGray
-        videoTimeLineView.viewModel.minWidth = UIScreen.main.bounds.width
+        videoTimeLineView.viewModel.minWidth = UIScreen.main.bounds.width * 4
         
         if let url = Bundle.main.url(forResource: "IMG_6119", withExtension: "MOV") {
             videoTimeLineView.configure(with: url)

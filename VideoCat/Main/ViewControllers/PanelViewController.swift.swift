@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  PanelViewController.swift
 //  VideoCat
 //
 //  Created by Vito on 27/08/2017.
@@ -10,7 +10,10 @@ import UIKit
 import Photos
 import MBProgressHUD
 
-class ViewController: UIViewController {
+class PanelViewController: UIViewController {
+    
+    @IBOutlet weak var timelineCollectionView: UICollectionView!
+    private let viewModel = PanelViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,7 +27,23 @@ class ViewController: UIViewController {
     
 }
 
-extension ViewController: AssetsViewControllerDelegate {
+extension PanelViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return viewModel.panel.trackItems.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ClipCell", for: indexPath)
+        
+        if let cell = cell as? ClipCell {
+            
+        }
+        
+        return cell
+    }
+}
+
+extension PanelViewController: AssetsViewControllerDelegate {
     func assetsViewControllerDidCancel(_ viewController: AssetsViewController) {
         viewController.dismiss(animated: true, completion: nil)
     }

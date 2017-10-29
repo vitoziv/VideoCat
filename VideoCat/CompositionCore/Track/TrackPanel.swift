@@ -10,5 +10,4 @@ import AVFoundation
 
 class TrackPanel {
     var trackItems: [TrackItem] = []
-    var trackItemsTimeInfo: [String: CMTime] = [:]
 }

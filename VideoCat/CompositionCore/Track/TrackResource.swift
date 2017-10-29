@@ -8,6 +8,7 @@
 
 import AVFoundation
 import CoreImage
+import UIKit
 
 class ImageAsset {
     var image: CIImage
@@ -22,9 +23,8 @@ class TrackResource {
     
     // MARK: - Resource Media
     
-    /// supported type: audio, video and image
+    /// supported type: audio and video
     open var trackAsset: AVAsset?
-    open var imageAsset: ImageAsset?
     
     // MARK: - Load Media before use resource
     
@@ -35,6 +35,22 @@ class TrackResource {
     var status: Status = .unavaliable
     open func loadMedia(completion: @escaping (Status) -> Void) {
         completion(status)
+    }
+    
+    // MARK: - Thumb
+    
+    private var cachedThumbImage: UIImage?
+    func requestThumbImage() -> UIImage? {
+        guard cachedThumbImage != nil else {
+            return cachedThumbImage
+        }
+        if let asset = trackAsset {
+            let imageGenerator = AVAssetImageGenerator(asset: asset)
+            if let image = try? imageGenerator.copyCGImage(at: kCMTimeZero, actualTime: nil) {
+                cachedThumbImage = UIImage(cgImage: image)
+            }
+        }
+        return cachedThumbImage
     }
     
     // MARK: - Encoder

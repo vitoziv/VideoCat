@@ -10,4 +10,12 @@ import AVFoundation
 
 struct TrackConfiguration {
     var timeRange: CMTimeRange = kCMTimeRangeZero
+    
+    
+    /// Track's final duration, it will be calculated using track's time, speed and so on
+    ///
+    /// - Returns: time
+    func realDuration() -> CMTime {
+        return timeRange.duration
+    }
 }
