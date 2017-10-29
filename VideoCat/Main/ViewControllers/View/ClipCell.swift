@@ -25,16 +25,20 @@ class ClipCell: UICollectionViewCell {
         }
         
         infoLabel.text = {
-            var text = ""
-            
             let seconds = trackItem.resource.trackAsset?.duration.seconds ?? 0
-            text += "Video Time: \(seconds)s\n"
-            
             let choosedRange = trackItem.configuration.timeRange
-            text += "TimeRange: {start: \(choosedRange.start.seconds), duration: \(choosedRange.duration.seconds)}"
             
-            return text
+            return """
+            Video Time: \(seconds.format(f: ".2"))s
+            TimeRange: {start: \(choosedRange.start.seconds.format(f: ".2")), duration: \(choosedRange.duration.seconds.format(f: ".2"))}
+            """
         }()
     }
     
+}
+
+extension Double {
+    func format(f: String) -> String {
+        return String(format: "%\(f)f", self)
+    }
 }

@@ -30,8 +30,34 @@ class AssetsViewController: UICollectionViewController {
             layout.itemSize = CGSize(width: width, height: width)
         }
         
-        viewModel.loadAssets()
-        collectionView?.reloadData()
+        viewModel.requestLibraryPermission { [weak self] (status) in
+            guard let strongSelf = self else { return }
+            if status == .authorized {
+                strongSelf.viewModel.loadAssets()
+                strongSelf.collectionView?.reloadData()
+            } else {
+                
+                switch status {
+                case .denied:
+                        let alert = UIAlertController(title: nil, message: NSLocalizedString("Access photolibrary is denied.", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
+                        let action = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: { (action) in
+                            strongSelf.dismiss(animated: true, completion: nil)
+                        })
+                        alert.addAction(action)
+                        strongSelf.present(alert, animated: true, completion: nil)
+                case .restricted:
+                        let alert = UIAlertController(title: nil, message: NSLocalizedString("Access photolibrary is restricted.", comment: ""), preferredStyle: UIAlertControllerStyle.alert)
+                        let action = UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: { (action) in
+                            strongSelf.dismiss(animated: true, completion: nil)
+                        })
+                        alert.addAction(action)
+                        strongSelf.present(alert, animated: true, completion: nil)
+                default:
+                    break
+                }
+                
+            }
+        }
     }
     
     @IBAction func cancelAction(_ sender: Any) {

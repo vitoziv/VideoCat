@@ -12,6 +12,19 @@ import Photos
 class AssetsViewModel {
     var assets: PHFetchResult<PHAsset> = PHFetchResult()
     
+    func requestLibraryPermission(completion: @escaping (PHAuthorizationStatus) -> Void) {
+        let status = PHPhotoLibrary.authorizationStatus()
+        if status == .notDetermined {
+            PHPhotoLibrary.requestAuthorization({ (status) in
+                DispatchQueue.main.async {
+                    completion(status)
+                }
+            })
+        } else {
+            completion(status)
+        }
+    }
+    
     func loadAssets() {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(keyPath: \PHAsset.creationDate, ascending: false)]

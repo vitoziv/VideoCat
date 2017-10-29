@@ -40,12 +40,14 @@ class TrackResource {
     // MARK: - Thumb
     
     private var cachedThumbImage: UIImage?
-    func requestThumbImage() -> UIImage? {
-        guard cachedThumbImage != nil else {
+    func requestThumbImage(maximumSize: CGSize = CGSize(width: 300, height: 300)) -> UIImage? {
+        guard cachedThumbImage == nil else {
             return cachedThumbImage
         }
         if let asset = trackAsset {
             let imageGenerator = AVAssetImageGenerator(asset: asset)
+            imageGenerator.appliesPreferredTrackTransform = true
+            imageGenerator.maximumSize = maximumSize
             if let image = try? imageGenerator.copyCGImage(at: kCMTimeZero, actualTime: nil) {
                 cachedThumbImage = UIImage(cgImage: image)
             }

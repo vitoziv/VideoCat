@@ -50,7 +50,9 @@ class TrackVideoAssetResource: TrackResource {
             } else {
                 strongSelf.status = .unavaliable
             }
-            completion(strongSelf.status)
+            DispatchQueue.main.async {            
+                completion(strongSelf.status)
+            }
         }
     }
     

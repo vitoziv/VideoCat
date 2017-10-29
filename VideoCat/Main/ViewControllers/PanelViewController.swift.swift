@@ -20,8 +20,9 @@ class PanelViewController: UIViewController {
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let viewController = segue.destination as? AssetsViewController {
-            viewController.delegate = self
+        if let viewController = segue.destination as? UINavigationController,
+            let assetViewController = viewController.viewControllers.first as? AssetsViewController {
+            assetViewController.delegate = self
         }
     }
     
@@ -34,9 +35,9 @@ extension PanelViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ClipCell", for: indexPath)
-        
+        let item = viewModel.panel.trackItems[indexPath.item]
         if let cell = cell as? ClipCell {
-            
+            cell.configure(trackItem: item)
         }
         
         return cell
@@ -58,11 +59,15 @@ extension PanelViewController: AssetsViewControllerDelegate {
             if status == .avaliable {
                 MBProgressHUD.dismiss()
                 let trackItem = TrackItem(resource: resource)
+                let duration = resource.trackAsset!.duration
+                trackItem.configuration.timeRange = CMTimeRangeMake(kCMTimeZero, duration)
+                strongSelf.viewModel.panel.trackItems.append(trackItem)
+                strongSelf.timelineCollectionView.reloadData()
             } else {
                 MBProgressHUD.showError(title: NSLocalizedString("Can't use this video", comment: ""))
             }
         }
-        
     }
+    
 }
 
