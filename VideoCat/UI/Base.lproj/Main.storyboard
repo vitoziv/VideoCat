@@ -89,7 +89,7 @@
                             </barButtonItem>
                             <barButtonItem title="preview" id="rFU-3d-y3p">
                                 <connections>
-                                    <segue destination="dv2-RJ-TnP" kind="presentation" id="ou7-EK-lMi"/>
+                                    <action selector="debugAction:" destination="BYZ-38-t0r" id="gOD-sE-9ae"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>

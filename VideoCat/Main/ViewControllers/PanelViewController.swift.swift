@@ -26,6 +26,11 @@ class PanelViewController: UIViewController {
         }
     }
     
+    @IBAction func debugAction(_ sender: UIBarButtonItem) {
+        let storyboard = UIStoryboard(name: "Demo", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "PlayerTestViewController")
+        navigationController?.pushViewController(viewController, animated: true)
+    }
 }
 
 extension PanelViewController: UICollectionViewDataSource {
