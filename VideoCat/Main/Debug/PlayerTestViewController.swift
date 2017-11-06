@@ -22,6 +22,7 @@ class PlayerTestViewController: UIViewController {
     @IBOutlet weak var playImmediatelyButton: UIButton!
     
     @IBOutlet weak var avplayerRateLabel: UILabel!
+    @IBOutlet weak var timebaseRateLabel: UILabel!
     @IBOutlet weak var timeControlStatusLabel: UILabel!
     @IBOutlet weak var reasonForWaitingToPlayLabel: UILabel!
     @IBOutlet weak var isPlaybackLikelyToKeepUpLabel: UILabel!
@@ -90,12 +91,10 @@ extension PlayerTestViewController: VIPlayerDelegate {
     func player(_ player: VIPlayer, statusDidChange status: VIPlayer.PlayerStatus) {
         switch status {
         case .playing:
-            timeControlStatusLabel.text = "Playing"
             playButton.isEnabled = false
             pauseButton.isEnabled = true
             print("playing")
         case .pause(let reason):
-            timeControlStatusLabel.text = "pause"
             pauseButton.isEnabled = false
             playButton.isEnabled = true
             switch reason {
@@ -107,8 +106,7 @@ extension PlayerTestViewController: VIPlayerDelegate {
                 print("pause: player reach end")
             }
         case .loading(let reason):
-            timeControlStatusLabel.text = "loading"
-            reasonForWaitingToPlayLabel.text = reason.rawValue
+            playButton.isEnabled = false
             pauseButton.isEnabled = true
             print("loading: \(reason)")
         }
@@ -119,21 +117,46 @@ extension PlayerTestViewController: VIPlayerDelegate {
     }
     
     func player(_ player: VIPlayer, didLoadedTimeRanges timeRanges: [NSValue]) {
-        loadedTimeRangesLabel.text = "\(timeRanges)"
+        var text = ""
+        timeRanges.forEach { (value) in
+            let timeRange = value.timeRangeValue
+            text += String.init(format: "{%.1f, %.1f}", timeRange.start.seconds, timeRange.duration.seconds)
+        }
+        loadedTimeRangesLabel.text = text
+        
+        self.player(stateDidChanged: player)
     }
     
     func player(_ player: VIPlayer, isPlaybackBufferFull: Bool) {
-        playbackBufferFullLabel.text = isPlaybackBufferFull ? "true" : "false"
+        
     }
     
     func player(_ player: VIPlayer, isPlaybackBufferEmpty: Bool) {
-        playbackBufferEmptyLabel.text = isPlaybackBufferEmpty ? "true" : "false"
+        
     }
     
     func player(stateDidChanged player: VIPlayer) {
         avplayerRateLabel.text = "\(player.player.rate)"
         if let playerItem = player.player.currentItem {
             isPlaybackLikelyToKeepUpLabel.text = playerItem.isPlaybackLikelyToKeepUp ? "true": "false"
+            playbackBufferFullLabel.text = playerItem.isPlaybackBufferFull ? "true" : "false"
+            playbackBufferEmptyLabel.text = playerItem.isPlaybackBufferEmpty ? "true" : "false"
+            
+            if let timebase = playerItem.timebase {
+                let rate = "\(CMTimebaseGetRate(timebase))"
+                timebaseRateLabel.text = rate
+            }
         }
+        reasonForWaitingToPlayLabel.text = player.player.reasonForWaitingToPlay?.rawValue
+        
+        switch player.player.timeControlStatus {
+        case .paused:
+            timeControlStatusLabel.text = "pause"
+        case .playing:
+            timeControlStatusLabel.text = "playing"
+        case .waitingToPlayAtSpecifiedRate:
+            timeControlStatusLabel.text = "waitingToPlayAtSpecifiedRate"
+        }
+        
     }
 }

@@ -18,9 +18,6 @@ protocol VIPlayerDelegate: class {
     func player(_ player: VIPlayer, didLoadedTimeRanges timeRanges: [NSValue])
     func player(_ player: VIPlayer, isPlaybackBufferFull: Bool)
     func player(_ player: VIPlayer, isPlaybackBufferEmpty: Bool)
-    
-    // Test
-    func player(stateDidChanged player: VIPlayer)
 }
 
 extension VIPlayerDelegate {
@@ -57,9 +54,7 @@ class VIPlayer: NSObject {
     private var currentPlayerItemChangedObserve: NSKeyValueObservation?
     
     private let observedKeyPaths = [
-        #keyPath(AVPlayer.rate),
         #keyPath(AVPlayer.timeControlStatus),
-        #keyPath(AVPlayer.reasonForWaitingToPlay),
         #keyPath(AVPlayer.currentItem.playbackLikelyToKeepUp),
         #keyPath(AVPlayer.currentItem.loadedTimeRanges),
         #keyPath(AVPlayer.currentItem.playbackBufferFull),
@@ -93,9 +88,9 @@ class VIPlayer: NSObject {
     }
     
     func replaceCurrentItem(_ playerItem: AVPlayerItem) {
-        NotificationCenter.default.removeObserver(self)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem)
         player.replaceCurrentItem(with: playerItem)
-        NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(note:)),
+        NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(notification:)),
                                                name: NSNotification.Name.AVPlayerItemDidPlayToEndTime,
                                                object: playerItem)
     }
@@ -138,6 +133,7 @@ class VIPlayer: NSObject {
             guard let strongSelf = self else { return }
             strongSelf.delegate?.player(strongSelf, timeDidChange: time.seconds)
         }
+        
     }
     
     private func removePlayerObserve() {
@@ -155,19 +151,19 @@ class VIPlayer: NSObject {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
             return
         }
-        
-        if keyPath == #keyPath(AVPlayer.rate) {
-            print("player rate: \(player.rate)")
-        } else if keyPath == #keyPath(AVPlayer.timeControlStatus) {
+        if keyPath == #keyPath(AVPlayer.timeControlStatus) {
             switch player.timeControlStatus {
             case .playing:
+                print("timeControlStatus playing")
                 status = .playing
             case .paused:
+                print("timeControlStatus paused")
                 if case .pause(.reachEnd) = status {
                 } else {
                     status = .pause(.manual)
                 }
             case .waitingToPlayAtSpecifiedRate:
+                print("timeControlStatus waitingToPlayAtSpecifiedRate")
                 if let reason = player.reasonForWaitingToPlay {
                     status = .loading(reason)
                 } else {
@@ -175,8 +171,6 @@ class VIPlayer: NSObject {
                 }
             }
             delegate?.player(self, statusDidChange: status)
-        } else if keyPath == #keyPath(AVPlayer.reasonForWaitingToPlay) {
-            
         } else if keyPath == #keyPath(AVPlayer.currentItem.playbackLikelyToKeepUp) {
             if let playerItem = player.currentItem {
                 print("playerItem isPlaybackLikelyToKeepUp: \(playerItem.isPlaybackLikelyToKeepUp)")
@@ -202,14 +196,13 @@ class VIPlayer: NSObject {
                 }
             }
         }
-        
-        delegate?.player(stateDidChanged: self)
     }
     
     // MARK: - Notification
-    @objc private func playerDidFinishPlaying(note: NSNotification) {
+    @objc private func playerDidFinishPlaying(notification: NSNotification) {
         status = .pause(.reachEnd)
     }
+    
 }
 
 // MARK: - Helper
