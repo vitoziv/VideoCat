@@ -14,9 +14,23 @@ class PanelViewController: UIViewController {
     
     @IBOutlet weak var timelineCollectionView: UICollectionView!
     private let viewModel = PanelViewModel()
+    let testRangeView = VideoRangeView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        testRangeView.videoContentView.startTime = kCMTimeZero
+        testRangeView.videoContentView.endTime = CMTime(value: 20, timescale: 1)
+
+        testRangeView.videoContentView.widthPerSecond = 10
+        view.addSubview(testRangeView)
+        
+        testRangeView.translatesAutoresizingMaskIntoConstraints = false
+        let leftConstraint = testRangeView.leftAnchor.constraint(equalTo: view.leftAnchor)
+        leftConstraint.constant = 40
+        leftConstraint.isActive = true
+        let topConstraint = testRangeView.topAnchor.constraint(equalTo: view.topAnchor)
+        topConstraint.constant = 80
+        topConstraint.isActive = true
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
