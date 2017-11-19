@@ -19,7 +19,7 @@ class PanelViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         testRangeView.videoContentView.startTime = kCMTimeZero
-        testRangeView.videoContentView.endTime = CMTime(value: 20, timescale: 1)
+        testRangeView.videoContentView.endTime = CMTime(value: 40, timescale: 1)
 
         testRangeView.videoContentView.widthPerSecond = 10
         view.addSubview(testRangeView)
@@ -82,6 +82,7 @@ extension PanelViewController: AssetsViewControllerDelegate {
                 trackItem.configuration.timeRange = CMTimeRangeMake(kCMTimeZero, duration)
                 strongSelf.viewModel.panel.trackItems.append(trackItem)
                 strongSelf.timelineCollectionView.reloadData()
+                strongSelf.testRangeView.configure(asset: resource.trackAsset)
             } else {
                 MBProgressHUD.showError(title: NSLocalizedString("Can't use this video", comment: ""))
             }
