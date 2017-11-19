@@ -18,65 +18,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="2Cg-xC-1pu">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CM3-Ri-9MJ" customClass="TimeLineView" customModule="VideoCat" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="517" width="375" height="150"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.14819208115183247" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="150" id="K2j-Ht-RHp"/>
-                                </constraints>
-                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="2" id="URy-53-G7h">
-                                    <size key="itemSize" width="150" height="100"/>
-                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                    <inset key="sectionInset" minX="150" minY="0.0" maxX="150" maxY="0.0"/>
-                                </collectionViewFlowLayout>
-                                <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ClipCell" id="Vfk-eI-EEG" customClass="ClipCell" customModule="VideoCat" customModuleProvider="target">
-                                        <rect key="frame" x="150" y="25" width="150" height="100"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
-                                            <rect key="frame" x="0.0" y="0.0" width="150" height="100"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rdq-Rk-KO8">
-                                                    <rect key="frame" x="0.0" y="0.0" width="150" height="100"/>
-                                                </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DbS-qW-r33">
-                                                    <rect key="frame" x="0.0" y="89" width="150" height="11"/>
-                                                    <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="0.20000000000000001" colorSpace="calibratedRGB"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="9"/>
-                                                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </view>
-                                        <constraints>
-                                            <constraint firstItem="rdq-Rk-KO8" firstAttribute="top" secondItem="Vfk-eI-EEG" secondAttribute="top" id="90c-hk-baa"/>
-                                            <constraint firstAttribute="bottom" secondItem="DbS-qW-r33" secondAttribute="bottom" id="FL0-ku-59E"/>
-                                            <constraint firstItem="DbS-qW-r33" firstAttribute="top" relation="greaterThanOrEqual" secondItem="Vfk-eI-EEG" secondAttribute="top" id="HFG-Ul-bcS"/>
-                                            <constraint firstAttribute="trailing" secondItem="rdq-Rk-KO8" secondAttribute="trailing" id="MEE-4D-hbW"/>
-                                            <constraint firstAttribute="trailing" secondItem="DbS-qW-r33" secondAttribute="trailing" id="QoD-Pu-Pia"/>
-                                            <constraint firstAttribute="bottom" secondItem="rdq-Rk-KO8" secondAttribute="bottom" id="WnJ-69-75E"/>
-                                            <constraint firstItem="DbS-qW-r33" firstAttribute="leading" secondItem="Vfk-eI-EEG" secondAttribute="leading" id="abv-Gk-tnm"/>
-                                            <constraint firstItem="rdq-Rk-KO8" firstAttribute="leading" secondItem="Vfk-eI-EEG" secondAttribute="leading" id="gV1-aZ-6lF"/>
-                                        </constraints>
-                                        <connections>
-                                            <outlet property="imageView" destination="rdq-Rk-KO8" id="WJg-yn-kZE"/>
-                                            <outlet property="infoLabel" destination="DbS-qW-r33" id="IGa-QJ-0CB"/>
-                                        </connections>
-                                    </collectionViewCell>
-                                </cells>
-                                <connections>
-                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="RSq-Ff-Eps"/>
-                                    <outlet property="delegate" destination="BYZ-38-t0r" id="Gqo-o4-qm7"/>
-                                </connections>
-                            </collectionView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wcC-1G-fzu">
-                                <rect key="frame" x="186.5" y="517" width="2" height="150"/>
-                                <color key="backgroundColor" red="0.98431372549999996" green="0.38431372549999998" blue="0.2901960784" alpha="0.69999999999999996" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="2" id="9bc-3h-2j2"/>
-                                    <constraint firstAttribute="height" constant="150" id="t3Y-aD-yfk"/>
+                                    <constraint firstAttribute="height" constant="150" id="6lA-ki-Feu"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nPt-BB-1RD" customClass="VideoView" customModule="VideoCat" customModuleProvider="target">
@@ -86,15 +32,13 @@
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="CM3-Ri-9MJ" firstAttribute="top" secondItem="nPt-BB-1RD" secondAttribute="bottom" id="9ZG-Jd-c0i"/>
                             <constraint firstItem="nPt-BB-1RD" firstAttribute="top" secondItem="IaK-It-gVs" secondAttribute="top" id="BEL-aw-a0y"/>
                             <constraint firstItem="nPt-BB-1RD" firstAttribute="trailing" secondItem="IaK-It-gVs" secondAttribute="trailing" id="CxL-dm-BCU"/>
-                            <constraint firstItem="2Cg-xC-1pu" firstAttribute="trailing" secondItem="IaK-It-gVs" secondAttribute="trailing" id="DkY-6J-BxO"/>
-                            <constraint firstItem="2Cg-xC-1pu" firstAttribute="bottom" secondItem="IaK-It-gVs" secondAttribute="bottom" id="RnV-Hh-NQe"/>
-                            <constraint firstItem="wcC-1G-fzu" firstAttribute="bottom" secondItem="IaK-It-gVs" secondAttribute="bottom" id="bfx-12-bbV"/>
                             <constraint firstItem="nPt-BB-1RD" firstAttribute="leading" secondItem="IaK-It-gVs" secondAttribute="leading" id="byb-bC-U8u"/>
-                            <constraint firstItem="wcC-1G-fzu" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="dDf-1k-Bds"/>
-                            <constraint firstItem="2Cg-xC-1pu" firstAttribute="top" secondItem="nPt-BB-1RD" secondAttribute="bottom" id="h1R-oK-kdi"/>
-                            <constraint firstItem="2Cg-xC-1pu" firstAttribute="leading" secondItem="IaK-It-gVs" secondAttribute="leading" id="uxY-vT-EBt"/>
+                            <constraint firstAttribute="trailing" secondItem="CM3-Ri-9MJ" secondAttribute="trailing" id="k2D-uL-geo"/>
+                            <constraint firstAttribute="bottom" secondItem="CM3-Ri-9MJ" secondAttribute="bottom" id="m4M-Ka-ddF"/>
+                            <constraint firstItem="CM3-Ri-9MJ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="qGg-MV-Wmu"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="IaK-It-gVs"/>
                     </view>
@@ -113,7 +57,7 @@
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
-                        <outlet property="timelineCollectionView" destination="2Cg-xC-1pu" id="vw6-C7-Cas"/>
+                        <outlet property="timeLineView" destination="CM3-Ri-9MJ" id="wrz-gt-Axw"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

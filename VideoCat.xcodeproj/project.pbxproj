@@ -44,7 +44,7 @@
 		5FE0883B1FB0AD9B00EA7963 /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0883A1FB0AD9B00EA7963 /* VideoView.swift */; };
 		5FE0883D1FB1EA1A00EA7963 /* UIStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0883C1FB1EA1A00EA7963 /* UIStyle.swift */; };
 		5FE088421FB846D200EA7963 /* VideoRangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE088411FB846D200EA7963 /* VideoRangeView.swift */; };
-		5FE088441FB9D75900EA7963 /* TimeLineScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE088431FB9D75900EA7963 /* TimeLineScrollView.swift */; };
+		5FE088441FB9D75900EA7963 /* TimeLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE088431FB9D75900EA7963 /* TimeLineView.swift */; };
 		5FF465C41FAA0FFA006EDD61 /* Demo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5FF465C31FAA0FFA006EDD61 /* Demo.storyboard */; };
 /* End PBXBuildFile section */
 
@@ -101,7 +101,7 @@
 		5FE0883A1FB0AD9B00EA7963 /* VideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
 		5FE0883C1FB1EA1A00EA7963 /* UIStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStyle.swift; sourceTree = "<group>"; };
 		5FE088411FB846D200EA7963 /* VideoRangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRangeView.swift; sourceTree = "<group>"; };
-		5FE088431FB9D75900EA7963 /* TimeLineScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineScrollView.swift; sourceTree = "<group>"; };
+		5FE088431FB9D75900EA7963 /* TimeLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineView.swift; sourceTree = "<group>"; };
 		5FF465C31FAA0FFA006EDD61 /* Demo.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Demo.storyboard; sourceTree = "<group>"; };
 		630D23A14081B0921452CF60 /* Pods-VideoCat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoCat.release.xcconfig"; path = "Pods/Target Support Files/Pods-VideoCat/Pods-VideoCat.release.xcconfig"; sourceTree = "<group>"; };
 		8F389E46D65FD18BFE27928E /* Pods-VideoCat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoCat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VideoCat/Pods-VideoCat.debug.xcconfig"; sourceTree = "<group>"; };
@@ -338,7 +338,7 @@
 			isa = PBXGroup;
 			children = (
 				5FE088411FB846D200EA7963 /* VideoRangeView.swift */,
-				5FE088431FB9D75900EA7963 /* TimeLineScrollView.swift */,
+				5FE088431FB9D75900EA7963 /* TimeLineView.swift */,
 			);
 			path = Edit;
 			sourceTree = "<group>";
@@ -533,7 +533,7 @@
 				5F01B0151F794AD40049CD3A /* VIPlayer.swift in Sources */,
 				5F01AFFD1F741E0E0049CD3A /* TrackPanel.swift in Sources */,
 				5F29D2391F740D9300D41F50 /* TrackVideoResource.swift in Sources */,
-				5FE088441FB9D75900EA7963 /* TimeLineScrollView.swift in Sources */,
+				5FE088441FB9D75900EA7963 /* TimeLineView.swift in Sources */,
 				5F977C351F8B4CF90029156E /* AudioSampleOperation.swift in Sources */,
 				5F01B0041F779BEF0049CD3A /* AssetCell.swift in Sources */,
 				5F01B0351F7D334D0049CD3A /* WaveformScrollView.swift in Sources */,

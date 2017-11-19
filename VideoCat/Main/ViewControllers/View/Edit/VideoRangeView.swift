@@ -166,7 +166,7 @@ class VideoRangeContentView: UIView {
         }
     }
     
-    var widthPerSecond: CGFloat = 0
+    var widthPerSecond: CGFloat = 10
     /// preload left and right image thumb, if preloadCount is 2, then will preload 2 left image thumbs and 2 right image thumbs
     var preloadCount: Int = 2
     
@@ -209,6 +209,9 @@ class VideoRangeContentView: UIView {
     }
     
     func updateThumbIfNeed() {
+        guard imageSize.height > 0 else {
+            return
+        }
         guard let asset = asset else {
             imageViews.forEach({ (key, value) in
                 value.image = nil

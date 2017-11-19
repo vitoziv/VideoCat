@@ -12,25 +12,13 @@ import MBProgressHUD
 
 class PanelViewController: UIViewController {
     
-    @IBOutlet weak var timelineCollectionView: UICollectionView!
+    @IBOutlet weak var timeLineView: TimeLineView!
     private let viewModel = PanelViewModel()
-    let testRangeView = VideoRangeView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        testRangeView.videoContentView.startTime = kCMTimeZero
-        testRangeView.videoContentView.endTime = CMTime(value: 40, timescale: 1)
-
-        testRangeView.videoContentView.widthPerSecond = 10
-        view.addSubview(testRangeView)
-        
-        testRangeView.translatesAutoresizingMaskIntoConstraints = false
-        let leftConstraint = testRangeView.leftAnchor.constraint(equalTo: view.leftAnchor)
-        leftConstraint.constant = 40
-        leftConstraint.isActive = true
-        let topConstraint = testRangeView.topAnchor.constraint(equalTo: view.topAnchor)
-        topConstraint.constant = 80
-        topConstraint.isActive = true
+        let inset = UIScreen.main.bounds.width / 2
+        timeLineView.scrollView.contentInset = UIEdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -81,8 +69,7 @@ extension PanelViewController: AssetsViewControllerDelegate {
                 let duration = resource.trackAsset!.duration
                 trackItem.configuration.timeRange = CMTimeRangeMake(kCMTimeZero, duration)
                 strongSelf.viewModel.panel.trackItems.append(trackItem)
-                strongSelf.timelineCollectionView.reloadData()
-                strongSelf.testRangeView.configure(asset: resource.trackAsset)
+                strongSelf.timeLineView.append(asset: resource.trackAsset!)
             } else {
                 MBProgressHUD.showError(title: NSLocalizedString("Can't use this video", comment: ""))
             }
