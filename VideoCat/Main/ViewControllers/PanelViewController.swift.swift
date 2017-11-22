@@ -17,7 +17,7 @@ class PanelViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let inset = UIScreen.main.bounds.width / 2
+        let inset = UIScreen.main.bounds.width / 2 - 24
         timeLineView.scrollView.contentInset = UIEdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
     }
 

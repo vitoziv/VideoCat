@@ -9,8 +9,17 @@
 import UIKit
 import AVFoundation
 
+protocol VideoRangeViewDelegate: class {
+    func videoRangeView(_ view: VideoRangeView, updateLeftOffset offset: CGFloat)
+    func videoRangeViewDidEndUpdateLeftOffset(_ view: VideoRangeView)
+    
+    func videoRangeView(_ view: VideoRangeView, updateRightOffset offset: CGFloat)
+    func videoRangeViewDidEndUpdateRightOffset(_ view: VideoRangeView)
+}
+
 class VideoRangeView: UIView {
     
+    weak var delegate: VideoRangeViewDelegate?
     var contentHeight: CGFloat = 44
     /// Conent will be displayed inside the inset
     var contentInset: UIEdgeInsets = UIEdgeInsetsMake(2, 24, 2, 24) {
@@ -24,6 +33,9 @@ class VideoRangeView: UIView {
             videoContentBottomConstraint.constant = -contentInset.bottom
         }
     }
+    
+    var leftConstraint: NSLayoutConstraint?
+    var rightConstraint: NSLayoutConstraint?
     
     private(set) var videoContentView: VideoRangeContentView!
     private(set) var leftEar: UIImageView!
@@ -133,14 +145,27 @@ class VideoRangeView: UIView {
     
     @objc private func panEarAction(_ gesture: UIPanGestureRecognizer) {
         let translation = gesture.translation(in: gesture.view)
+        let previousWidth = videoContentView.contentWidth
         if gesture.view == rightEar {
             videoContentView.expand(contentWidth: translation.x, left: false)
+            let offset = videoContentView.contentWidth - previousWidth
+            delegate?.videoRangeView(self, updateRightOffset: offset)
         } else {
             videoContentView.expand(contentWidth: -translation.x, left: true)
+            let offset = videoContentView.contentWidth - previousWidth
+            delegate?.videoRangeView(self, updateLeftOffset: -offset)
         }
         invalidateIntrinsicContentSize()
         setNeedsLayout()
         gesture.setTranslation(CGPoint.zero, in: gesture.view)
+        
+        if gesture.state == .ended || gesture.state == .cancelled {
+            if gesture.view == rightEar {
+                delegate?.videoRangeViewDidEndUpdateRightOffset(self)
+            } else {
+                delegate?.videoRangeViewDidEndUpdateLeftOffset(self)
+            }
+        }
     }
     
 }
@@ -319,6 +344,8 @@ class VideoRangeContentView: UIView {
         imageView.configureDebugIndexLabel(index: index)
     }
     
+    // TODO: 修改这里，现在实时更新 contentView 大小的时候，会看到缩略图的位置一直在抖动。
+    // 尝试用某种方式，让缩略图成为一个整体，避免抖动，并且减少 cpu 调用更新位置的代码，降低 cpu 使用量。
     private func layout(imageView: AssetThumbImageView, at index: Int) {
         if let imageViewSuperView = imageView.superview, imageViewSuperView == self {
             for constraint in constraints {
