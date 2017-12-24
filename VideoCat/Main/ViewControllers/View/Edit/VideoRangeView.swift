@@ -17,8 +17,7 @@ protocol VideoRangeViewDelegate: class {
     func videoRangeViewDidEndUpdateRightOffset(_ view: VideoRangeView)
 }
 
-// TODO: 这里开始，实现显示和隐藏 左右的 ear，只有在激活状态下，才能改变时间
-// 下一步，实现 timeline 和 player 的同步显示
+// TODO: 下一步，实现 timeline 和 player 的同步显示
 
 class VideoRangeView: UIView {
     

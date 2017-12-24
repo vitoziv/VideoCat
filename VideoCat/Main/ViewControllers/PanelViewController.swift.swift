@@ -74,7 +74,8 @@ extension PanelViewController: AssetsViewControllerDelegate {
                 let duration = resource.trackAsset!.duration
                 trackItem.configuration.timeRange = CMTimeRangeMake(kCMTimeZero, duration)
                 strongSelf.viewModel.panel.trackItems.append(trackItem)
-                strongSelf.timeLineView.append(asset: resource.trackAsset!)
+                let index = strongSelf.timeLineView.nextRangeViewIndex
+                strongSelf.timeLineView.append(asset: resource.trackAsset!, at: index)
             } else {
                 MBProgressHUD.showError(title: NSLocalizedString("Can't use this video", comment: ""))
             }

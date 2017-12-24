@@ -18,6 +18,19 @@ class TimeLineView: UIView {
     private(set) var scrollContentHeightConstraint: NSLayoutConstraint!
     
     private(set) var rangeViews: [VideoRangeView] = []
+    var rangeViewsIndex: Int {
+        var index = 0
+        let center = centerLineView.center
+        for (i, view) in rangeViews.enumerated() {
+            let rect = view.superview!.convert(view.frame, to: centerLineView.superview!)
+            if rect.contains(center) {
+                index = i
+                break
+            }
+        }
+        
+        return index
+    }
     
     var videoRangeViewEarWidth: CGFloat = 24
     
@@ -103,12 +116,10 @@ class TimeLineView: UIView {
     
     // MARK: - Data
     
-    func append(asset: AVAsset, at index: Int = Int.max) {
+    func append(asset: AVAsset, at index: Int = 0) {
         // TODO: 添加到当前时间点，最接近的地方。
         // 1. 如果没有 asset，直接添加
         // 2. 如果当前时间线压在一个 asset 上，判断时间线在 asset 的偏左边还是偏右边，然后放到最近的位置
-        
-        let index = rangeViews.count / 2
         
         let videoRangeView = VideoRangeView()
         videoRangeView.videoContentView.widthPerSecond = 10
@@ -230,5 +241,29 @@ extension TimeLineView: VideoRangeViewDelegate {
         UIView.animate(withDuration: 0.3) {
             self.scrollView.contentInset = inset
         }
+    }
+}
+
+// MARK: - Helper
+
+extension TimeLineView {
+    var nextRangeViewIndex: Int {
+        var index = 0
+        let center = centerLineView.center
+        for (i, view) in rangeViews.enumerated() {
+            let rect = view.superview!.convert(view.frame, to: centerLineView.superview!)
+            if rect.contains(center) {
+                if center.x - rect.origin.x < rect.maxX - center.x {
+                    // On left side
+                    index = i
+                } else {
+                    // On right side
+                    index = i + 1
+                }
+                break
+            }
+        }
+        
+        return index
     }
 }

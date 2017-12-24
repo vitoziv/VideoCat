@@ -24,8 +24,22 @@ class TrackVideoAssetResource: TrackResource {
         if let asset = trackAsset {
             asset.loadValuesAsynchronously(forKeys: ["tracks", "duration"], completionHandler: { [weak self] in
                 guard let strongSelf = self else { return }
+                defer {
+                    completion(strongSelf.status)
+                }
+                
+                var error: NSError?
+                let tracksStatus = asset.statusOfValue(forKey: "tracks", error: &error)
+                if tracksStatus != .loaded {
+                    print("Failed to load tracks, status: \(tracksStatus), error: \(String(describing: error))")
+                    return
+                }
+                let durationStatus = asset.statusOfValue(forKey: "duration", error: &error)
+                if durationStatus != .loaded {
+                    print("Failed to duration tracks, status: \(tracksStatus), error: \(String(describing: error))")
+                    return
+                }
                 strongSelf.status = .avaliable
-                completion(strongSelf.status)
             })
             return
         }
