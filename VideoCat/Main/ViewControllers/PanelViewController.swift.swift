@@ -28,6 +28,11 @@ class PanelViewController: UIViewController {
         }
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        timeLineView.resignVideoRangeView()
+    }
+    
     @IBAction func debugAction(_ sender: UIBarButtonItem) {
         let storyboard = UIStoryboard(name: "Demo", bundle: nil)
         let viewController = storyboard.instantiateViewController(withIdentifier: "PlayerTestViewController")

@@ -47,7 +47,6 @@ class TimeLineView: UIView {
         centerLineView.isUserInteractionEnabled = false
         centerLineView.backgroundColor = UIColor.orange
         
-        
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         scrollView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
@@ -66,15 +65,39 @@ class TimeLineView: UIView {
         centerLineView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         centerLineView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         centerLineView.widthAnchor.constraint(equalToConstant: 1).isActive = true
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapLineViewAction(_:)))
+        addGestureRecognizer(tapGesture)
     }
     
     // MARK: - Actions
     
     @objc private func tapContentAction(_ recognizer: UITapGestureRecognizer) {
-        if let view = recognizer.view as? VideoRangeView, !view.isEditActive {
-            view.superview?.bringSubview(toFront: view)
-            view.isEditActive = true
-            rangeViews.filter({ $0 != view && $0.isEditActive }).forEach({ $0.isEditActive = false })
+        if recognizer.state == .ended {
+            if let view = recognizer.view as? VideoRangeView, !view.isEditActive {
+                view.superview?.bringSubview(toFront: view)
+                view.isEditActive = true
+                rangeViews.filter({ $0 != view && $0.isEditActive }).forEach({ $0.isEditActive = false })
+            }
+        }
+    }
+    
+    func resignVideoRangeView() {
+        rangeViews.filter({ $0.isEditActive }).forEach({ $0.isEditActive = false })
+    }
+    
+    @objc private func tapLineViewAction(_ recognizer: UITapGestureRecognizer) {
+        let point = recognizer.location(in: recognizer.view)
+        var tapOnVideoRangeView = false
+        for view in rangeViews {
+            let rect = view.superview!.convert(view.frame, to: self)
+            if rect.contains(point) {
+                tapOnVideoRangeView = true
+                break
+            }
+        }
+        if !tapOnVideoRangeView {
+            resignVideoRangeView()
         }
     }
     
