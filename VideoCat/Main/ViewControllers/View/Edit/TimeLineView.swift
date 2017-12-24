@@ -37,6 +37,7 @@ class TimeLineView: UIView {
         scrollView.alwaysBounceVertical = false
         scrollView.alwaysBounceHorizontal = true
         scrollView.contentSize = CGSize(width: 0, height: bounds.height)
+        scrollView.delegate = self
         
         contentView = UIView()
         scrollView.addSubview(contentView)
@@ -141,10 +142,25 @@ class TimeLineView: UIView {
     
 }
 
+extension TimeLineView: UIScrollViewDelegate {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let showingRangeViews = rangeViews.filter { (view) -> Bool in
+            let rect = view.superview!.convert(view.frame, to: scrollView)
+            let intersects = scrollView.bounds.intersects(rect)
+            return intersects
+        }
+        showingRangeViews.forEach({ $0.videoContentView.updateThumbIfNeed() })
+    }
+}
+
 // MARK: - VideoRangeViewDelegate
 
 extension TimeLineView: VideoRangeViewDelegate {
-    func videoRangeView(_ view: VideoRangeView, updateLeftOffset offset: CGFloat) {
+    func videoRangeView(_ view: VideoRangeView, updateLeftOffset offset: CGFloat, auto: Bool) {
+        if auto {
+            return
+        }
+        
         var inset = scrollView.contentInset
         inset.left = scrollView.frame.width
         scrollView.contentInset = inset
@@ -162,10 +178,16 @@ extension TimeLineView: VideoRangeViewDelegate {
         }
     }
     
-    func videoRangeView(_ view: VideoRangeView, updateRightOffset offset: CGFloat) {
-        var inset = scrollView.contentInset
-        inset.right = scrollView.frame.width
-        scrollView.contentInset = inset
+    func videoRangeView(_ view: VideoRangeView, updateRightOffset offset: CGFloat, auto: Bool) {
+        if auto {
+            var contentOffset = scrollView.contentOffset
+            contentOffset.x += offset
+            scrollView.setContentOffset(contentOffset, animated: false)
+        } else {
+            var inset = scrollView.contentInset
+            inset.right = scrollView.frame.width
+            scrollView.contentInset = inset
+        }
     }
     
     func videoRangeViewDidEndUpdateRightOffset(_ view: VideoRangeView) {

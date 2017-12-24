@@ -50,7 +50,7 @@ class PrepareVideoViewController: UIViewController {
                 strongSelf.timeRangePickerView?.rangeView.setRangeValue(start: 0.25, end: 0.75)
                 
                 let duration = asset.duration.seconds
-                let time = CMTime(seconds: duration / 2, preferredTimescale: 1000)
+                let time = CMTime(seconds: duration / 2, preferredTimescale: asset.duration.timescale)
                 strongSelf.timeRangePickerView?.moveTo(time: time)
             })
         }

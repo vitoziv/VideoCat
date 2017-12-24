@@ -10,16 +10,21 @@ import UIKit
 import AVFoundation
 
 protocol VideoRangeViewDelegate: class {
-    func videoRangeView(_ view: VideoRangeView, updateLeftOffset offset: CGFloat)
+    func videoRangeView(_ view: VideoRangeView, updateLeftOffset offset: CGFloat, auto: Bool)
     func videoRangeViewDidEndUpdateLeftOffset(_ view: VideoRangeView)
     
-    func videoRangeView(_ view: VideoRangeView, updateRightOffset offset: CGFloat)
+    func videoRangeView(_ view: VideoRangeView, updateRightOffset offset: CGFloat, auto: Bool)
     func videoRangeViewDidEndUpdateRightOffset(_ view: VideoRangeView)
 }
+
+// TODO: 这里开始，实现显示和隐藏 左右的 ear，只有在激活状态下，才能改变时间
+// 下一步，实现 timeline 和 player 的同步显示
 
 class VideoRangeView: UIView {
     
     weak var delegate: VideoRangeViewDelegate?
+    fileprivate lazy var displayTriggerMachine = DisplayTriggerMachine()
+    
     var contentHeight: CGFloat = 44
     /// Conent will be displayed inside the inset
     var contentInset: UIEdgeInsets = UIEdgeInsetsMake(2, 24, 2, 24) {
@@ -33,6 +38,10 @@ class VideoRangeView: UIView {
             videoContentBottomConstraint.constant = -contentInset.bottom
         }
     }
+    /// This value defined when should change content size and ear position automatically
+    /// while user dragging ear to the edge of window.
+    var autoScrollInset: CGFloat = 100
+    var earEdgeInset: CGFloat = 30
     
     var leftConstraint: NSLayoutConstraint?
     var rightConstraint: NSLayoutConstraint?
@@ -62,7 +71,7 @@ class VideoRangeView: UIView {
     
     private func commonInit() {
         backgroundImageView = UIImageView()
-        backgroundImageView.backgroundColor = UIColor(white: 0, alpha: 1)
+        backgroundImageView.backgroundColor = UIColor.purple
         addSubview(backgroundImageView)
         
         videoContentView = VideoRangeContentView()
@@ -143,23 +152,40 @@ class VideoRangeView: UIView {
     
     // MARK: - Action
     
+    private var autoScrollSpeed: CGFloat = 0
+    private var autoScrollType: AutoScrollType = .none
+    enum AutoScrollType: Int {
+        case none
+        case left
+        case right
+    }
+    private var panGesturePreviousTranslation = CGPoint.zero
+    
     @objc private func panEarAction(_ gesture: UIPanGestureRecognizer) {
-        let translation = gesture.translation(in: gesture.view)
-        let previousWidth = videoContentView.contentWidth
-        if gesture.view == rightEar {
-            videoContentView.expand(contentWidth: translation.x, left: false)
-            let offset = videoContentView.contentWidth - previousWidth
-            delegate?.videoRangeView(self, updateRightOffset: offset)
+        // Check whether gesture should trigger automatic scroll
+        let windowLocation = gesture.view!.superview!.convert(gesture.view!.center, to: window)
+        let windowBounds = window!.bounds // No window, no gesture
+        if (windowLocation.x < autoScrollInset && panGesturePreviousTranslation.x < 0) ||
+            (windowLocation.x > (windowBounds.width - autoScrollInset) && panGesturePreviousTranslation.x > 0) {
+            autoScrollEar(gesture)
+            displayTriggerMachine.start()
         } else {
-            videoContentView.expand(contentWidth: -translation.x, left: true)
-            let offset = videoContentView.contentWidth - previousWidth
-            delegate?.videoRangeView(self, updateLeftOffset: -offset)
+            displayTriggerMachine.pause()
+            cleanUpAutoScrolValues()
         }
-        invalidateIntrinsicContentSize()
-        setNeedsLayout()
-        gesture.setTranslation(CGPoint.zero, in: gesture.view)
         
+        let translation = gesture.translation(in: gesture.view)
+        let outOfControl = (windowLocation.x < earEdgeInset && panGesturePreviousTranslation.x > translation.x) ||
+            ((windowLocation.x > windowBounds.width - earEdgeInset) && panGesturePreviousTranslation.x < translation.x)
+        if !outOfControl {
+            normalPanEar(gesture)
+        }
+        
+        // No matter what happened, call this
         if gesture.state == .ended || gesture.state == .cancelled {
+            // Clean up auto scroll values
+            cleanUpAutoScrolValues()
+            
             if gesture.view == rightEar {
                 delegate?.videoRangeViewDidEndUpdateRightOffset(self)
             } else {
@@ -168,275 +194,79 @@ class VideoRangeView: UIView {
         }
     }
     
-}
-
-class VideoRangeContentView: UIView {
-    
-    var asset: AVAsset? {
-        didSet {
-            updateThumbIfNeed()
-            startTime = kCMTimeZero
-            endTime = kCMTimeZero
-        }
-    }
-    /// Asset's selected timerange
-    var startTime: CMTime = kCMTimeZero {
-        didSet {
-            timeLabel.text = String(format: "(%.1f, %.1f)", startTime.seconds, endTime.seconds - startTime.seconds)
-        }
-    }
-    var endTime: CMTime = kCMTimeZero{
-        didSet {
-            timeLabel.text = String(format: "(%.1f, %.1f)", startTime.seconds, endTime.seconds - startTime.seconds)
-        }
-    }
-    
-    var widthPerSecond: CGFloat = 10
-    /// preload left and right image thumb, if preloadCount is 2, then will preload 2 left image thumbs and 2 right image thumbs
-    var preloadCount: Int = 2
-    
-    var contentWidth: CGFloat {
-        let duration = endTime.seconds - startTime.seconds
-        return round(CGFloat(duration) * widthPerSecond)
-    }
-    
-    private(set) var timeLabel: UILabel!
-    private var imageViews: [Int: AssetThumbImageView] = [:]
-    private var reuseableImageViews: [AssetThumbImageView] = []
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        commonInit()
-    }
-    
-    private func commonInit() {
-        clipsToBounds = true
+    fileprivate func autoScrollEar(_ gesture: UIPanGestureRecognizer) {
+        let windowLocation = gesture.view!.superview!.convert(gesture.view!.center, to: window)
+        let windowBounds = window!.bounds // No window, no gesture
         
-        timeLabel = UILabel()
-        timeLabel.backgroundColor = UIColor(white: 0, alpha: 0.3)
-        timeLabel.font = UIFont.systemFont(ofSize: 11)
-        timeLabel.textColor = UIColor.white
-        addSubview(timeLabel)
-        
-        timeLabel.translatesAutoresizingMaskIntoConstraints = false
-        timeLabel.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        timeLabel.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        updateThumbIfNeed()
-    }
-    
-    func updateThumbIfNeed() {
-        guard imageSize.height > 0 else {
-            return
-        }
-        guard let asset = asset else {
-            imageViews.forEach({ (key, value) in
-                value.image = nil
-                value.removeFromSuperview()
-                reuseableImageViews.append(value)
-            })
-            imageViews.removeAll()
-            return
-        }
-        guard let window = window else {
-            return
-        }
-        let rectInWindow = convert(bounds, to: window)
-        
-        let availableRectInWindow = window.bounds.intersection(rectInWindow)
-        guard !availableRectInWindow.isNull else {
-            return
+        if windowLocation.x > (windowBounds.width - autoScrollInset) {
+            let scrollInset = autoScrollInset - (windowBounds.width - windowLocation.x)
+            autoScrollSpeed = min(scrollInset, autoScrollInset) * 0.1
+        } else if windowLocation.x < autoScrollInset {
+            let scrollInset = autoScrollInset - windowLocation.x
+            autoScrollSpeed = -min(scrollInset, autoScrollInset) * 0.1
         }
         
-        let availableRect = convert(availableRectInWindow, from: window)
-        
-        let startOffset = CGFloat(startTime.seconds) * widthPerSecond
-        var startIndexOfImage = Int(startOffset / imageSize.width)
-        var endIndexOfImage = Int(ceil((availableRect.width + startOffset) / imageSize.width))
-        
-        if preloadCount > 0 {
-            startIndexOfImage = max(0, startIndexOfImage - preloadCount)
-            let maxIndex = Int(ceil(CGFloat(asset.duration.seconds) * widthPerSecond / imageSize.width))
-            endIndexOfImage = min(maxIndex, endIndexOfImage + preloadCount)
-        }
-        
-        let indexRange = startIndexOfImage..<endIndexOfImage
-        
-        removeImageViewsOutOf(range: indexRange)
-        indexRange.forEach { (index) in
-            loadImageView(for: index)
-        }
-    }
-    
-    func expand(contentWidth: CGFloat, left: Bool) {
-        let seconds = contentWidth / widthPerSecond
-        if left {
-            var startSeconds = max(0, startTime.seconds - Double(seconds))
-            startSeconds = min(startSeconds, endTime.seconds)
-            startTime = CMTime(seconds: startSeconds, preferredTimescale: 10000)
-        } else {
-            guard let asset = asset else {
-                return
-            }
-            let maxDuration: Double = asset.duration.seconds
-            let endSeconds = max(min(endTime.seconds + Double(seconds), maxDuration), startTime.seconds)
-            endTime = CMTime(seconds: endSeconds, preferredTimescale: 10000)
-        }
-    }
-    
-    // MARK: - DataSource
-    
-    private var imageSize: CGSize {
-        return CGSize(width: bounds.height, height: bounds.height)
-    }
-    
-    private func removeImageViewsOutOf(range: CountableRange<Int>) {
-        let outIndex = imageViews.keys.filter { (index) -> Bool in
-            return !range.contains(index)
-        }
-        outIndex.forEach { (index) in
-            if let imageView = imageViews.removeValue(forKey: index) {
-                imageView.image = nil
-                imageView.removeFromSuperview()
-                reuseableImageViews.append(imageView)
-            }
-        }
-    }
-    
-    private func loadImageView(for index: Int) {
-        guard let asset = asset else {
-            return
-        }
-        if let imageView = imageViews[index] {
-            layout(imageView: imageView, at: index)
-            return
-        }
-        
-        let imageView: AssetThumbImageView = {
-            if let imageView = reuseableImageViews.first {
-                reuseableImageViews.removeFirst()
-                imageView.prepareForReuse()
-                return imageView
-            }
-            let imageView = AssetThumbImageView()
-            imageView.clipsToBounds = true
-            imageView.contentMode = .scaleAspectFill
-            return imageView
-        }()
-        imageViews[index] = imageView
-        
-        // Layout
-        layout(imageView: imageView, at: index)
-        
-        // Image generetor
-        let secondsPerImage = Double(imageSize.width / widthPerSecond)
-        let seconds = secondsPerImage * Double(index)
-        let time = CMTime(seconds: seconds, preferredTimescale: asset.duration.timescale)
-        imageView.configure(asset: asset, at: time)
-        imageView.configureDebugIndexLabel(index: index)
-    }
-    
-    // TODO: 修改这里，现在实时更新 contentView 大小的时候，会看到缩略图的位置一直在抖动。
-    // 尝试用某种方式，让缩略图成为一个整体，避免抖动，并且减少 cpu 调用更新位置的代码，降低 cpu 使用量。
-    private func layout(imageView: AssetThumbImageView, at index: Int) {
-        if let imageViewSuperView = imageView.superview, imageViewSuperView == self {
-            for constraint in constraints {
-                if let identifier = constraint.identifier, identifier == "VideoRangeContentView-AssetThumbImageView",
-                    let firstItem = constraint.firstItem as? AssetThumbImageView, firstItem == imageView {
-                    let startOffset = CGFloat(startTime.seconds) * widthPerSecond
-                    constraint.constant = round((CGFloat(index) * imageSize.width) - startOffset)
-                    break
+        if gesture.view == rightEar {
+            if autoScrollType != .right {
+                autoScrollType = .right
+                displayTriggerMachine.triggerOperation = { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.expandRightEar(width: strongSelf.autoScrollSpeed, auto: true)
                 }
             }
-        } else {
-            imageView.removeFromSuperview()
-            imageView.translatesAutoresizingMaskIntoConstraints = false
-            insertSubview(imageView, at: 0)
-            let imageSize = self.imageSize
-            imageView.bounds = CGRect(origin: CGPoint.zero, size: imageSize)
-            imageView.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
-            let imageViewLeftConstraint = imageView.leftAnchor.constraint(equalTo: leftAnchor)
-            let startOffset = CGFloat(startTime.seconds) * widthPerSecond
-            imageViewLeftConstraint.constant = round((CGFloat(index) * imageSize.width) - startOffset)
-            imageViewLeftConstraint.isActive = true
-            imageViewLeftConstraint.identifier = "VideoRangeContentView-AssetThumbImageView"
-            imageView.widthAnchor.constraint(equalToConstant: imageSize.width).isActive = true
-            imageView.heightAnchor.constraint(equalToConstant: imageSize.height).isActive = true
-        }
-        
-    }
-    
-}
-
-class AssetThumbImageView: UIImageView {
-    
-    var imageGenerator: AVAssetImageGenerator?
-    
-    func prepareForReuse() {
-        imageGenerator?.cancelAllCGImageGeneration()
-    }
-    
-    func configure(asset: AVAsset, at time: CMTime) {
-        if let imageGenerator = imageGenerator, imageGenerator.asset == asset {
-            // Same image generator don't recreate
-        } else {
-            imageGenerator = AVAssetImageGenerator(asset: asset)
-            imageGenerator?.appliesPreferredTrackTransform = true
-        }
-        
-        let imageSize = bounds.size
-        let imageWidth = imageSize.width * UIScreen.main.scale
-        let imageHeight = imageSize.height * UIScreen.main.scale
-        if let naturalSize = asset.tracks.first?.naturalSize {
-            let widthRatio = imageWidth / naturalSize.width
-            let heightRatio = imageHeight / naturalSize.height
-            if widthRatio > heightRatio {
-                let height = round(naturalSize.height * widthRatio)
-                imageGenerator?.maximumSize = CGSize(width: imageWidth, height: height)
-            } else {
-                let width = round(naturalSize.width * heightRatio)
-                imageGenerator?.maximumSize = CGSize(width: width, height: imageHeight)
-            }
-        } else {
-            imageGenerator?.maximumSize = CGSize(width: imageWidth, height: imageHeight)
-        }
-        imageGenerator?.generateCGImagesAsynchronously(forTimes: [NSValue(time: time)], completionHandler: { [weak self] (time, image, actualTime, result, error) in
-            guard let strongSelf = self else { return }
-            if result == .succeeded, let image = image {
-                DispatchQueue.main.async {
-                    strongSelf.image = UIImage(cgImage: image)
+        } else if gesture.view == leftEar {
+            if autoScrollType != .left {
+                autoScrollType = .left
+                displayTriggerMachine.triggerOperation = { [weak self] in
+                    guard let strongSelf = self else { return }
+                    strongSelf.expandLeftEar(width: strongSelf.autoScrollSpeed, auto: true)
                 }
-            } else if let error = error {
-                print("Image generator copyCGImage error: \(error.localizedDescription)")
             }
-        })
+        }
     }
     
-    var debugIndexLabel: UILabel?
-    func configureDebugIndexLabel(index: Int) {
-        if debugIndexLabel == nil {
-            let debugIndexLabel = UILabel()
-            addSubview(debugIndexLabel)
-            debugIndexLabel.backgroundColor = UIColor.init(white: 0, alpha: 0.3)
-            debugIndexLabel.textColor = UIColor.white
-            debugIndexLabel.textAlignment = .center
-            self.debugIndexLabel = debugIndexLabel
-            
-            debugIndexLabel.translatesAutoresizingMaskIntoConstraints = false
-            debugIndexLabel.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
-            debugIndexLabel.topAnchor.constraint(equalTo: topAnchor).isActive = true
-            debugIndexLabel.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
-            debugIndexLabel.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+    fileprivate func normalPanEar(_ gesture: UIPanGestureRecognizer) {
+        // normal drag
+        let translation = gesture.translation(in: gesture.view)
+        let offset = translation.x - panGesturePreviousTranslation.x
+        
+        var actulOffset = offset
+        if gesture.view == rightEar {
+            actulOffset = expandRightEar(width: offset, auto: false)
+        } else {
+            actulOffset = -expandLeftEar(width: offset, auto: false)
         }
-        debugIndexLabel?.text = "\(index)"
+        panGesturePreviousTranslation.x += actulOffset
+        
+        if gesture.state == .ended || gesture.state == .cancelled {
+            panGesturePreviousTranslation = CGPoint.zero
+        }
+    }
+    
+    @discardableResult
+    fileprivate func expandRightEar(width: CGFloat, auto: Bool) -> CGFloat {
+        let previousWidth = videoContentView.contentWidth
+        videoContentView.expand(contentWidth: width, left: false)
+        let offset = videoContentView.contentWidth - previousWidth
+        invalidateIntrinsicContentSize()
+        delegate?.videoRangeView(self, updateRightOffset: offset, auto: auto)
+        return offset
+    }
+    
+    @discardableResult
+    fileprivate func expandLeftEar(width: CGFloat, auto: Bool) -> CGFloat {
+        let previousWidth = videoContentView.contentWidth
+        videoContentView.expand(contentWidth: -width, left: true)
+        let offset = videoContentView.contentWidth - previousWidth
+        invalidateIntrinsicContentSize()
+        delegate?.videoRangeView(self, updateLeftOffset: -offset, auto: auto)
+        return offset
+    }
+    
+    fileprivate func cleanUpAutoScrolValues() {
+        autoScrollSpeed = 0
+        autoScrollType = .none
+        displayTriggerMachine.pause()
     }
     
 }
