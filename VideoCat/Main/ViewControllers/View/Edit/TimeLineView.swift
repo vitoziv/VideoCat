@@ -41,7 +41,6 @@ class TimeLineView: UIView {
         
         contentView = UIView()
         scrollView.addSubview(contentView)
-        contentView.backgroundColor = UIColor.purple
         
         centerLineView = UIView()
         addSubview(centerLineView)
@@ -69,10 +68,20 @@ class TimeLineView: UIView {
         centerLineView.widthAnchor.constraint(equalToConstant: 1).isActive = true
     }
     
+    // MARK: - Actions
+    
+    @objc private func tapContentAction(_ recognizer: UITapGestureRecognizer) {
+        if let view = recognizer.view as? VideoRangeView, !view.isEditActive {
+            view.superview?.bringSubview(toFront: view)
+            view.isEditActive = true
+            rangeViews.filter({ $0 != view && $0.isEditActive }).forEach({ $0.isEditActive = false })
+        }
+    }
+    
     // MARK: - Data
     
     func append(asset: AVAsset, at index: Int = Int.max) {
-        // 添加到当前时间点，最接近的地方。
+        // TODO: 添加到当前时间点，最接近的地方。
         // 1. 如果没有 asset，直接添加
         // 2. 如果当前时间线压在一个 asset 上，判断时间线在 asset 的偏左边还是偏右边，然后放到最近的位置
         
@@ -82,7 +91,9 @@ class TimeLineView: UIView {
         videoRangeView.videoContentView.widthPerSecond = 10
         videoRangeView.contentInset = UIEdgeInsetsMake(2, videoRangeViewEarWidth, 2, videoRangeViewEarWidth)
         videoRangeView.delegate = self
-        contentView.addSubview(videoRangeView)
+        let tapContentGesture = UITapGestureRecognizer(target: self, action: #selector(tapContentAction(_:)))
+        videoRangeView.addGestureRecognizer(tapContentGesture)
+        contentView.insertSubview(videoRangeView, at: 0)
         videoRangeView.configure(asset: asset)
         
         videoRangeView.translatesAutoresizingMaskIntoConstraints = false
@@ -102,7 +113,7 @@ class TimeLineView: UIView {
                     rightConstraint.isActive = false
                 }
                 let leftConstraint = videoRangeView.leftAnchor.constraint(equalTo: leftVideoRangeView.rightAnchor)
-                leftConstraint.constant = -videoRangeViewEarWidth
+                leftConstraint.constant = -videoRangeViewEarWidth * 2
                 leftConstraint.isActive = true
                 videoRangeView.leftConstraint = leftConstraint
                 
@@ -115,7 +126,7 @@ class TimeLineView: UIView {
                     leftConstraint.isActive = false
                 }
                 let leftConstraint = rightVideoRangeView.leftAnchor.constraint(equalTo: videoRangeView.rightAnchor)
-                leftConstraint.constant = -videoRangeViewEarWidth
+                leftConstraint.constant = -videoRangeViewEarWidth * 2
                 leftConstraint.isActive = true
                 rightVideoRangeView.leftConstraint = leftConstraint
                 
@@ -125,7 +136,7 @@ class TimeLineView: UIView {
                 rangeViews.insert(videoRangeView, at: index)
                 let leftVideoRangeView = rangeViews[index - 1]
                 videoRangeView.leftConstraint = videoRangeView.leftAnchor.constraint(equalTo: leftVideoRangeView.rightAnchor)
-                videoRangeView.leftConstraint?.constant = -videoRangeViewEarWidth
+                videoRangeView.leftConstraint?.constant = -videoRangeViewEarWidth * 2
                 videoRangeView.leftConstraint?.isActive = true
                 
                 let rightVideoRangeView = rangeViews[index + 1]
@@ -133,7 +144,7 @@ class TimeLineView: UIView {
                     leftConstraint.isActive = false
                 }
                 let leftConstraint = rightVideoRangeView.leftAnchor.constraint(equalTo: videoRangeView.rightAnchor)
-                leftConstraint.constant = -videoRangeViewEarWidth
+                leftConstraint.constant = -videoRangeViewEarWidth * 2
                 leftConstraint.isActive = true
                 rightVideoRangeView.leftConstraint = leftConstraint
             }

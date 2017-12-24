@@ -79,13 +79,13 @@ class VideoRangeView: UIView {
         
         leftEar = EnlargeImageView()
         leftEar.backgroundColor = UIColor.purple
-        leftEar.isUserInteractionEnabled = true
         addSubview(leftEar)
         
         rightEar = EnlargeImageView()
         rightEar.backgroundColor = UIColor.purple
-        rightEar.isUserInteractionEnabled = true
         addSubview(rightEar)
+        
+        inactiveEar(animated: false)
         
         // Background ImageView
         backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -150,7 +150,7 @@ class VideoRangeView: UIView {
         setNeedsLayout()
     }
     
-    // MARK: - Action
+    // MARK: - Left and right ear gesture handle
     
     private var autoScrollSpeed: CGFloat = 0
     private var autoScrollType: AutoScrollType = .none
@@ -267,6 +267,59 @@ class VideoRangeView: UIView {
         autoScrollSpeed = 0
         autoScrollType = .none
         displayTriggerMachine.pause()
+    }
+    
+    // MARK: - Active & Inactive manage
+    
+    var isEditActive: Bool {
+        get {
+            return leftEar.isUserInteractionEnabled
+        }
+        set {
+            if newValue {
+                activeEar()
+            } else {
+                inactiveEar()
+            }
+        }
+    }
+    
+    fileprivate func activeEar(animated: Bool = true) {
+        leftEar.isUserInteractionEnabled = true
+        rightEar.isUserInteractionEnabled = true
+        func operations() {
+            backgroundImageView.alpha = 1.0
+            leftEar.alpha = 1.0
+            rightEar.alpha = 1.0
+        }
+        if animated {
+            UIView.animate(withDuration: 0.3,
+                           delay: 0,
+                           options: [.beginFromCurrentState, .curveEaseInOut],
+                           animations: operations,
+                           completion: nil)
+        } else {
+            operations()
+        }
+    }
+    
+    fileprivate func inactiveEar(animated: Bool = true) {
+        leftEar.isUserInteractionEnabled = false
+        rightEar.isUserInteractionEnabled = false
+        func operations() {
+            backgroundImageView.alpha = 0.0
+            leftEar.alpha = 0.0
+            rightEar.alpha = 0.0
+        }
+        if animated {
+            UIView.animate(withDuration: 0.3,
+                           delay: 0,
+                           options: [.beginFromCurrentState, .curveEaseInOut],
+                           animations: operations,
+                           completion: nil)
+        } else {
+            operations()
+        }
     }
     
 }
