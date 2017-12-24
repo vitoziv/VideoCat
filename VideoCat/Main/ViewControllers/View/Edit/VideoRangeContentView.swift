@@ -246,18 +246,19 @@ class AssetThumbImageView: UIImageView {
         let imageSize = bounds.size
         let imageWidth = imageSize.width * UIScreen.main.scale
         let imageHeight = imageSize.height * UIScreen.main.scale
-        if let naturalSize = asset.tracks.first?.naturalSize {
+        if var naturalSize = asset.tracks.first?.naturalSize {
+            if let transform = asset.tracks.first?.preferredTransform {
+                naturalSize = CGRect(origin: CGPoint.zero, size: naturalSize).applying(transform).size
+            }
             let widthRatio = imageWidth / naturalSize.width
             let heightRatio = imageHeight / naturalSize.height
             if widthRatio > heightRatio {
-                let height = round(naturalSize.height * widthRatio)
-                imageGenerator?.maximumSize = CGSize(width: imageWidth, height: height)
+                imageGenerator?.maximumSize = CGSize(width: imageWidth, height: 0)
             } else {
-                let width = round(naturalSize.width * heightRatio)
-                imageGenerator?.maximumSize = CGSize(width: width, height: imageHeight)
+                imageGenerator?.maximumSize = CGSize(width: 0, height: imageHeight)
             }
         } else {
-            imageGenerator?.maximumSize = CGSize(width: imageWidth, height: imageHeight)
+            imageGenerator?.maximumSize = CGSize(width: 0, height: imageHeight)
         }
         imageGenerator?.generateCGImagesAsynchronously(forTimes: [NSValue(time: time)], completionHandler: { [weak self] (time, image, actualTime, result, error) in
             guard let strongSelf = self else { return }
