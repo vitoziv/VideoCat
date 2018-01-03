@@ -17,8 +17,6 @@ protocol VideoRangeViewDelegate: class {
     func videoRangeViewDidEndUpdateRightOffset(_ view: VideoRangeView)
 }
 
-// TODO: 下一步，实现 timeline 和 player 的同步显示
-
 class VideoRangeView: UIView {
     
     weak var delegate: VideoRangeViewDelegate?

@@ -47,6 +47,11 @@ class VideoView: UIView {
         player.replaceCurrentItem(playerItem)
     }
     
+    func configure(asset: AVAsset) {
+        let playerItem = AVPlayerItem(asset: asset)
+        player.replaceCurrentItem(playerItem)
+    }
+    
     @objc private func playPauseAction(sender: UIButton) {
         switch player.status {
         case .pause(_):

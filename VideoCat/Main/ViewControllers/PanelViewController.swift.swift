@@ -13,7 +13,8 @@ import MBProgressHUD
 class PanelViewController: UIViewController {
     
     @IBOutlet weak var timeLineView: TimeLineView!
-    private let viewModel = PanelViewModel()
+    @IBOutlet weak var videoView: VideoView!
+    private let viewModel = TimelineViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,22 +41,6 @@ class PanelViewController: UIViewController {
     }
 }
 
-extension PanelViewController: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.panel.trackItems.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ClipCell", for: indexPath)
-        let item = viewModel.panel.trackItems[indexPath.item]
-        if let cell = cell as? ClipCell {
-            cell.configure(trackItem: item)
-        }
-        
-        return cell
-    }
-}
-
 extension PanelViewController: AssetsViewControllerDelegate {
     func assetsViewControllerDidCancel(_ viewController: AssetsViewController) {
         viewController.dismiss(animated: true, completion: nil)
@@ -70,12 +55,11 @@ extension PanelViewController: AssetsViewControllerDelegate {
             guard let strongSelf = self else { return }
             if status == .avaliable {
                 MBProgressHUD.dismiss()
-                let trackItem = TrackItem(resource: resource)
-                let duration = resource.trackAsset!.duration
-                trackItem.configuration.timeRange = CMTimeRangeMake(kCMTimeZero, duration)
-                strongSelf.viewModel.panel.trackItems.append(trackItem)
                 let index = strongSelf.timeLineView.nextRangeViewIndex
                 strongSelf.timeLineView.append(asset: resource.trackAsset!, at: index)
+                
+                let trackItem = TrackItem(resource: resource)
+                strongSelf.viewModel.insertTrackItem(trackItem, at: index)
             } else {
                 MBProgressHUD.showError(title: NSLocalizedString("Can't use this video", comment: ""))
             }

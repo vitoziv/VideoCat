@@ -117,10 +117,7 @@ class TimeLineView: UIView {
     // MARK: - Data
     
     func append(asset: AVAsset, at index: Int = 0) {
-        // TODO: 添加到当前时间点，最接近的地方。
-        // 1. 如果没有 asset，直接添加
-        // 2. 如果当前时间线压在一个 asset 上，判断时间线在 asset 的偏左边还是偏右边，然后放到最近的位置
-        
+        // 添加到当前时间点，最接近的地方。
         let videoRangeView = VideoRangeView()
         videoRangeView.videoContentView.widthPerSecond = 10
         videoRangeView.contentInset = UIEdgeInsetsMake(2, videoRangeViewEarWidth, 2, videoRangeViewEarWidth)
@@ -247,6 +244,7 @@ extension TimeLineView: VideoRangeViewDelegate {
 // MARK: - Helper
 
 extension TimeLineView {
+    
     var nextRangeViewIndex: Int {
         var index = 0
         let center = centerLineView.center
@@ -266,4 +264,5 @@ extension TimeLineView {
         
         return index
     }
+    
 }

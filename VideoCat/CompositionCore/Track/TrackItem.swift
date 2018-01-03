@@ -9,14 +9,17 @@
 import AVFoundation
 
 class TrackItem {
+    
     var identifier: String
     var resource: TrackResource
     var configuration: TrackConfiguration
+    
     init(resource: TrackResource) {
         identifier = ProcessInfo.processInfo.globallyUniqueString
         self.resource = resource
         configuration = TrackConfiguration()
     }
+    
 }
 
 extension AVMutableComposition {

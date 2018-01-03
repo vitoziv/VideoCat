@@ -12,11 +12,14 @@ class TrackVideoAssetResource: TrackResource {
     
     var identifier: String
     var asset: PHAsset?
+    var timeRange = kCMTimeRangeZero
     
     init(asset: PHAsset) {
         identifier = asset.localIdentifier
         super.init(with: nil)
         self.asset = asset
+        let duration = CMTimeMake(Int64(asset.duration * 600), 600)
+        timeRange = CMTimeRangeMake(kCMTimeZero, duration)
     }
     
     // MARK: - Load

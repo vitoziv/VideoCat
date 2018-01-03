@@ -8,6 +8,6 @@
 
 import AVFoundation
 
-class TrackPanel {
+class Timeline {
     var trackItems: [TrackItem] = []
 }

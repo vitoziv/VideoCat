@@ -11,11 +11,14 @@ import AVFoundation
 class TrackVideoResource: TrackResource {
     
     var assetURL: URL
+    var timeRange = kCMTimeRangeZero
     
     init(asset: AVURLAsset) {
         assetURL = asset.url
         super.init(with: nil)
         trackAsset = asset
+        let duration = CMTimeMake(Int64(asset.duration * 600), 600)
+        timeRange = CMTimeRangeMake(kCMTimeZero, duration)
     }
     
     // MARK: - Load
