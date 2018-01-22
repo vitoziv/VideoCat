@@ -9,11 +9,11 @@
 import AVFoundation
 
 class TrackComposition {
-    func createComposition(from trackPanel: TrackPanel) -> AVAsset {
+    func createComposition(from timeline: Timeline) -> AVAsset {
         let composition = AVMutableComposition(urlAssetInitializationOptions: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
         
         var trackTime = kCMTimeZero
-        trackPanel.trackItems.forEach { (trackItem) in
+        timeline.trackItems.forEach { (trackItem) in
             composition.addMutableTrack(from: trackItem, at: trackTime)
             
             trackTime = trackTime + trackItem.configuration.realDuration()

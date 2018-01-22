@@ -12,12 +12,16 @@ import AVFoundation
 class TimelineViewModel {
     let timeline = Timeline()
     
+    private(set) var playerItem = AVPlayerItem(asset: AVComposition.init())
+    
     func addTrackItem(_ trackItem: TrackItem) {
         timeline.trackItems.append(trackItem)
+        reloadPlayerItem()
     }
     
     func insertTrackItem(_ tackItem: TrackItem, at index: Int) {
         timeline.trackItems.insert(tackItem, at: index)
+        reloadPlayerItem()
     }
     
     func timeRange(at index: Int) -> CMTimeRange {
@@ -31,6 +35,19 @@ class TimelineViewModel {
         }
         let trackItem = timeline.trackItems[index]
         return trackItem.configuration.timeRange
+    }
+    
+    fileprivate func reloadPlayerItem() {
+        let composition = AVMutableComposition(urlAssetInitializationOptions: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
+        
+        var trackTime = kCMTimeZero
+        timeline.trackItems.forEach { (trackItem) in
+            composition.addMutableTrack(from: trackItem, at: trackTime)
+            
+            trackTime = trackTime + trackItem.configuration.realDuration()
+        }
+        let playerItem = AVPlayerItem(asset: composition)
+        self.playerItem = playerItem
     }
     
 }

@@ -17,7 +17,7 @@ class TrackVideoResource: TrackResource {
         assetURL = asset.url
         super.init(with: nil)
         trackAsset = asset
-        let duration = CMTimeMake(Int64(asset.duration * 600), 600)
+        let duration = CMTimeMake(Int64(asset.duration.seconds * 600), 600)
         timeRange = CMTimeRangeMake(kCMTimeZero, duration)
     }
     

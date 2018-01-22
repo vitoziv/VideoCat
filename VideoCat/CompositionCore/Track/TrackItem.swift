@@ -26,9 +26,19 @@ extension AVMutableComposition {
     func addMutableTrack(from item: TrackItem, at time: CMTime) {
         if let asset = item.resource.trackAsset {
             asset.tracks.forEach({ (t) in
-                if let track = addMutableTrack(withMediaType: t.mediaType, preferredTrackID: t.trackID) {
+                guard t.mediaType == AVMediaType.video || t.mediaType == AVMediaType.audio else {
+                    return
+                }
+                let track: AVMutableCompositionTrack? = {
+                    if let track = tracks(withMediaType: t.mediaType).first {
+                        return track
+                    }
+                    return addMutableTrack(withMediaType: t.mediaType, preferredTrackID: t.trackID)
+                }()
+                
+                if let track = track {
                     do {
-                        try track.insertTimeRange(item.configuration.timeRange, of: track, at: time)
+                        try track.insertTimeRange(item.configuration.timeRange, of: t, at: time)
                     } catch {
                         removeTrack(track)
                         print(error.localizedDescription)

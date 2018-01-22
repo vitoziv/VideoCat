@@ -1,5 +1,5 @@
 //
-//  TrackPanel.swift
+//  Timeline.swift
 //  VideoCat
 //
 //  Created by Vito on 22/09/2017.

@@ -40,6 +40,12 @@ class VideoView: UIView {
         playerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         playerView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
         playerView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        
+        controlView.translatesAutoresizingMaskIntoConstraints = false
+        controlView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
+        controlView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
+        controlView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        controlView.heightAnchor.constraint(equalToConstant: 44).isActive = true
     }
     
     func configure(url: URL) {
