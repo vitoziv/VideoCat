@@ -16,6 +16,7 @@ class TimeLineView: UIView {
     private(set) var centerLineView: UIView!
     
     private(set) var scrollContentHeightConstraint: NSLayoutConstraint!
+    var widthPerSecond: CGFloat = 60
     
     private(set) var rangeViews: [VideoRangeView] = []
     var rangeViewsIndex: Int {
@@ -119,7 +120,7 @@ class TimeLineView: UIView {
     func append(asset: AVAsset, at index: Int = 0) {
         // 添加到当前时间点，最接近的地方。
         let videoRangeView = VideoRangeView()
-        videoRangeView.videoContentView.widthPerSecond = 10
+        videoRangeView.videoContentView.widthPerSecond = widthPerSecond
         videoRangeView.contentInset = UIEdgeInsetsMake(2, videoRangeViewEarWidth, 2, videoRangeViewEarWidth)
         videoRangeView.delegate = self
         let tapContentGesture = UITapGestureRecognizer(target: self, action: #selector(tapContentAction(_:)))
@@ -180,6 +181,71 @@ class TimeLineView: UIView {
                 rightVideoRangeView.leftConstraint = leftConstraint
             }
         }
+    }
+    
+    func adjustCollectionViewOffset(time: CMTime) {
+        if !time.isValid { return }
+        let time = max(time, kCMTimeZero)
+        let offsetX = getOffsetX(at: time).0
+        if !offsetX.isNaN {
+            scrollView.delegate = nil
+            scrollView.contentOffset = CGPoint(x: offsetX, y: 0)
+            displayRangeViewsIfNeed()
+            scrollView.delegate = self
+        }
+    }
+    
+    func showingRangeView() -> [VideoRangeView] {
+        let showingRangeViews = rangeViews.filter { (view) -> Bool in
+            let rect = view.superview!.convert(view.frame, to: scrollView)
+            let intersects = scrollView.bounds.intersects(rect)
+            return intersects
+        }
+        return showingRangeViews
+    }
+    
+    fileprivate func displayRangeViewsIfNeed() {
+        let showingRangeViews = showingRangeView()
+        showingRangeViews.forEach({ $0.videoContentView.updateThumbIfNeed() })
+    }
+    
+    // MARK: offset
+    
+    func getOffsetX(at time: CMTime) -> (CGFloat, Int) {
+        var offsetX: CGFloat = -scrollView.contentInset.left
+        guard time.isValid else { return (offsetX, 0) }
+        
+        var duration = time
+        var index = 0
+        for (i, rangeView) in rangeViews.enumerated() {
+            let contentDuration = rangeView.videoContentView.endTime - rangeView.videoContentView.startTime
+            if duration <= contentDuration {
+                index = i
+                break
+            } else {
+                duration = duration - contentDuration
+            }
+        }
+        offsetX = offsetX + CGFloat(time.seconds) * widthPerSecond
+        
+        return (offsetX, index)
+    }
+    
+    func getTime(at offsetX: CGFloat) -> (CMTime, Int) {
+        var offsetX = offsetX + scrollView.contentInset.left
+        let duration = CMTime.init(seconds: Double(offsetX / widthPerSecond), preferredTimescale: 600)
+        var index = 0
+        for (i, rangeView) in rangeViews.enumerated() {
+            let width = rangeView.videoContentView.contentWidth
+            if offsetX <= width {
+                index = i
+                break
+            } else {
+                offsetX = offsetX - width
+            }
+        }
+        
+        return (duration, index)
     }
     
 }

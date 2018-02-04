@@ -9,6 +9,7 @@
 import UIKit
 import Photos
 import MBProgressHUD
+import RxCocoa
 
 class PanelViewController: UIViewController {
     
@@ -20,6 +21,7 @@ class PanelViewController: UIViewController {
         super.viewDidLoad()
         let inset = UIScreen.main.bounds.width / 2 - 24
         timeLineView.scrollView.contentInset = UIEdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
+        bindAction()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -39,6 +41,26 @@ class PanelViewController: UIViewController {
         let viewController = storyboard.instantiateViewController(withIdentifier: "PlayerTestViewController")
         navigationController?.pushViewController(viewController, animated: true)
     }
+    
+    // MARK: - Helper
+    fileprivate var timeObserver: Any?
+    fileprivate func bindAction() {
+        timeObserver = videoView.player.player.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 30), queue: DispatchQueue.main, using: { [weak self] (time) in
+            guard let strongSelf = self else { return }
+            strongSelf.playerTimeDidChanged(time: time)
+        })
+        _ = timeLineView.scrollView.rx.observeWeakly(CGPoint.self, "contentOffset").takeUntil(rx.deallocated).subscribe(onNext: { [weak self] (offset) in
+            guard let strongSelf = self else { return }
+            guard let offset = offset else { return }
+            let time = strongSelf.timeLineView.getTime(at: offset.x)
+            strongSelf.videoView.player.player.fl_seekSmoothly(to: time.0)
+        })
+    }
+    
+    fileprivate func playerTimeDidChanged(time: CMTime) {
+        timeLineView.adjustCollectionViewOffset(time: time)
+    }
+    
 }
 
 extension PanelViewController: AssetsViewControllerDelegate {

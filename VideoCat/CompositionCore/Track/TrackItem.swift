@@ -35,7 +35,7 @@ extension AVMutableComposition {
                     }
                     return addMutableTrack(withMediaType: t.mediaType, preferredTrackID: t.trackID)
                 }()
-                
+                track?.preferredTransform = t.preferredTransform
                 if let track = track {
                     do {
                         try track.insertTimeRange(item.configuration.timeRange, of: t, at: time)
