@@ -38,15 +38,10 @@ class TimelineViewModel {
     }
     
     fileprivate func reloadPlayerItem() {
-        let composition = AVMutableComposition(urlAssetInitializationOptions: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
-        
-        var trackTime = kCMTimeZero
-        timeline.trackItems.forEach { (trackItem) in
-            composition.addMutableTrack(from: trackItem, at: trackTime)
-            
-            trackTime = trackTime + trackItem.configuration.realDuration()
-        }
+        let composition = timeline.buildComposition()
         let playerItem = AVPlayerItem(asset: composition)
+//        playerItem.videoComposition = timeline.buildVideoComposition()
+//        playerItem.audioMix = timeline.buildAudioMix()
         self.playerItem = playerItem
     }
     

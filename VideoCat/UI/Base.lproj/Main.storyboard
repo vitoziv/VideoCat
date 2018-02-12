@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Navigation items with more than one left or right bar item" minToolsVersion="7.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -19,25 +20,35 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CM3-Ri-9MJ" customClass="TimeLineView" customModule="VideoCat" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="367" width="375" height="300"/>
+                                <rect key="frame" x="0.0" y="517" width="375" height="150"/>
                                 <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="300" id="6lA-ki-Feu"/>
+                                    <constraint firstAttribute="height" constant="150" id="6lA-ki-Feu"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nPt-BB-1RD" customClass="VideoView" customModule="VideoCat" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="64" width="375" height="303"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="309"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r2G-iK-B9m" customClass="APLCompositionDebugView">
+                                <rect key="frame" x="0.0" y="375" width="375" height="140"/>
+                                <color key="backgroundColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="140" id="YDg-bY-bbb"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="CM3-Ri-9MJ" firstAttribute="top" secondItem="nPt-BB-1RD" secondAttribute="bottom" id="9ZG-Jd-c0i"/>
+                            <constraint firstItem="r2G-iK-B9m" firstAttribute="leading" secondItem="IaK-It-gVs" secondAttribute="leading" id="1dk-uT-nx9"/>
                             <constraint firstItem="nPt-BB-1RD" firstAttribute="top" secondItem="IaK-It-gVs" secondAttribute="top" id="BEL-aw-a0y"/>
                             <constraint firstItem="nPt-BB-1RD" firstAttribute="trailing" secondItem="IaK-It-gVs" secondAttribute="trailing" id="CxL-dm-BCU"/>
                             <constraint firstItem="nPt-BB-1RD" firstAttribute="leading" secondItem="IaK-It-gVs" secondAttribute="leading" id="byb-bC-U8u"/>
+                            <constraint firstItem="CM3-Ri-9MJ" firstAttribute="top" secondItem="r2G-iK-B9m" secondAttribute="bottom" constant="2" id="hyp-mT-Pvu"/>
+                            <constraint firstItem="r2G-iK-B9m" firstAttribute="trailing" secondItem="IaK-It-gVs" secondAttribute="trailing" id="jMn-Nd-VWS"/>
                             <constraint firstAttribute="trailing" secondItem="CM3-Ri-9MJ" secondAttribute="trailing" id="k2D-uL-geo"/>
                             <constraint firstAttribute="bottom" secondItem="CM3-Ri-9MJ" secondAttribute="bottom" id="m4M-Ka-ddF"/>
+                            <constraint firstItem="r2G-iK-B9m" firstAttribute="top" secondItem="nPt-BB-1RD" secondAttribute="bottom" constant="2" id="q7m-Pb-69n"/>
                             <constraint firstItem="CM3-Ri-9MJ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="qGg-MV-Wmu"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="IaK-It-gVs"/>
@@ -57,6 +68,7 @@
                         </rightBarButtonItems>
                     </navigationItem>
                     <connections>
+                        <outlet property="compositionDebugView" destination="r2G-iK-B9m" id="Dry-eC-yHd"/>
                         <outlet property="timeLineView" destination="CM3-Ri-9MJ" id="wrz-gt-Axw"/>
                         <outlet property="videoView" destination="nPt-BB-1RD" id="uQd-MW-Nyh"/>
                     </connections>

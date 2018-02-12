@@ -15,6 +15,7 @@ class PanelViewController: UIViewController {
     
     @IBOutlet weak var timeLineView: TimeLineView!
     @IBOutlet weak var videoView: VideoView!
+    @IBOutlet weak var compositionDebugView: APLCompositionDebugView!
     private let viewModel = TimelineViewModel()
     
     override func viewDidLoad() {
@@ -52,9 +53,21 @@ class PanelViewController: UIViewController {
         _ = timeLineView.scrollView.rx.observeWeakly(CGPoint.self, "contentOffset").takeUntil(rx.deallocated).subscribe(onNext: { [weak self] (offset) in
             guard let strongSelf = self else { return }
             guard let offset = offset else { return }
-            let time = strongSelf.timeLineView.getTime(at: offset.x)
-            strongSelf.videoView.player.player.fl_seekSmoothly(to: time.0)
+            switch strongSelf.videoView.player.status {
+            case .playing:
+                break
+            default:
+                let time = strongSelf.timeLineView.getTime(at: offset.x)
+                strongSelf.videoView.player.player.fl_seekSmoothly(to: time.0)
+            }
         })
+        // TODO: 开始拖拽后暂停播放
+//        _ = timeLineView.scrollView.rx.observeWeakly(Bool.self, "isDragging").takeUntil(rx.deallocated).subscribe(onNext: { [weak self] (isDragging) in
+//            guard let strongSelf = self else { return }
+//            if let isDragging = isDragging, isDragging {
+//                strongSelf.videoView.player.pause()
+//            }
+//        })
     }
     
     fileprivate func playerTimeDidChanged(time: CMTime) {
@@ -84,6 +97,9 @@ extension PanelViewController: AssetsViewControllerDelegate {
                 trackItem.configuration.timeRange = CMTimeRangeMake(kCMTimeZero, resource.trackAsset!.duration)
                 strongSelf.viewModel.insertTrackItem(trackItem, at: index)
                 strongSelf.videoView.player.replaceCurrentItem(strongSelf.viewModel.playerItem)
+//                strongSelf.compositionDebugView.synchronize(to: strongSelf.viewModel.playerItem.asset as! AVComposition,
+//                                                            videoComposition: strongSelf.viewModel.playerItem.videoComposition,
+//                                                            audioMix: strongSelf.viewModel.playerItem.audioMix)
             } else {
                 MBProgressHUD.showError(title: NSLocalizedString("Can't use this video", comment: ""))
             }
