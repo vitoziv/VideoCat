@@ -10,8 +10,15 @@ import AVFoundation
 
 struct TrackConfiguration {
     
+    enum BaseContentMode {
+        case aspectFit
+        case aspectFill
+    }
+    
     /// Resource's time range
     var timeRange: CMTimeRange = kCMTimeRangeZero
+    
+    var baseContentMode: BaseContentMode = .aspectFit
     
     
     /// Track's final duration, it will be calculated using track's time, speed and so on

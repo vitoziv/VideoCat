@@ -18,6 +18,10 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
     private var shouldCancelAllRequests = false
     private var renderContext: AVVideoCompositionRenderContext?
     
+    fileprivate lazy var colorGeneratorFilter: CIFilter = {
+        return CIFilter(name: "CIConstantColorGenerator")!
+    }()
+    
     var sourcePixelBufferAttributes: [String : Any]? =
         [String(kCVPixelBufferPixelFormatTypeKey): kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
          String(kCVPixelBufferOpenGLESCompatibilityKey): true]
@@ -34,25 +38,25 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
         })
     }
     
+    enum PixelBufferRequestError: Error {
+        case newRenderedPixelBufferForRequestFailure
+    }
+    
     func startRequest(_ request: AVAsynchronousVideoCompositionRequest) {
-        renderingQueue.async(execute: { [weak self] in
-            guard let strongSelf = self else { return }
-            if strongSelf.shouldCancelAllRequests {
-                request.finishCancelledRequest()
-            } else {
-                autoreleasepool(invoking: { () -> () in
-                    do {
-                        if let resultPixels = try strongSelf.newRenderedPixelBufferForRequest(request: request) {
-                            request.finish(withComposedVideoFrame: resultPixels)
-                        } else {
-                            request.finishCancelledRequest()
-                        }
-                    } catch let e {
-                        request.finish(with: e)
+        autoreleasepool {
+            renderingQueue.async(execute: { [weak self] in
+                guard let strongSelf = self else { return }
+                if strongSelf.shouldCancelAllRequests {
+                    request.finishCancelledRequest()
+                } else {
+                    if let resultPixels = strongSelf.newRenderedPixelBufferForRequest(request: request) {
+                        request.finish(withComposedVideoFrame: resultPixels)
+                    } else {
+                        request.finish(with: PixelBufferRequestError.newRenderedPixelBufferForRequestFailure)
                     }
-                })
-            }
-        })
+                }
+            })
+        }
     }
     
     func cancelAllPendingVideoCompositionRequests() {
@@ -63,21 +67,34 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
         }
     }
     
-    func newRenderedPixelBufferForRequest(request: AVAsynchronousVideoCompositionRequest) throws -> CVPixelBuffer? {
-        var image: CIImage?
+    func newRenderedPixelBufferForRequest(request: AVAsynchronousVideoCompositionRequest) -> CVPixelBuffer? {
+        guard let outputPixels = renderContext?.newPixelBuffer() else { return nil }
+        guard let instruction = request.videoCompositionInstruction as? VIVideoCompositionInstruction else {
+            return nil
+        }
         
-        request.sourceTrackIDs.forEach { (trackID) in
-            if let sourcePixel = request.sourceFrame(byTrackID: trackID.int32Value) {
-                if let resultImage = image {
-                    let sourceImage = CIImage(cvPixelBuffer: sourcePixel)
-                    image = sourceImage.composited(over: resultImage)
-                } else {
-                    image = CIImage(cvPixelBuffer: sourcePixel)
-                }
+        var image = generateBackgroundImage(pixelBuffer: outputPixels)
+        instruction.layerInstructions.forEach { (layerInstruction) in
+            if let sourcePixel = request.sourceFrame(byTrackID: layerInstruction.trackID) {
+                var sourceImage = CIImage(cvPixelBuffer: sourcePixel)
+                sourceImage = layerInstruction.apply(sourceImage: sourceImage, at: request.compositionTime, renderSize: request.renderContext.size)
+                
+                image = sourceImage.composited(over: image)
             }
         }
         
-        return image?.pixelBuffer
+        VideoCompositor.ciContext.render(image, to: outputPixels)
+        
+        return outputPixels
+    }
+    
+    fileprivate func generateBackgroundImage(pixelBuffer: CVPixelBuffer) -> CIImage {
+        let color = CIColor(color: UIColor.black)
+        colorGeneratorFilter.setValue(color, forKey: "inputColor")
+        if let outputImage = colorGeneratorFilter.outputImage {
+            VideoCompositor.ciContext.render(outputImage, to: pixelBuffer)
+        }
+        return CIImage(cvPixelBuffer: pixelBuffer)
     }
     
 }

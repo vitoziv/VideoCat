@@ -12,6 +12,16 @@ import AVFoundation
 class TimelineViewModel {
     let timeline = Timeline()
     
+    init() {
+        let width = UIScreen.main.bounds.width * UIScreen.main.scale
+        let height: CGFloat = round(width * 0.5625)
+        timeline.renderSize = CGSize(width: width, height: height)
+    }
+    
+    private lazy var compositionGenerator: CompositionGenerator = {
+        return CompositionGenerator(timeline: self.timeline)
+    }()
+    
     private(set) var playerItem = AVPlayerItem(asset: AVComposition.init())
     
     func addTrackItem(_ trackItem: TrackItem) {
@@ -38,10 +48,7 @@ class TimelineViewModel {
     }
     
     fileprivate func reloadPlayerItem() {
-        let composition = timeline.buildComposition()
-        let playerItem = AVPlayerItem(asset: composition)
-//        playerItem.videoComposition = timeline.buildVideoComposition()
-//        playerItem.audioMix = timeline.buildAudioMix()
+        let playerItem = compositionGenerator.buildPlayerItem()
         self.playerItem = playerItem
     }
     

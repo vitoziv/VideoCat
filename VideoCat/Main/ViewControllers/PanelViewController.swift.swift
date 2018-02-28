@@ -97,9 +97,9 @@ extension PanelViewController: AssetsViewControllerDelegate {
                 trackItem.configuration.timeRange = CMTimeRangeMake(kCMTimeZero, resource.trackAsset!.duration)
                 strongSelf.viewModel.insertTrackItem(trackItem, at: index)
                 strongSelf.videoView.player.replaceCurrentItem(strongSelf.viewModel.playerItem)
-//                strongSelf.compositionDebugView.synchronize(to: strongSelf.viewModel.playerItem.asset as! AVComposition,
-//                                                            videoComposition: strongSelf.viewModel.playerItem.videoComposition,
-//                                                            audioMix: strongSelf.viewModel.playerItem.audioMix)
+                strongSelf.compositionDebugView.synchronize(to: strongSelf.viewModel.playerItem.asset as! AVComposition,
+                                                            videoComposition: strongSelf.viewModel.playerItem.videoComposition,
+                                                            audioMix: strongSelf.viewModel.playerItem.audioMix)
             } else {
                 MBProgressHUD.showError(title: NSLocalizedString("Can't use this video", comment: ""))
             }

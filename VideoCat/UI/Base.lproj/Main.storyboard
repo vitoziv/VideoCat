@@ -27,14 +27,14 @@
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nPt-BB-1RD" customClass="VideoView" customModule="VideoCat" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="64" width="375" height="309"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="299"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r2G-iK-B9m" customClass="APLCompositionDebugView">
-                                <rect key="frame" x="0.0" y="375" width="375" height="140"/>
+                                <rect key="frame" x="0.0" y="365" width="375" height="150"/>
                                 <color key="backgroundColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="140" id="YDg-bY-bbb"/>
+                                    <constraint firstAttribute="height" constant="150" id="YDg-bY-bbb"/>
                                 </constraints>
                             </view>
                         </subviews>

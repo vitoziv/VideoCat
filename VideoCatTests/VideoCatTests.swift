@@ -23,7 +23,7 @@ class VideoCatTests: XCTestCase {
     }
     
     func testResourceClassType() {
-        let path = Bundle(for: type(of: self)).path(forResource: "IMG_5242", ofType: "MOV")!
+        let path = Bundle(for: type(of: self)).path(forResource: "black_empty", ofType: "mp4")!
         let url = URL(fileURLWithPath: path)
         let asset = AVURLAsset(url: url)
         let videoResource = TrackVideoResource(asset: asset)
@@ -40,13 +40,6 @@ class VideoCatTests: XCTestCase {
             return
         }
         
-    }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
     }
     
 }

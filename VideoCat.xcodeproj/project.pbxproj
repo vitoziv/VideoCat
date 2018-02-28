@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0A0FBF7AC09FFABFA1F7A96E /* Pods_VideoCat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3E076CE63B9D46D6BEB25CF3 /* Pods_VideoCat.framework */; };
-		5F01AFF61F7417AC0049CD3A /* IMG_5242.MOV in Resources */ = {isa = PBXBuildFile; fileRef = 5F29D2481F7414FD00D41F50 /* IMG_5242.MOV */; };
 		5F01AFFD1F741E0E0049CD3A /* Timeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01AFFC1F741E0E0049CD3A /* Timeline.swift */; };
 		5F01AFFF1F7794370049CD3A /* AssetsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01AFFE1F7794370049CD3A /* AssetsViewController.swift */; };
 		5F01B0041F779BEF0049CD3A /* AssetCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0031F779BEF0049CD3A /* AssetCell.swift */; };
@@ -52,6 +51,11 @@
 		5FE088421FB846D200EA7963 /* VideoRangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE088411FB846D200EA7963 /* VideoRangeView.swift */; };
 		5FE088441FB9D75900EA7963 /* TimeLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE088431FB9D75900EA7963 /* TimeLineView.swift */; };
 		5FF465C41FAA0FFA006EDD61 /* Demo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5FF465C31FAA0FFA006EDD61 /* Demo.storyboard */; };
+		5FF8D33F2032B0D900240EE4 /* black_empty.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5FF8D33E2032B0D900240EE4 /* black_empty.mp4 */; };
+		5FF8D3412032CEFF00240EE4 /* CompositionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF8D3402032CEFF00240EE4 /* CompositionGenerator.swift */; };
+		5FF8D3432046AFBF00240EE4 /* CGMathFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF8D3422046AFBF00240EE4 /* CGMathFunctions.swift */; };
+		5FF8D3452046B2EC00240EE4 /* black_empty.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5FF8D3442046B2CE00240EE4 /* black_empty.mp4 */; };
+		5FF8D3472046B32300240EE4 /* CGMathFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FF8D3462046B32300240EE4 /* CGMathFunctionTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,7 +92,6 @@
 		5F29D23E1F74146700D41F50 /* VideoCatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VideoCatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F29D2401F74146700D41F50 /* VideoCatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCatTests.swift; sourceTree = "<group>"; };
 		5F29D2421F74146700D41F50 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		5F29D2481F7414FD00D41F50 /* IMG_5242.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = IMG_5242.MOV; sourceTree = "<group>"; };
 		5F2A987D1FA4738F0032B5DF /* TimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewModel.swift; sourceTree = "<group>"; };
 		5F3A1CAE1F528FD5001895DB /* VideoCat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoCat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F3A1CB11F528FD5001895DB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -116,6 +119,11 @@
 		5FE088411FB846D200EA7963 /* VideoRangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRangeView.swift; sourceTree = "<group>"; };
 		5FE088431FB9D75900EA7963 /* TimeLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineView.swift; sourceTree = "<group>"; };
 		5FF465C31FAA0FFA006EDD61 /* Demo.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Demo.storyboard; sourceTree = "<group>"; };
+		5FF8D33E2032B0D900240EE4 /* black_empty.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = black_empty.mp4; sourceTree = "<group>"; };
+		5FF8D3402032CEFF00240EE4 /* CompositionGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositionGenerator.swift; sourceTree = "<group>"; };
+		5FF8D3422046AFBF00240EE4 /* CGMathFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGMathFunctions.swift; sourceTree = "<group>"; };
+		5FF8D3442046B2CE00240EE4 /* black_empty.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = black_empty.mp4; sourceTree = "<group>"; };
+		5FF8D3462046B32300240EE4 /* CGMathFunctionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGMathFunctionTests.swift; sourceTree = "<group>"; };
 		630D23A14081B0921452CF60 /* Pods-VideoCat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoCat.release.xcconfig"; path = "Pods/Target Support Files/Pods-VideoCat/Pods-VideoCat.release.xcconfig"; sourceTree = "<group>"; };
 		8F389E46D65FD18BFE27928E /* Pods-VideoCat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoCat.debug.xcconfig"; path = "Pods/Target Support Files/Pods-VideoCat/Pods-VideoCat.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -163,10 +171,13 @@
 		5F01AFF91F741D440049CD3A /* Composition */ = {
 			isa = PBXGroup;
 			children = (
+				5FF8D3402032CEFF00240EE4 /* CompositionGenerator.swift */,
 				5F9DBECE2029F41300E8BFC4 /* VideoCompositor.swift */,
 				5F9DBED0202EA6C800E8BFC4 /* VIVideoCompositionInstruction.swift */,
 				5FB64C272031977B004A09F8 /* APLCompositionDebugView.h */,
 				5FB64C282031977B004A09F8 /* APLCompositionDebugView.m */,
+				5FF8D33E2032B0D900240EE4 /* black_empty.mp4 */,
+				5FF8D3422046AFBF00240EE4 /* CGMathFunctions.swift */,
 			);
 			path = Composition;
 			sourceTree = "<group>";
@@ -287,8 +298,9 @@
 		5F29D23F1F74146700D41F50 /* VideoCatTests */ = {
 			isa = PBXGroup;
 			children = (
-				5F29D2481F7414FD00D41F50 /* IMG_5242.MOV */,
+				5FF8D3442046B2CE00240EE4 /* black_empty.mp4 */,
 				5F29D2401F74146700D41F50 /* VideoCatTests.swift */,
+				5FF8D3462046B32300240EE4 /* CGMathFunctionTests.swift */,
 				5F29D2421F74146700D41F50 /* Info.plist */,
 			);
 			path = VideoCatTests;
@@ -478,7 +490,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5F01AFF61F7417AC0049CD3A /* IMG_5242.MOV in Resources */,
+				5FF8D3452046B2EC00240EE4 /* black_empty.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -489,6 +501,7 @@
 				5F3A1CBC1F528FD5001895DB /* LaunchScreen.storyboard in Resources */,
 				5F01B0271F7BFC140049CD3A /* Moon River.mp3 in Resources */,
 				5F3A1CB91F528FD5001895DB /* Assets.xcassets in Resources */,
+				5FF8D33F2032B0D900240EE4 /* black_empty.mp4 in Resources */,
 				5F3A1CB71F528FD5001895DB /* Main.storyboard in Resources */,
 				5FF465C41FAA0FFA006EDD61 /* Demo.storyboard in Resources */,
 			);
@@ -562,6 +575,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5F29D2411F74146700D41F50 /* VideoCatTests.swift in Sources */,
+				5FF8D3472046B32300240EE4 /* CGMathFunctionTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -573,6 +587,7 @@
 				5F9DBED1202EA6C800E8BFC4 /* VIVideoCompositionInstruction.swift in Sources */,
 				5FB240EF2014C5B600A84411 /* TimelineCenter.swift in Sources */,
 				5F01B0151F794AD40049CD3A /* VIPlayer.swift in Sources */,
+				5FF8D3412032CEFF00240EE4 /* CompositionGenerator.swift in Sources */,
 				5FB64C292031977C004A09F8 /* APLCompositionDebugView.m in Sources */,
 				5F01AFFD1F741E0E0049CD3A /* Timeline.swift in Sources */,
 				5F29D2391F740D9300D41F50 /* TrackVideoResource.swift in Sources */,
@@ -590,6 +605,7 @@
 				5F01AFFF1F7794370049CD3A /* AssetsViewController.swift in Sources */,
 				5F81A7F71F8D06B300D65DAA /* VideoTimelineView.swift in Sources */,
 				5F29D2331F73F25B00D41F50 /* TrackItem.swift in Sources */,
+				5FF8D3432046AFBF00240EE4 /* CGMathFunctions.swift in Sources */,
 				5F2A987E1FA4738F0032B5DF /* TimelineViewModel.swift in Sources */,
 				5F01B00C1F77CF420049CD3A /* MBProgressExtension.swift in Sources */,
 				5F6099C01F7E576E00EA44A0 /* EnlargeImageView.swift in Sources */,
