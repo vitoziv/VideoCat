@@ -73,7 +73,13 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
             return nil
         }
         
-        var image = generateBackgroundImage(pixelBuffer: outputPixels)
+        var image = CIImage(cvPixelBuffer: outputPixels)
+        
+        // Background
+        let backgroundColor = CIColor(color: UIColor.black)
+        let backgroundImage = CIImage(color: backgroundColor).cropped(to: image.extent)
+        image = backgroundImage.composited(over: image)
+        
         instruction.layerInstructions.forEach { (layerInstruction) in
             if let sourcePixel = request.sourceFrame(byTrackID: layerInstruction.trackID) {
                 var sourceImage = CIImage(cvPixelBuffer: sourcePixel)
@@ -86,15 +92,6 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
         VideoCompositor.ciContext.render(image, to: outputPixels)
         
         return outputPixels
-    }
-    
-    fileprivate func generateBackgroundImage(pixelBuffer: CVPixelBuffer) -> CIImage {
-        let color = CIColor(color: UIColor.black)
-        colorGeneratorFilter.setValue(color, forKey: "inputColor")
-        if let outputImage = colorGeneratorFilter.outputImage {
-            VideoCompositor.ciContext.render(outputImage, to: pixelBuffer)
-        }
-        return CIImage(cvPixelBuffer: pixelBuffer)
     }
     
 }
