@@ -11,16 +11,12 @@ import CoreImage
 
 class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
     
-    fileprivate static let ciContext: CIContext = CIContext()
+    static let ciContext: CIContext = CIContext()
     private let renderContextQueue: DispatchQueue = DispatchQueue(label: "videocore.rendercontextqueue")
     private let renderingQueue: DispatchQueue = DispatchQueue(label: "videocore.renderingqueue")
     private var renderContextDidChange = false
     private var shouldCancelAllRequests = false
     private var renderContext: AVVideoCompositionRenderContext?
-    
-    fileprivate lazy var colorGeneratorFilter: CIFilter = {
-        return CIFilter(name: "CIConstantColorGenerator")!
-    }()
     
     var sourcePixelBufferAttributes: [String : Any]? =
         [String(kCVPixelBufferPixelFormatTypeKey): kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
@@ -72,7 +68,6 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
         guard let instruction = request.videoCompositionInstruction as? VIVideoCompositionInstruction else {
             return nil
         }
-        
         var image = CIImage(cvPixelBuffer: outputPixels)
         
         // Background
@@ -80,13 +75,10 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
         let backgroundImage = CIImage(color: backgroundColor).cropped(to: image.extent)
         image = backgroundImage.composited(over: image)
         
-        instruction.layerInstructions.forEach { (layerInstruction) in
-            if let sourcePixel = request.sourceFrame(byTrackID: layerInstruction.trackID) {
-                var sourceImage = CIImage(cvPixelBuffer: sourcePixel)
-                sourceImage = layerInstruction.apply(sourceImage: sourceImage, at: request.compositionTime, renderSize: request.renderContext.size)
-                
-                image = sourceImage.composited(over: image)
-            }
+        if let destinationPixelBuffer = renderContext?.newPixelBuffer() {
+            instruction.apply(destinationPixelBuffer: destinationPixelBuffer, request: request)
+            let destinationImage = CIImage(cvPixelBuffer: destinationPixelBuffer)
+            image = destinationImage.composited(over: image)
         }
         
         VideoCompositor.ciContext.render(image, to: outputPixels)

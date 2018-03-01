@@ -97,12 +97,14 @@ class CompositionGenerator {
         
         var trackTime = kCMTimeZero
         let videoTracks = composition.tracks(withMediaType: .video)
+        // TODO: 转场效果的数据对象放哪里？
         timeline.trackItems.enumerated().forEach { (offset, trackItem) in
             let trackIndex = offset % 2
             if videoTracks.count > trackIndex {
                 let track = videoTracks[trackIndex]
                 let timeRange = CMTimeRangeMake(trackTime, trackItem.configuration.finalDuration())
                 let instruction = VIVideoCompositionInstruction(theSourceTrackIDs: [track.trackID as NSValue], forTimeRange: timeRange)
+                instruction.transition = CrossDissolveTransition()
                 let layerInstruction = VIVideoCompositionLayerInstruction(assetTrack: track)
                 layerInstruction.trackItem = trackItem
                 instruction.layerInstructions = [layerInstruction]
