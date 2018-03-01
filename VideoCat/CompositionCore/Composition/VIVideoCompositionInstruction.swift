@@ -64,11 +64,7 @@ class VIVideoCompositionLayerInstruction: AVMutableVideoCompositionLayerInstruct
             return sourceImage
         }
         
-        var flipYTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: sourceImage.extent.origin.y * 2 + sourceImage.extent.height) // 反转 Y 轴
-        var finalImage = sourceImage.transformed(by: flipYTransform)
-        finalImage = finalImage.transformed(by: track.preferredTransform)
-        flipYTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: finalImage.extent.origin.y * 2 + finalImage.extent.height) // 反转 Y 轴
-        finalImage = finalImage.transformed(by: flipYTransform)
+        var finalImage = sourceImage.flipYCoordinate().transformed(by: track.preferredTransform).flipYCoordinate()
         let sourceSize = finalImage.extent.size
         
         var transform = CGAffineTransform.identity
@@ -81,8 +77,19 @@ class VIVideoCompositionLayerInstruction: AVMutableVideoCompositionLayerInstruct
             transform = transform.concatenating(fillTransform)
         }
         finalImage = finalImage.transformed(by: transform)
+        
+        // TODO: other configuration
+        
         return finalImage
     }
     
+}
+
+private extension CIImage {
+    func flipYCoordinate() -> CIImage {
+        // Invert Y coordinate
+        let flipYTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: extent.origin.y * 2 + extent.height)
+        return transformed(by: flipYTransform)
+    }
 }
 

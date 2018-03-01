@@ -69,7 +69,6 @@ class VideoView: UIView {
 
 }
 
-// TODO: 实现播放器的状态显示
 extension VideoView: VIPlayerDelegate {
     
     func player(_ player: VIPlayer, didLoadedFailed error: Error?) {

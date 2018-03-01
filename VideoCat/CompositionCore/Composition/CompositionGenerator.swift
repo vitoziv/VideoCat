@@ -92,7 +92,7 @@ class CompositionGenerator {
     func buildVideoComposition(with composition: AVComposition) -> AVMutableVideoComposition? {
         let videoComposition = AVMutableVideoComposition()
         videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
-        videoComposition.renderSize = timeline.renderSize // TODO: 可配置，实时预览时可以用小的 size，导出时用大的 size
+        videoComposition.renderSize = timeline.renderSize
         var instructions: [AVVideoCompositionInstructionProtocol] = []
         
         var trackTime = kCMTimeZero
