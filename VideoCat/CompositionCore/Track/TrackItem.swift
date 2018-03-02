@@ -13,6 +13,7 @@ class TrackItem {
     var identifier: String
     var resource: TrackResource
     var configuration: TrackConfiguration
+    var transition: VideoTransition = NoneTransition()
     
     init(resource: TrackResource) {
         identifier = ProcessInfo.processInfo.globallyUniqueString

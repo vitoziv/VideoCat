@@ -41,18 +41,40 @@ class CompositionGenerator {
         return imageGenerator
     }
     
+    private var transitionTimeRanges: [CMTimeRange] = []
+    
     func buildComposition() -> AVMutableComposition {
         let composition = AVMutableComposition(urlAssetInitializationOptions: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
         
         var trackTime = kCMTimeZero
-        timeline.trackItems.enumerated().forEach { (offset, trackItem) in
+        var previousTransitionDuration = kCMTimeZero
+        for index in 0..<timeline.trackItems.count {
+            let trackItem = timeline.trackItems[index]
+            
+            // Precedence: the previous transition has priority. If clip doesn't have enough time to have begin transition and end transition, then begin transition will be considered first.
+            var transitionDuration = trackItem.transition.duration
+            let trackDuration = trackItem.configuration.finalDuration() - previousTransitionDuration
+            if trackDuration < transitionDuration {
+                transitionDuration = kCMTimeZero
+            } else {
+                if index < timeline.trackItems.count - 1 {
+                    let nextTrackItem = timeline.trackItems[index + 1]
+                    if nextTrackItem.configuration.finalDuration() < transitionDuration {
+                        transitionDuration = kCMTimeZero
+                    }
+                } else {
+                    transitionDuration = kCMTimeZero
+                }
+            }
+            
+            let insertTime = trackTime - previousTransitionDuration
             if let asset = trackItem.resource.trackAsset {
                 asset.tracks.filter({  $0.mediaType == .video || $0.mediaType == .audio }).forEach({ (track) in
                     let trackID: Int32 = {
                         if track.mediaType == .video {
-                            return (offset % 2 == 0) ? CompositionGenerator.VideoTrackID_1 : CompositionGenerator.VideoTrackID_2
+                            return (index % 2 == 0) ? CompositionGenerator.VideoTrackID_1 : CompositionGenerator.VideoTrackID_2
                         }
-                        return (offset % 2 == 0) ? CompositionGenerator.AudioTrackID_1 : CompositionGenerator.AudioTrackID_2
+                        return (index % 2 == 0) ? CompositionGenerator.AudioTrackID_1 : CompositionGenerator.AudioTrackID_2
                     }()
                     let compositionTrack: AVMutableCompositionTrack? = {
                         if let track = composition.track(withTrackID: trackID) {
@@ -63,7 +85,7 @@ class CompositionGenerator {
                     if let compositionTrack = compositionTrack {
                         compositionTrack.preferredTransform = track.preferredTransform
                         do {
-                            try compositionTrack.insertTimeRange(trackItem.configuration.timeRange, of: track, at: trackTime)
+                            try compositionTrack.insertTimeRange(trackItem.configuration.timeRange, of: track, at: insertTime)
                         } catch {
                             print(error.localizedDescription)
                         }
@@ -71,8 +93,10 @@ class CompositionGenerator {
                 })
             }
             
-            trackTime = trackTime + trackItem.configuration.finalDuration()
+            previousTransitionDuration = transitionDuration
+            trackTime = trackTime + trackDuration
         }
+        
         
         // Add background frame
         //        if let blackEmptyAssetURL = Bundle.main.url(forResource: "black_empty", withExtension: "mp4") {
@@ -97,22 +121,62 @@ class CompositionGenerator {
         
         var trackTime = kCMTimeZero
         let videoTracks = composition.tracks(withMediaType: .video)
-        // TODO: 转场效果的数据对象放哪里？
-        timeline.trackItems.enumerated().forEach { (offset, trackItem) in
-            let trackIndex = offset % 2
-            if videoTracks.count > trackIndex {
-                let track = videoTracks[trackIndex]
-                let timeRange = CMTimeRangeMake(trackTime, trackItem.configuration.finalDuration())
-                let instruction = VIVideoCompositionInstruction(theSourceTrackIDs: [track.trackID as NSValue], forTimeRange: timeRange)
-                instruction.transition = CrossDissolveTransition()
+        // TODO: 实现转场插入
+        
+        
+        var previousTransitionDuration = kCMTimeZero
+        for index in 0..<timeline.trackItems.count {
+            let trackItem = timeline.trackItems[index]
+            // Precedence: the previous transition has priority. If clip doesn't have enough time to have begin transition and end transition, then begin transition will be considered first.
+            var transitionDuration = trackItem.transition.duration
+            let trackDuration = trackItem.configuration.finalDuration() - previousTransitionDuration
+            
+            if trackDuration < transitionDuration {
+                transitionDuration = kCMTimeZero
+            } else {
+                if index < timeline.trackItems.count - 1 {
+                    let nextTrackItem = timeline.trackItems[index + 1]
+                    if nextTrackItem.configuration.finalDuration() < transitionDuration {
+                        transitionDuration = kCMTimeZero
+                    }
+                } else {
+                    transitionDuration = kCMTimeZero
+                }
+            }
+            
+            let trackIndex = index % 2
+            let track = videoTracks[trackIndex]
+            let trackCenterDuration = trackDuration - transitionDuration
+            let timeRange = CMTimeRangeMake(trackTime, trackCenterDuration)
+            let instruction = VIVideoCompositionInstruction(theSourceTrackIDs: [track.trackID as NSValue], forTimeRange: timeRange)
+            instruction.transition = CrossDissolveTransition()
+            let layerInstruction = VIVideoCompositionLayerInstruction(assetTrack: track)
+            layerInstruction.trackItem = trackItem
+            instruction.layerInstructions = [layerInstruction]
+            instructions.append(instruction)
+            
+            if transitionDuration.seconds > 0 && index < timeline.trackItems.count - 1 {
+                let nextTrackIndex = (index + 1) % 2
+                let nextTrack = videoTracks[nextTrackIndex]
+                let startTime = trackTime + trackCenterDuration
+                let timeRange = CMTimeRangeMake(startTime, transitionDuration)
+                let instruction = VIVideoCompositionInstruction(theSourceTrackIDs: [track.trackID as NSValue, nextTrack.trackID as NSValue], forTimeRange: timeRange)
+                instruction.foregroundTrackID = nextTrack.trackID
+                instruction.backgroundTrackID = track.trackID
+                instruction.transition = trackItem.transition
                 let layerInstruction = VIVideoCompositionLayerInstruction(assetTrack: track)
                 layerInstruction.trackItem = trackItem
-                instruction.layerInstructions = [layerInstruction]
+                let nextLayerInstruction = VIVideoCompositionLayerInstruction(assetTrack: nextTrack)
+                let nextTrackItem = timeline.trackItems[index + 1]
+                nextLayerInstruction.trackItem = nextTrackItem
+                instruction.layerInstructions = [layerInstruction, nextLayerInstruction]
                 instructions.append(instruction)
-                
-                trackTime = trackTime + trackItem.configuration.finalDuration()
             }
+            
+            previousTransitionDuration = transitionDuration
+            trackTime = trackTime + trackDuration
         }
+        
         videoComposition.customVideoCompositorClass = VideoCompositor.self
         
         videoComposition.instructions = instructions

@@ -94,6 +94,9 @@ extension PanelViewController: AssetsViewControllerDelegate {
                 strongSelf.timeLineView.append(asset: resource.trackAsset!, at: index)
                 
                 let trackItem = TrackItem(resource: resource)
+                let transition = CrossDissolveTransition()
+                transition.duration = CMTime(value: 1, timescale: 2)
+                trackItem.transition = transition
                 trackItem.configuration.timeRange = CMTimeRangeMake(kCMTimeZero, resource.trackAsset!.duration)
                 strongSelf.viewModel.insertTrackItem(trackItem, at: index)
                 strongSelf.videoView.player.replaceCurrentItem(strongSelf.viewModel.playerItem)

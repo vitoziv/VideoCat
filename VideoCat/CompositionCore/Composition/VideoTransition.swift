@@ -9,6 +9,7 @@
 import Foundation
 
 protocol VideoTransition: class {
+    var duration: CMTime { get }
     func renderPixelBuffer(destinationPixelBuffer: CVPixelBuffer,
                            foregroundPixelBuffer: CVPixelBuffer,
                            backgroundPixelBuffer: CVPixelBuffer,
@@ -16,6 +17,13 @@ protocol VideoTransition: class {
 }
 
 class NoneTransition: VideoTransition {
+    
+    var duration: CMTime
+    
+    init() {
+        duration = kCMTimeZero
+    }
+    
     func renderPixelBuffer(destinationPixelBuffer: CVPixelBuffer, foregroundPixelBuffer: CVPixelBuffer, backgroundPixelBuffer: CVPixelBuffer, forTweenFactor tween: Float64) {
         let foregroundImage = CIImage(cvPixelBuffer: foregroundPixelBuffer)
         let backgroundImage = CIImage(cvPixelBuffer: backgroundPixelBuffer)
@@ -24,8 +32,8 @@ class NoneTransition: VideoTransition {
     }
 }
 
-class CrossDissolveTransition: VideoTransition {
-    func renderPixelBuffer(destinationPixelBuffer: CVPixelBuffer, foregroundPixelBuffer: CVPixelBuffer, backgroundPixelBuffer: CVPixelBuffer, forTweenFactor tween: Float64) {
+class CrossDissolveTransition: NoneTransition {
+    override func renderPixelBuffer(destinationPixelBuffer: CVPixelBuffer, foregroundPixelBuffer: CVPixelBuffer, backgroundPixelBuffer: CVPixelBuffer, forTweenFactor tween: Float64) {
         let foregroundImage = CIImage(cvPixelBuffer: foregroundPixelBuffer)
         let backgroundImage = CIImage(cvPixelBuffer: backgroundPixelBuffer)
         if let crossDissolveFilter = CIFilter(name: "CIDissolveTransition") {
