@@ -79,6 +79,7 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
             instruction.apply(destinationPixelBuffer: destinationPixelBuffer, request: request)
             let destinationImage = CIImage(cvPixelBuffer: destinationPixelBuffer)
             image = destinationImage.composited(over: image)
+            
         }
         
         VideoCompositor.ciContext.render(image, to: outputPixels)

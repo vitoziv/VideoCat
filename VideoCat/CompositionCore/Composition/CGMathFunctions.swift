@@ -11,15 +11,15 @@ import Foundation
 extension CGRect {
     func aspectFit(in rect: CGRect) -> CGRect {
         let size = self.size.aspectFit(in: rect.size)
-        let x = (rect.size.width - size.width) / 2
-        let y = (rect.size.height - size.height) / 2
+        let x = rect.origin.x + (rect.size.width - size.width) / 2
+        let y = rect.origin.y + (rect.size.height - size.height) / 2
         return CGRect(x: x, y: y, width: size.width, height: size.height)
     }
     
     func aspectFill(in rect: CGRect) -> CGRect {
         let size = self.size.aspectFill(in: rect.size)
-        let x = (rect.size.width - size.width) / 2
-        let y = (rect.size.height - size.height) / 2
+        let x = rect.origin.x + (rect.size.width - size.width) / 2
+        let y = rect.origin.y + (rect.size.height - size.height) / 2
         return CGRect(x: x, y: y, width: size.width, height: size.height)
     }
 }
@@ -51,22 +51,30 @@ extension CGSize {
 }
 
 extension CGAffineTransform {
+    static func transform(by sourceRect: CGRect, aspectFitInRect fitTargetRect: CGRect) -> CGAffineTransform {
+        let fitRect = sourceRect.aspectFit(in: fitTargetRect)
+        let xRatio = fitRect.size.width / sourceRect.size.width
+        let yRatio = fitRect.size.height / sourceRect.size.height
+        return CGAffineTransform(translationX: fitRect.origin.x - sourceRect.origin.x * xRatio, y: fitRect.origin.y - sourceRect.origin.y * yRatio).scaledBy(x: xRatio, y: yRatio)
+    }
+    
     static func transform(by size: CGSize, aspectFitInSize fitSize: CGSize) -> CGAffineTransform {
         let sourceRect = CGRect(origin: .zero, size: size)
         let fitTargetRect = CGRect(origin: .zero, size: fitSize)
-        let fitRect = sourceRect.aspectFit(in: fitTargetRect)
-        let xRatio = fitRect.size.width / size.width
-        let yRatio = fitRect.size.height / size.height
-        return CGAffineTransform(translationX: fitRect.origin.x, y: fitRect.origin.y).scaledBy(x: xRatio, y: yRatio) 
+        return transform(by: sourceRect, aspectFitInRect: fitTargetRect)
+    }
+    
+    static func transform(by sourceRect: CGRect, aspectFillRect fillTargetRect: CGRect) -> CGAffineTransform {
+        let fillRect = sourceRect.aspectFill(in: fillTargetRect)
+        let xRatio = fillRect.size.width / sourceRect.size.width
+        let yRatio = fillRect.size.height / sourceRect.size.height
+        return CGAffineTransform(translationX: fillRect.origin.x - sourceRect.origin.x * xRatio, y: fillRect.origin.y - sourceRect.origin.y * yRatio).scaledBy(x: xRatio, y: yRatio)
     }
     
     static func transform(by size: CGSize, aspectFillSize fillSize: CGSize) -> CGAffineTransform {
         let sourceRect = CGRect(origin: .zero, size: size)
         let fillTargetRect = CGRect(origin: .zero, size: fillSize)
-        let fillRect = sourceRect.aspectFill(in: fillTargetRect)
-        let xRatio = fillRect.size.width / size.width
-        let yRatio = fillRect.size.height / size.height
-        return CGAffineTransform(translationX: fillRect.origin.x, y: fillRect.origin.y).scaledBy(x: xRatio, y: yRatio)
+        return transform(by: sourceRect, aspectFillRect: fillTargetRect)
     }
 }
 
