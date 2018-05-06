@@ -52,73 +52,55 @@ class VIVideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProt
         enablePostProcessing = false
     }
     
-    func apply(destinationPixelBuffer: CVPixelBuffer, request: AVAsynchronousVideoCompositionRequest) {
+    func apply(request: AVAsynchronousVideoCompositionRequest) -> CIImage? {
         if layerInstructions.count == 2 {
             let layerInstruction1 = layerInstructions[0]
             let layerInstruction2 = layerInstructions[1]
-            
-            autoreleasepool {
-                if let sourcePixel1 = request.sourceFrame(byTrackID: layerInstruction1.trackID),
-                    let sourcePixel2 = request.sourceFrame(byTrackID: layerInstruction2.trackID),
-                    let sourceDestinationPixelBuffer1 = request.renderContext.newPixelBuffer(),
-                    let sourceDestinationPixelBuffer2 = request.renderContext.newPixelBuffer() {
-                    
-                    layerInstruction1.apply(destinationPixelBuffer: sourceDestinationPixelBuffer1,
-                                            sourcePixelBuffer: sourcePixel1,
-                                            at: request.compositionTime,
-                                            renderSize: request.renderContext.size)
-                    
-                    layerInstruction2.apply(destinationPixelBuffer: sourceDestinationPixelBuffer2,
-                                            sourcePixelBuffer: sourcePixel2,
-                                            at: request.compositionTime,
-                                            renderSize: request.renderContext.size)
-                    
-                    let foregroundDestinationPixelBuffer: CVPixelBuffer = {
-                        if foregroundTrackID == layerInstruction1.trackID {
-                            return sourceDestinationPixelBuffer1
-                        } else {
-                            return sourceDestinationPixelBuffer2
-                        }
-                    }()
-                    let backgroundDestinationPixelBuffer: CVPixelBuffer = {
-                        if foregroundTrackID == layerInstruction1.trackID {
-                            return sourceDestinationPixelBuffer2
-                        } else {
-                            return sourceDestinationPixelBuffer1
-                        }
-                    }()
-                    // TODO: 合成两个画面到 destinationPixelBuffer
-                    let tweenFactor = factorForTimeInRange(request.compositionTime, range: timeRange)
-                    transition?.renderPixelBuffer(destinationPixelBuffer: destinationPixelBuffer,
-                                                  foregroundPixelBuffer: foregroundDestinationPixelBuffer,
-                                                  backgroundPixelBuffer: backgroundDestinationPixelBuffer,
-                                                  forTweenFactor: tweenFactor)
-                    
-                    
-                }
+            if let sourcePixel1 = request.sourceFrame(byTrackID: layerInstruction1.trackID),
+                let sourcePixel2 = request.sourceFrame(byTrackID: layerInstruction2.trackID) {
+                
+                let image1 = generateImage(from: sourcePixel1)
+                let sourceImage1 = layerInstruction1.apply(sourceImage: image1, at: request.compositionTime, renderSize: request.renderContext.size)
+                let image2 = generateImage(from: sourcePixel2)
+                let sourceImage2 = layerInstruction2.apply(sourceImage: image2, at: request.compositionTime, renderSize: request.renderContext.size)
+                
+                let foregroundImage: CIImage = {
+                    if foregroundTrackID == layerInstruction1.trackID {
+                        return sourceImage1
+                    } else {
+                        return sourceImage2
+                    }
+                }()
+                let backgroundImage: CIImage = {
+                    if foregroundTrackID == layerInstruction1.trackID {
+                        return sourceImage2
+                    } else {
+                        return sourceImage1
+                    }
+                }()
+                
+                let tweenFactor = factorForTimeInRange(request.compositionTime, range: timeRange)
+                let transitionImage = transition?.renderImage(foregroundImage: foregroundImage, backgroundImage: backgroundImage, forTweenFactor: tweenFactor)
+                assert(transition != nil)
+                return transitionImage
             }
         } else {
             var image: CIImage?
             layerInstructions.forEach { (layerInstruction) in
-                autoreleasepool {
-                    if let sourcePixel = request.sourceFrame(byTrackID: layerInstruction.trackID) {
-                        layerInstruction.apply(destinationPixelBuffer: destinationPixelBuffer,
-                                               sourcePixelBuffer: sourcePixel,
-                                               at: request.compositionTime,
-                                               renderSize: request.renderContext.size)
-                        if let previousImage = image {
-                            let sourceImage = CIImage(cvPixelBuffer: destinationPixelBuffer)
-                            image = sourceImage.composited(over: previousImage)
-                        } else {
-                            image = CIImage(cvPixelBuffer: destinationPixelBuffer)
-                        }
+                if let sourcePixel = request.sourceFrame(byTrackID: layerInstruction.trackID) {
+                    let sourceImage = layerInstruction.apply(sourceImage: CIImage(cvPixelBuffer: sourcePixel), at: request.compositionTime, renderSize: request.renderContext.size)
+                    if let previousImage = image {
+                        image = sourceImage.composited(over: previousImage)
+                    } else {
+                        image = sourceImage
                     }
                 }
             }
-            if layerInstructions.count > 1, let image = image {
-                VideoCompositor.ciContext.render(image, to: destinationPixelBuffer)
-            }
+            
+            return image
         }
+        
+        return nil
     }
     
     /* 0.0 -> 1.0 */
@@ -126,22 +108,35 @@ class VIVideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProt
         let elapsed = CMTimeSubtract(time, range.start)
         return CMTimeGetSeconds(elapsed) / CMTimeGetSeconds(range.duration)
     }
+    
+    private func generateImage(from pixelBuffer: CVPixelBuffer) -> CIImage {
+        var image = CIImage(cvPixelBuffer: pixelBuffer)
+        let attr = CVBufferGetAttachments(pixelBuffer, .shouldPropagate) as? [ String : Any ]
+        if let attr = attr, !attr.isEmpty {
+            if let aspectRatioDict = attr[kCVImageBufferPixelAspectRatioKey as String] as? [ String : Any ], !aspectRatioDict.isEmpty {
+                let width = aspectRatioDict[kCVImageBufferPixelAspectRatioHorizontalSpacingKey as String] as? CGFloat
+                let height = aspectRatioDict[kCVImageBufferPixelAspectRatioVerticalSpacingKey as String] as? CGFloat
+                if let width = width, let height = height,  width != 0 && height != 0 {
+                    image = image.transformed(by: CGAffineTransform.identity.scaledBy(x: width / height, y: 1))
+                }
+            }
+        }
+        return image
+    }
 }
 
 class VIVideoCompositionLayerInstruction: AVMutableVideoCompositionLayerInstruction {
     
     var trackItem: TrackItem?
     
-    func apply(destinationPixelBuffer: CVPixelBuffer, sourcePixelBuffer: CVPixelBuffer, at time: CMTime, renderSize: CGSize) {
-        var finalImage = CIImage(cvPixelBuffer: sourcePixelBuffer)
+    func apply(sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage {
+        var finalImage = sourceImage
         guard let trackItem = trackItem else {
-            VideoCompositor.ciContext.render(finalImage, to: destinationPixelBuffer)
-            return
+            return finalImage
         }
         
         guard let track = trackItem.resource.trackAsset?.tracks(withMediaType: .video).first else {
-            VideoCompositor.ciContext.render(finalImage, to: destinationPixelBuffer)
-            return
+            return finalImage
         }
         
         finalImage = finalImage.flipYCoordinate().transformed(by: track.preferredTransform).flipYCoordinate()
@@ -162,7 +157,7 @@ class VIVideoCompositionLayerInstruction: AVMutableVideoCompositionLayerInstruct
         let backgroundColor = CIColor(color: UIColor.black)
         let backgroundImage = CIImage(color: backgroundColor).cropped(to: CGRect(origin: .zero, size: renderSize))
         finalImage = finalImage.composited(over: backgroundImage)
-        VideoCompositor.ciContext.render(finalImage, to: destinationPixelBuffer)
+        return finalImage
     }
     
 }

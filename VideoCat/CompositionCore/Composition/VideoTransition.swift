@@ -8,41 +8,41 @@
 
 import Foundation
 
-protocol VideoTransition: class {
+public protocol VideoTransition: class {
+    var identifier: String { get }
     var duration: CMTime { get }
-    func renderPixelBuffer(destinationPixelBuffer: CVPixelBuffer,
-                           foregroundPixelBuffer: CVPixelBuffer,
-                           backgroundPixelBuffer: CVPixelBuffer,
-                           forTweenFactor tween: Float64)
+    func renderImage(foregroundImage: CIImage,
+                     backgroundImage: CIImage,
+                     forTweenFactor tween: Float64) -> CIImage
 }
 
-class NoneTransition: VideoTransition {
-    
-    var duration: CMTime
-    
-    init() {
-        duration = kCMTimeZero
+open class NoneTransition: VideoTransition {
+    public var identifier: String {
+        return String(describing: self)
     }
     
-    func renderPixelBuffer(destinationPixelBuffer: CVPixelBuffer, foregroundPixelBuffer: CVPixelBuffer, backgroundPixelBuffer: CVPixelBuffer, forTweenFactor tween: Float64) {
-        let foregroundImage = CIImage(cvPixelBuffer: foregroundPixelBuffer)
-        let backgroundImage = CIImage(cvPixelBuffer: backgroundPixelBuffer)
-        let resultImage = foregroundImage.composited(over: backgroundImage)
-        VideoCompositor.ciContext.render(resultImage, to: destinationPixelBuffer)
+    open var duration: CMTime
+    
+    public init(duration: CMTime = kCMTimeZero) {
+        self.duration = duration
+    }
+    
+    open func renderImage(foregroundImage: CIImage, backgroundImage: CIImage, forTweenFactor tween: Float64) -> CIImage {
+        return foregroundImage.composited(over: backgroundImage)
     }
 }
 
-class CrossDissolveTransition: NoneTransition {
-    override func renderPixelBuffer(destinationPixelBuffer: CVPixelBuffer, foregroundPixelBuffer: CVPixelBuffer, backgroundPixelBuffer: CVPixelBuffer, forTweenFactor tween: Float64) {
-        let foregroundImage = CIImage(cvPixelBuffer: foregroundPixelBuffer)
-        let backgroundImage = CIImage(cvPixelBuffer: backgroundPixelBuffer)
+public class CrossDissolveTransition: NoneTransition {
+    
+    override public func renderImage(foregroundImage: CIImage, backgroundImage: CIImage, forTweenFactor tween: Float64) -> CIImage {
         if let crossDissolveFilter = CIFilter(name: "CIDissolveTransition") {
             crossDissolveFilter.setValue(backgroundImage, forKey: "inputImage")
             crossDissolveFilter.setValue(foregroundImage, forKey: "inputTargetImage")
             crossDissolveFilter.setValue(tween, forKey: "inputTime")
-            if let resultImage = crossDissolveFilter.outputImage {
-                VideoCompositor.ciContext.render(resultImage, to: destinationPixelBuffer)
+            if let outputImage = crossDissolveFilter.outputImage {
+                return outputImage
             }
         }
+        return super.renderImage(foregroundImage: foregroundImage, backgroundImage: backgroundImage, forTweenFactor: tween)
     }
 }
