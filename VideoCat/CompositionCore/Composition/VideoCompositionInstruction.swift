@@ -8,27 +8,16 @@
 
 import AVFoundation
 
-class VIVideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtocol {
-    
-    /// ID used by subclasses to identify the foreground frame.
-    var foregroundTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
-    /// ID used by subclasses to identify the background frame.
-    var backgroundTrackID: CMPersistentTrackID = kCMPersistentTrackID_Invalid
-    
-    /// Video transition
-    var transition: VideoTransition?
+class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtocol {
     
     var timeRange: CMTimeRange = CMTimeRange()
-    
     var enablePostProcessing: Bool = false
-    
     var containsTweening: Bool = false
-    
     var requiredSourceTrackIDs: [NSValue]?
-    
     var passthroughTrackID: CMPersistentTrackID = 0
     
-    var layerInstructions: [VIVideoCompositionLayerInstruction] = []
+    var layerInstructions: [VideoCompositionLayerInstruction] = []
+    var mainTrackIDs: [Int32] = []
     
     init(thePassthroughTrackID: CMPersistentTrackID, forTimeRange theTimeRange: CMTimeRange) {
         super.init()
@@ -53,42 +42,52 @@ class VIVideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProt
     }
     
     func apply(request: AVAsynchronousVideoCompositionRequest) -> CIImage? {
-        if layerInstructions.count == 2 {
-            let layerInstruction1 = layerInstructions[0]
-            let layerInstruction2 = layerInstructions[1]
+        let time = request.compositionTime
+        let renderSize = request.renderContext.size
+        
+        var otherLayerInstructions: [VideoCompositionLayerInstruction] = []
+        var mainLayerInstructions: [VideoCompositionLayerInstruction] = []
+        
+        let currentLayerInstructions = layerInstructions.filter({ $0.timeRange.containsTime(time) })
+        for layerInstruction in currentLayerInstructions {
+            if mainTrackIDs.contains(layerInstruction.trackID) {
+                mainLayerInstructions.append(layerInstruction)
+            } else {
+                otherLayerInstructions.append(layerInstruction)
+            }
+        }
+        
+        var image: CIImage?
+        // TODO: 需要验证，是否没有 layerInstruction 的 track 也可以读取到
+        if mainLayerInstructions.count == 2 {
+            let layerInstruction1: VideoCompositionLayerInstruction
+            let layerInstruction2: VideoCompositionLayerInstruction
+            if mainLayerInstructions[0].timeRange.end < mainLayerInstructions[1].timeRange.end {
+                layerInstruction1 = mainLayerInstructions[0]
+                layerInstruction2 = mainLayerInstructions[1]
+            } else {
+                layerInstruction1 = mainLayerInstructions[1]
+                layerInstruction2 = mainLayerInstructions[0]
+            }
+            
             if let sourcePixel1 = request.sourceFrame(byTrackID: layerInstruction1.trackID),
                 let sourcePixel2 = request.sourceFrame(byTrackID: layerInstruction2.trackID) {
                 
                 let image1 = generateImage(from: sourcePixel1)
-                let sourceImage1 = layerInstruction1.apply(sourceImage: image1, at: request.compositionTime, renderSize: request.renderContext.size)
+                let sourceImage1 = layerInstruction1.apply(sourceImage: image1, at: time, renderSize: renderSize)
                 let image2 = generateImage(from: sourcePixel2)
-                let sourceImage2 = layerInstruction2.apply(sourceImage: image2, at: request.compositionTime, renderSize: request.renderContext.size)
+                let sourceImage2 = layerInstruction2.apply(sourceImage: image2, at: time, renderSize: renderSize)
                 
-                let foregroundImage: CIImage = {
-                    if foregroundTrackID == layerInstruction1.trackID {
-                        return sourceImage1
-                    } else {
-                        return sourceImage2
-                    }
-                }()
-                let backgroundImage: CIImage = {
-                    if foregroundTrackID == layerInstruction1.trackID {
-                        return sourceImage2
-                    } else {
-                        return sourceImage1
-                    }
-                }()
-                
-                let tweenFactor = factorForTimeInRange(request.compositionTime, range: timeRange)
-                let transitionImage = transition?.renderImage(foregroundImage: foregroundImage, backgroundImage: backgroundImage, forTweenFactor: tweenFactor)
-                assert(transition != nil)
-                return transitionImage
+                let transitionTimeRange = layerInstruction1.timeRange.intersection(layerInstruction2.timeRange)
+                let tweenFactor = factorForTimeInRange(time, range: transitionTimeRange)
+                let transitionImage = layerInstruction1.trackItem.transition?.renderImage(foregroundImage: sourceImage1, backgroundImage: sourceImage2, forTweenFactor: tweenFactor)
+                assert(layerInstruction1.trackItem.transition != nil)
+                image = transitionImage
             }
         } else {
-            var image: CIImage?
-            layerInstructions.forEach { (layerInstruction) in
+            mainLayerInstructions.forEach { (layerInstruction) in
                 if let sourcePixel = request.sourceFrame(byTrackID: layerInstruction.trackID) {
-                    let sourceImage = layerInstruction.apply(sourceImage: CIImage(cvPixelBuffer: sourcePixel), at: request.compositionTime, renderSize: request.renderContext.size)
+                    let sourceImage = layerInstruction.apply(sourceImage: CIImage(cvPixelBuffer: sourcePixel), at: time, renderSize: renderSize)
                     if let previousImage = image {
                         image = sourceImage.composited(over: previousImage)
                     } else {
@@ -96,11 +95,20 @@ class VIVideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProt
                     }
                 }
             }
-            
-            return image
         }
         
-        return nil
+        otherLayerInstructions.forEach { (layerInstruction) in
+            if let sourcePixel = request.sourceFrame(byTrackID: layerInstruction.trackID) {
+                let sourceImage = layerInstruction.apply(sourceImage: CIImage(cvPixelBuffer: sourcePixel), at: time, renderSize: renderSize)
+                if let previousImage = image {
+                    image = sourceImage.composited(over: previousImage)
+                } else {
+                    image = sourceImage
+                }
+            }
+        }
+        
+        return image
     }
     
     /* 0.0 -> 1.0 */
@@ -125,15 +133,19 @@ class VIVideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProt
     }
 }
 
-class VIVideoCompositionLayerInstruction: AVMutableVideoCompositionLayerInstruction {
+class VideoCompositionLayerInstruction {
     
-    var trackItem: TrackItem?
+    var trackID: Int32
+    var trackItem: TrackItem
+    var timeRange: CMTimeRange = kCMTimeRangeZero
+    
+    init(trackID: Int32, trackItem: TrackItem) {
+        self.trackID = trackID
+        self.trackItem = trackItem
+    }
     
     func apply(sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage {
         var finalImage = sourceImage
-        guard let trackItem = trackItem else {
-            return finalImage
-        }
         
         guard let track = trackItem.resource.trackAsset?.tracks(withMediaType: .video).first else {
             return finalImage

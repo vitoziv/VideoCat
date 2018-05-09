@@ -65,7 +65,7 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
     
     func newRenderedPixelBufferForRequest(request: AVAsynchronousVideoCompositionRequest) -> CVPixelBuffer? {
         guard let outputPixels = renderContext?.newPixelBuffer() else { return nil }
-        guard let instruction = request.videoCompositionInstruction as? VIVideoCompositionInstruction else {
+        guard let instruction = request.videoCompositionInstruction as? VideoCompositionInstruction else {
             return nil
         }
         var image = CIImage(cvPixelBuffer: outputPixels)

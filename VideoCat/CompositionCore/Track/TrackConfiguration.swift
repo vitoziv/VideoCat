@@ -21,10 +21,11 @@ struct TrackConfiguration {
     var baseContentMode: BaseContentMode = .aspectFit
     
     
+    var timelineStartTime: CMTime = kCMTimeZero
     /// Track's final duration, it will be calculated using track's time, speed and so on
     ///
     /// - Returns: time
-    func finalDuration() -> CMTime {
+    func timelineDuration() -> CMTime {
         return timeRange.duration
     }
 }

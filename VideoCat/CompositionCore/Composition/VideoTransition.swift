@@ -14,6 +14,7 @@ public protocol VideoTransition: class {
     func renderImage(foregroundImage: CIImage,
                      backgroundImage: CIImage,
                      forTweenFactor tween: Float64) -> CIImage
+    // TODO: Audio transition support
 }
 
 open class NoneTransition: VideoTransition {
@@ -36,8 +37,8 @@ public class CrossDissolveTransition: NoneTransition {
     
     override public func renderImage(foregroundImage: CIImage, backgroundImage: CIImage, forTweenFactor tween: Float64) -> CIImage {
         if let crossDissolveFilter = CIFilter(name: "CIDissolveTransition") {
-            crossDissolveFilter.setValue(backgroundImage, forKey: "inputImage")
-            crossDissolveFilter.setValue(foregroundImage, forKey: "inputTargetImage")
+            crossDissolveFilter.setValue(foregroundImage, forKey: "inputImage")
+            crossDissolveFilter.setValue(backgroundImage, forKey: "inputTargetImage")
             crossDissolveFilter.setValue(tween, forKey: "inputTime")
             if let outputImage = crossDissolveFilter.outputImage {
                 return outputImage

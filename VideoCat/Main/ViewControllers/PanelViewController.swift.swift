@@ -95,7 +95,7 @@ extension PanelViewController: AssetsViewControllerDelegate {
                 
                 let trackItem = TrackItem(resource: resource)
                 let transition = CrossDissolveTransition()
-                transition.duration = CMTime(value: 1, timescale: 2)
+                transition.duration = CMTime(value: 3, timescale: 2)
                 trackItem.transition = transition
                 trackItem.configuration.timeRange = CMTimeRangeMake(kCMTimeZero, resource.trackAsset!.duration)
                 strongSelf.viewModel.insertTrackItem(trackItem, at: index)
