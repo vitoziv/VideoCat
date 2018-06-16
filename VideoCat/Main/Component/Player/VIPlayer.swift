@@ -101,6 +101,10 @@ class VIPlayer: NSObject {
         player.play()
     }
     
+    func seek(to time: CMTime, completion: @escaping (Bool) -> Void) {
+        player.seek(to: time, completionHandler: completion)
+    }
+    
     func seek(to percent: Double, completion: @escaping (Bool) -> Void) {
         guard let duration = player.currentItem?.duration else {
             completion(false)
