@@ -32,6 +32,7 @@
 		5F3A1CB71F528FD5001895DB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F3A1CB51F528FD5001895DB /* Main.storyboard */; };
 		5F3A1CB91F528FD5001895DB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5F3A1CB81F528FD5001895DB /* Assets.xcassets */; };
 		5F3A1CBC1F528FD5001895DB /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F3A1CBA1F528FD5001895DB /* LaunchScreen.storyboard */; };
+		5F49915020A30C64005C61C3 /* AudioProcessingTapHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F49914F20A30C64005C61C3 /* AudioProcessingTapHolder.swift */; };
 		5F5037A220482BBB00C5270B /* VideoTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5037A120482BBB00C5270B /* VideoTransition.swift */; };
 		5F6099B51F7DFD9800EA44A0 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0331F7D31580049CD3A /* WaveformView.swift */; };
 		5F6099B61F7DFDA000EA44A0 /* TimeRangePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0321F7D31580049CD3A /* TimeRangePickerView.swift */; };
@@ -101,6 +102,7 @@
 		5F3A1CB81F528FD5001895DB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5F3A1CBB1F528FD5001895DB /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5F3A1CBD1F528FD5001895DB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5F49914F20A30C64005C61C3 /* AudioProcessingTapHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProcessingTapHolder.swift; sourceTree = "<group>"; };
 		5F5037A120482BBB00C5270B /* VideoTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTransition.swift; sourceTree = "<group>"; };
 		5F6099BB1F7DFDED00EA44A0 /* VideoCat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoCat-Bridging-Header.h"; sourceTree = "<group>"; };
 		5F6099BF1F7E576E00EA44A0 /* EnlargeImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EnlargeImageView.swift; path = ../../../../Videocat/VideoCat/Main/Util/EnlargeImageView.swift; sourceTree = "<group>"; };
@@ -181,6 +183,7 @@
 				5FB64C282031977B004A09F8 /* APLCompositionDebugView.m */,
 				5FF8D33E2032B0D900240EE4 /* black_empty.mp4 */,
 				5FF8D3422046AFBF00240EE4 /* CGMathFunctions.swift */,
+				5F49914F20A30C64005C61C3 /* AudioProcessingTapHolder.swift */,
 			);
 			path = Composition;
 			sourceTree = "<group>";
@@ -594,6 +597,7 @@
 				5FF8D3412032CEFF00240EE4 /* CompositionGenerator.swift in Sources */,
 				5FB64C292031977C004A09F8 /* APLCompositionDebugView.m in Sources */,
 				5F01AFFD1F741E0E0049CD3A /* Timeline.swift in Sources */,
+				5F49915020A30C64005C61C3 /* AudioProcessingTapHolder.swift in Sources */,
 				5F29D2391F740D9300D41F50 /* TrackVideoResource.swift in Sources */,
 				5FE088441FB9D75900EA7963 /* TimeLineView.swift in Sources */,
 				5F977C351F8B4CF90029156E /* AudioSampleOperation.swift in Sources */,

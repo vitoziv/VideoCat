@@ -58,7 +58,7 @@ class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtoc
         }
         
         var image: CIImage?
-        // TODO: 需要验证，是否没有 layerInstruction 的 track 也可以读取到
+        
         if mainLayerInstructions.count == 2 {
             let layerInstruction1: VideoCompositionLayerInstruction
             let layerInstruction2: VideoCompositionLayerInstruction

@@ -10,8 +10,6 @@ import AVFoundation
 
 class CompositionGenerator {
     
-    private static let VideoTrackID_Background: Int32 = 0
-    
     private var increasementTrackID: Int32 = 0
     func generateNextTrackID() -> Int32 {
         let trackID = increasementTrackID + 1
@@ -29,7 +27,7 @@ class CompositionGenerator {
         let composition = buildComposition()
         let playerItem = AVPlayerItem(asset: composition)
         playerItem.videoComposition = buildVideoComposition(with: composition)
-//        playerItem.audioMix = buildAudioMix(with: composition)
+        playerItem.audioMix = buildAudioMix(with: composition)
         return playerItem
     }
     
@@ -39,44 +37,6 @@ class CompositionGenerator {
         imageGenerator.videoComposition = buildVideoComposition(with: composition)
         
         return imageGenerator
-    }
-    
-    private var transitionTimeRanges: [CMTimeRange] = []
-    
-    private func generateTime(handler: (_ index: Int, _ item: TrackItem, _ trackTime: CMTime, _ previousTransitionDuration: CMTime) -> Void) {
-        var trackTime = kCMTimeZero
-        var previousTransitionDuration = kCMTimeZero
-        for index in 0..<timeline.trackItems.count {
-            let trackItem = timeline.trackItems[index]
-            
-            // Precedence: the previous transition has priority. If clip doesn't have enough time to have begin transition and end transition, then begin transition will be considered first.
-            var transitionDuration: CMTime = {
-                if let duration = trackItem.transition?.duration {
-                    return duration
-                }
-                return kCMTimeZero
-            }()
-            let trackDuration = trackItem.configuration.timelineDuration()
-            if trackDuration < transitionDuration {
-                transitionDuration = kCMTimeZero
-            } else {
-                if index < timeline.trackItems.count - 1 {
-                    let nextTrackItem = timeline.trackItems[index + 1]
-                    if nextTrackItem.configuration.timelineDuration() < transitionDuration {
-                        transitionDuration = kCMTimeZero
-                    }
-                } else {
-                    transitionDuration = kCMTimeZero
-                }
-            }
-            
-            trackTime = trackTime - previousTransitionDuration
-            
-            handler(index, trackItem, trackTime, previousTransitionDuration)
-            
-            previousTransitionDuration = transitionDuration
-            trackTime = trackTime + trackDuration
-        }
     }
     
     func buildComposition() -> AVMutableComposition {
@@ -206,7 +166,14 @@ class CompositionGenerator {
     
     public func buildAudioMix(with asset: AVAsset) -> AVMutableAudioMix? {
         var audioParameters = [AVMutableAudioMixInputParameters]()
-        
+        let audioTracks = asset.tracks(withMediaType: .audio)
+        audioTracks.forEach { (track) in
+            let inputParameter = AVMutableAudioMixInputParameters(track: track)
+            let holder = AudioProcessingTapHolder()
+            // TODO: 根据 track 处理音频数据
+            inputParameter.audioProcessingTapHolder = holder
+            audioParameters.append(inputParameter)
+        }
         if audioParameters.count == 0 {
             return nil
         }
@@ -216,16 +183,52 @@ class CompositionGenerator {
         return audioMix
     }
     
+    // MARK: - Helper
     
+    private func generateTime(handler: (_ index: Int, _ item: TrackItem, _ trackTime: CMTime, _ previousTransitionDuration: CMTime) -> Void) {
+        var trackTime = kCMTimeZero
+        var previousTransitionDuration = kCMTimeZero
+        for index in 0..<timeline.trackItems.count {
+            let trackItem = timeline.trackItems[index]
+            
+            // Precedence: the previous transition has priority. If clip doesn't have enough time to have begin transition and end transition, then begin transition will be considered first.
+            var transitionDuration: CMTime = {
+                if let duration = trackItem.transition?.duration {
+                    return duration
+                }
+                return kCMTimeZero
+            }()
+            let trackDuration = trackItem.configuration.timelineDuration()
+            if trackDuration < transitionDuration {
+                transitionDuration = kCMTimeZero
+            } else {
+                if index < timeline.trackItems.count - 1 {
+                    let nextTrackItem = timeline.trackItems[index + 1]
+                    if nextTrackItem.configuration.timelineDuration() < transitionDuration {
+                        transitionDuration = kCMTimeZero
+                    }
+                } else {
+                    transitionDuration = kCMTimeZero
+                }
+            }
+            
+            trackTime = trackTime - previousTransitionDuration
+            
+            handler(index, trackItem, trackTime, previousTransitionDuration)
+            
+            previousTransitionDuration = transitionDuration
+            trackTime = trackTime + trackDuration
+        }
+    }
     
 }
 
-private var trackGroupAssociationKey: UInt8 = 0
 
 extension AVComposition {
+    private static var trackGroupAssociationKey: UInt8 = 0
     var mainTrackGroups: [TrackGroup] {
         get {
-            if let groups = (objc_getAssociatedObject(self, &trackGroupAssociationKey) as? [TrackGroup]) {
+            if let groups = (objc_getAssociatedObject(self, &AVComposition.trackGroupAssociationKey) as? [TrackGroup]) {
                 return groups
             } else {
                 let groups = [TrackGroup]()
@@ -234,7 +237,20 @@ extension AVComposition {
             }
         }
         set(newValue) {
-            objc_setAssociatedObject(self, &trackGroupAssociationKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+            objc_setAssociatedObject(self, &AVComposition.trackGroupAssociationKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+        }
+    }
+}
+
+extension AVMutableAudioMixInputParameters {
+    private static var audioProcessingTapHolderKey: UInt8 = 0
+    var audioProcessingTapHolder: AudioProcessingTapHolder? {
+        get {
+            return objc_getAssociatedObject(self, &AVMutableAudioMixInputParameters.audioProcessingTapHolderKey) as? AudioProcessingTapHolder
+        }
+        set(newValue) {
+            objc_setAssociatedObject(self, &AVMutableAudioMixInputParameters.audioProcessingTapHolderKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+            audioTapProcessor = newValue?.tap?.takeRetainedValue()
         }
     }
 }
