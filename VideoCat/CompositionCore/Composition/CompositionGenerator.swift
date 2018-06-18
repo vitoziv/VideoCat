@@ -17,6 +17,9 @@ class CompositionGenerator {
         return trackID
     }
     
+    private var mainVideoTrackInfo: [AVCompositionTrack: TrackItem] = [:]
+    private var mainAudioTrackInfo: [AVCompositionTrack: TrackItem] = [:]
+    
     var timeline: Timeline
     
     init(timeline: Timeline) {
@@ -39,102 +42,62 @@ class CompositionGenerator {
         return imageGenerator
     }
     
-    func buildComposition() -> AVMutableComposition {
+    func buildExportSession()  {
+        // TODO: 导出
+    }
+    
+    private func buildComposition() -> AVMutableComposition {
         increasementTrackID = 0
         let composition = AVMutableComposition(urlAssetInitializationOptions: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
         
-        var mainVideoTrackIDs = [Int: Int32]()
-        var mainAudioTrackIDs: [Int :[Int: Int32]] = [:]
-        generateTime { (index, trackItem, trackTime, previousTransitionDuration) in
-            let insertTime = trackTime
+        timeline.trackItems.forEach { (trackItem) in
+            let insertTime = trackItem.configuration.timelineTimeRange.start
+            
+            // Main video and audio
             if let asset = trackItem.resource.trackAsset {
                 if let track = asset.tracks(withMediaType: .video).first {
-                    let trackID: Int32 = {
-                        let idIndex = index % 2
-                        if let trackID = mainVideoTrackIDs[idIndex] {
-                            return trackID
-                        } else {
-                            let trackID = generateNextTrackID()
-                            mainVideoTrackIDs[idIndex] = trackID
-                            return trackID
-                        }
-                    }()
-                    let compositionTrack: AVMutableCompositionTrack? = {
-                        if let track = composition.track(withTrackID: trackID) {
-                            return track
-                        }
-                        return composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: trackID)
-                    }()
+                    let trackID: Int32 = generateNextTrackID()
+                    let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: trackID)
                     if let compositionTrack = compositionTrack {
+                        self.mainVideoTrackInfo[compositionTrack] = trackItem
                         compositionTrack.preferredTransform = track.preferredTransform
                         do {
-                            try compositionTrack.insertTimeRange(trackItem.configuration.timeRange, of: track, at: insertTime)
+                            try compositionTrack.insertTimeRange(trackItem.resource.timeRange, of: track, at: insertTime)
                         } catch {
                             print(error.localizedDescription)
                         }
                     }
                 }
                 asset.tracks.filter({ $0.mediaType == .audio }).enumerated().forEach({ (offset, track) in
-                    let trackID: Int32 = {
-                        let idIndex = index % 2
-                        if let trackID = mainAudioTrackIDs[offset]?[idIndex] {
-                            return trackID
-                        } else {
-                            let trackID = generateNextTrackID()
-                            if var offsetTrackIDS = mainAudioTrackIDs[offset] {
-                                offsetTrackIDS[idIndex] = trackID
-                                mainAudioTrackIDs[offset] = offsetTrackIDS
-                            } else {
-                                mainAudioTrackIDs[offset] = [idIndex: trackID]
-                            }
-                            return trackID
-                        }
-                    }()
-                    let compositionTrack: AVMutableCompositionTrack? = {
-                        if let track = composition.track(withTrackID: trackID) {
-                            return track
-                        }
-                        return composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: trackID)
-                    }()
+                    // If audio bitrate is different, can't put them on the same track, otherwise, the compositor can't handle audio play rate.
+                    let trackID: Int32 = generateNextTrackID()
+                    let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: trackID)
                     if let compositionTrack = compositionTrack {
+                        self.mainAudioTrackInfo[compositionTrack] = trackItem
+                        compositionTrack.trackItem = trackItem
                         do {
-                            try compositionTrack.insertTimeRange(trackItem.configuration.timeRange, of: track, at: insertTime)
+                            try compositionTrack.insertTimeRange(trackItem.resource.timeRange, of: track, at: insertTime)
                         } catch {
                             print(error.localizedDescription)
                         }
                     }
                 })
             }
+            
+            // Other track. exp: overlay, image, video
         }
-        
-        var trackGroups: [TrackGroup] = []
-        
-        let videoTrackGroup = TrackGroup()
-        videoTrackGroup.trackIDs = mainVideoTrackIDs.keys.sorted(by: <).map({ mainVideoTrackIDs[$0]! })
-        videoTrackGroup.mediaType = .video
-        trackGroups.append(videoTrackGroup)
-        
-        mainAudioTrackIDs.forEach { (offset, trackIDs) in
-            let trackGroup = TrackGroup()
-            let groupIDS = trackIDs.keys.sorted(by: <).map({ trackIDs[$0]! })
-            trackGroup.trackIDs = groupIDS
-            trackGroup.mediaType = .audio
-            trackGroups.append(trackGroup)
-        }
-        
-        composition.mainTrackGroups = trackGroups
         
         return composition
     }
     
-    func buildVideoComposition(with composition: AVComposition) -> AVMutableVideoComposition? {
+    fileprivate func buildVideoComposition(with composition: AVComposition) -> AVMutableVideoComposition? {
         let videoComposition = AVMutableVideoComposition()
         videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
         videoComposition.renderSize = timeline.renderSize
         
         let videoTracks = composition.tracks(withMediaType: .video)
         
-        let trackIDs = videoTracks.map({ $0.trackID })
+        let trackIDs = mainVideoTrackInfo.keys.map({ $0.trackID })
         let timeRange: CMTimeRange = {
             var duration = kCMTimeZero
             if let time = videoTracks.max(by: { $0.timeRange.end < $1.timeRange.end })?.timeRange.end {
@@ -143,19 +106,18 @@ class CompositionGenerator {
             return CMTimeRangeMake(kCMTimeZero, duration)
         }()
         let instruction = VideoCompositionInstruction(theSourceTrackIDs: trackIDs as [NSValue], forTimeRange: timeRange)
-        instruction.mainTrackIDs = composition.mainTrackGroups.first(where: { $0.mediaType == .video })!.trackIDs
+        instruction.mainTrackIDs = mainVideoTrackInfo.keys.map({ $0.trackID })
         
         var layerInstructions: [VideoCompositionLayerInstruction] = []
-        
-        generateTime { (index, trackItem, trackTime, previousTransitionDuration) in
-            let trackIndex = index % 2
-            let track = videoTracks[trackIndex]
-            let trackDuration = trackItem.configuration.timelineDuration()
-            let timeRange = CMTimeRangeMake(trackTime, trackDuration)
-            let layerInstruction = VideoCompositionLayerInstruction(trackID: track.trackID, trackItem: trackItem)
-            layerInstruction.timeRange = timeRange
-            layerInstruction.trackItem = trackItem
-            layerInstructions.append(layerInstruction)
+        videoTracks.forEach { (track) in
+            if let trackItem = mainVideoTrackInfo[track] {
+                let layerInstruction = VideoCompositionLayerInstruction(trackID: track.trackID, trackItem: trackItem)
+                layerInstruction.timeRange = trackItem.configuration.timelineTimeRange
+                layerInstruction.trackItem = trackItem
+                layerInstructions.append(layerInstruction)
+            }
+            
+            // TODO: Other video overlay
         }
         instruction.layerInstructions = layerInstructions
         videoComposition.instructions = [instruction]
@@ -164,15 +126,21 @@ class CompositionGenerator {
         return videoComposition
     }
     
-    public func buildAudioMix(with asset: AVAsset) -> AVMutableAudioMix? {
+    fileprivate func buildAudioMix(with composition: AVComposition) -> AVMutableAudioMix? {
         var audioParameters = [AVMutableAudioMixInputParameters]()
-        let audioTracks = asset.tracks(withMediaType: .audio)
+        let audioTracks = composition.tracks(withMediaType: .audio)
+        // 没法像 instruction 一样，可以动态的修改处理行为。所以这里只能提前设置好指定的行为
+        // 动态行为，可以放到 audio tap 里
+        
         audioTracks.forEach { (track) in
-            let inputParameter = AVMutableAudioMixInputParameters(track: track)
-            let holder = AudioProcessingTapHolder()
-            // TODO: 根据 track 处理音频数据
-            inputParameter.audioProcessingTapHolder = holder
-            audioParameters.append(inputParameter)
+            if let trackItem = mainAudioTrackInfo[track] {
+                // Main track, should apply transition
+                let inputParameter = AVMutableAudioMixInputParameters(track: track)
+                let volume = trackItem.configuration.audioConfiguration.volume
+                inputParameter.setVolumeRamp(fromStartVolume: volume, toEndVolume: volume, timeRange: trackItem.configuration.timelineTimeRange)
+                inputParameter.audioProcessingTapHolder = trackItem.configuration.audioConfiguration.audioTapHolder
+                audioParameters.append(inputParameter)
+            }
         }
         if audioParameters.count == 0 {
             return nil
@@ -183,63 +151,20 @@ class CompositionGenerator {
         return audioMix
     }
     
-    // MARK: - Helper
-    
-    private func generateTime(handler: (_ index: Int, _ item: TrackItem, _ trackTime: CMTime, _ previousTransitionDuration: CMTime) -> Void) {
-        var trackTime = kCMTimeZero
-        var previousTransitionDuration = kCMTimeZero
-        for index in 0..<timeline.trackItems.count {
-            let trackItem = timeline.trackItems[index]
-            
-            // Precedence: the previous transition has priority. If clip doesn't have enough time to have begin transition and end transition, then begin transition will be considered first.
-            var transitionDuration: CMTime = {
-                if let duration = trackItem.transition?.duration {
-                    return duration
-                }
-                return kCMTimeZero
-            }()
-            let trackDuration = trackItem.configuration.timelineDuration()
-            if trackDuration < transitionDuration {
-                transitionDuration = kCMTimeZero
-            } else {
-                if index < timeline.trackItems.count - 1 {
-                    let nextTrackItem = timeline.trackItems[index + 1]
-                    if nextTrackItem.configuration.timelineDuration() < transitionDuration {
-                        transitionDuration = kCMTimeZero
-                    }
-                } else {
-                    transitionDuration = kCMTimeZero
-                }
-            }
-            
-            trackTime = trackTime - previousTransitionDuration
-            
-            handler(index, trackItem, trackTime, previousTransitionDuration)
-            
-            previousTransitionDuration = transitionDuration
-            trackTime = trackTime + trackDuration
-        }
-    }
-    
 }
 
-
-extension AVComposition {
-    private static var trackGroupAssociationKey: UInt8 = 0
-    var mainTrackGroups: [TrackGroup] {
+extension AVCompositionTrack {
+    
+    private static var trackItemsAssociationKey: UInt8 = 0
+    var trackItem: TrackItem? {
         get {
-            if let groups = (objc_getAssociatedObject(self, &AVComposition.trackGroupAssociationKey) as? [TrackGroup]) {
-                return groups
-            } else {
-                let groups = [TrackGroup]()
-                self.mainTrackGroups = groups
-                return groups
-            }
+            return objc_getAssociatedObject(self, &AVCompositionTrack.trackItemsAssociationKey) as? TrackItem
         }
         set(newValue) {
-            objc_setAssociatedObject(self, &AVComposition.trackGroupAssociationKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
+            objc_setAssociatedObject(self, &AVCompositionTrack.trackItemsAssociationKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
         }
     }
+    
 }
 
 extension AVMutableAudioMixInputParameters {
@@ -254,11 +179,3 @@ extension AVMutableAudioMixInputParameters {
         }
     }
 }
-
-
-class TrackGroup {
-    var identifier: String = ProcessInfo.processInfo.globallyUniqueString
-    var mediaType: AVMediaType = .video
-    var trackIDs: [Int32] = []
-}
-

@@ -23,3 +23,11 @@ class TrackItem {
     
 }
 
+extension TrackItem {
+    func reloadTimelineDuration() {
+        let duration = resource.timeRange.duration
+        var timeRange = configuration.timelineTimeRange
+        timeRange.duration = duration
+        configuration.timelineTimeRange = timeRange
+    }
+}

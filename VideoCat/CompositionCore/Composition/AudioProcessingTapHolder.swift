@@ -9,7 +9,7 @@
 import AVFoundation
 
 class AudioProcessingTapHolder {
-    let tapInit: MTAudioProcessingTapInitCallback = {
+    var tapInit: MTAudioProcessingTapInitCallback = {
         (tap, clientInfo, tapStorageOut) in
         
         let nonOptionalSelf = clientInfo!.assumingMemoryBound(to: AppDelegate.self).pointee
@@ -19,22 +19,22 @@ class AudioProcessingTapHolder {
         //            tapStorageOut.init(clientInfo)
     }
     
-    let tapFinalize: MTAudioProcessingTapFinalizeCallback = {
+    var tapFinalize: MTAudioProcessingTapFinalizeCallback = {
         (tap) in
         print("finalize \(tap)\n")
     }
     
-    let tapPrepare: MTAudioProcessingTapPrepareCallback = {
+    var tapPrepare: MTAudioProcessingTapPrepareCallback = {
         (tap, b, c) in
         print("prepare: \(tap, b, c)\n")
     }
     
-    let tapUnprepare: MTAudioProcessingTapUnprepareCallback = {
+    var tapUnprepare: MTAudioProcessingTapUnprepareCallback = {
         (tap) in
         print("unprepare \(tap)\n")
     }
     
-    let tapProcess: MTAudioProcessingTapProcessCallback = {
+    var tapProcess: MTAudioProcessingTapProcessCallback = {
         (tap, numberFrames, flags, bufferListInOut, numberFramesOut, flagsOut) in
         print("callback \(tap, numberFrames, flags, bufferListInOut, numberFramesOut, flagsOut)\n")
         
@@ -57,7 +57,6 @@ class AudioProcessingTapHolder {
             prepare: tapPrepare,
             unprepare: tapUnprepare,
             process: tapProcess)
-        
         var tap: Unmanaged<MTAudioProcessingTap>?
         let err = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PostEffects, &tap)
         

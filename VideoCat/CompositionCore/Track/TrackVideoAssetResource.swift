@@ -12,7 +12,6 @@ class TrackVideoAssetResource: TrackResource {
     
     var identifier: String
     var asset: PHAsset?
-    var timeRange = kCMTimeRangeZero
     
     init(asset: PHAsset) {
         identifier = asset.localIdentifier

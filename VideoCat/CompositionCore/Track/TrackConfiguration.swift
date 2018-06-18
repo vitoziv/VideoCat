@@ -8,24 +8,31 @@
 
 import AVFoundation
 
-struct TrackConfiguration {
+class TrackConfiguration {
+    
+    // MARK: - Timing
+    
+    /// Track's final time range, it will be calculated using track's time, speed, transition and so on
+    var timelineTimeRange: CMTimeRange = kCMTimeRangeZero
+    
+    // MARK: - Media
+    var videoConfiguration: VideoConfiguration = .default
+    var audioConfiguration: AudioConfiguration = .default
+}
+
+class VideoConfiguration {
+    
+    static let `default` = VideoConfiguration()
     
     enum BaseContentMode {
         case aspectFit
         case aspectFill
     }
-    
-    /// Resource's time range
-    var timeRange: CMTimeRange = kCMTimeRangeZero
-    
     var baseContentMode: BaseContentMode = .aspectFit
-    
-    
-    var timelineStartTime: CMTime = kCMTimeZero
-    /// Track's final duration, it will be calculated using track's time, speed and so on
-    ///
-    /// - Returns: time
-    func timelineDuration() -> CMTime {
-        return timeRange.duration
-    }
+}
+
+class AudioConfiguration {
+    static let `default` = AudioConfiguration()
+    var volume: Float = 1.0;
+    var audioTapHolder: AudioProcessingTapHolder?
 }

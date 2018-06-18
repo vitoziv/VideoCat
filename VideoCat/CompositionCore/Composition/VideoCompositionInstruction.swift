@@ -154,7 +154,7 @@ class VideoCompositionLayerInstruction {
         finalImage = finalImage.flipYCoordinate().transformed(by: track.preferredTransform).flipYCoordinate()
         
         var transform = CGAffineTransform.identity
-        switch trackItem.configuration.baseContentMode {
+        switch trackItem.configuration.videoConfiguration.baseContentMode {
         case .aspectFit:
             let fitTransform = CGAffineTransform.transform(by: finalImage.extent, aspectFitInRect: CGRect(origin: .zero, size: renderSize))
             transform = transform.concatenating(fitTransform)

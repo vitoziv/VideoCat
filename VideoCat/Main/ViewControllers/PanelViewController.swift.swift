@@ -97,7 +97,7 @@ extension PanelViewController: AssetsViewControllerDelegate {
                 let transition = CrossDissolveTransition()
                 transition.duration = CMTime(value: 3, timescale: 2)
                 trackItem.transition = transition
-                trackItem.configuration.timeRange = CMTimeRangeMake(kCMTimeZero, resource.trackAsset!.duration)
+                trackItem.resource.timeRange = CMTimeRangeMake(kCMTimeZero, resource.trackAsset!.duration)
                 strongSelf.viewModel.insertTrackItem(trackItem, at: index)
                 strongSelf.videoView.player.replaceCurrentItem(strongSelf.viewModel.playerItem)
                 strongSelf.compositionDebugView.synchronize(to: strongSelf.viewModel.playerItem.asset as! AVComposition,
@@ -110,4 +110,3 @@ extension PanelViewController: AssetsViewControllerDelegate {
     }
     
 }
-

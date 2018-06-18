@@ -25,12 +25,16 @@ class TimelineViewModel {
     private(set) var playerItem = AVPlayerItem(asset: AVComposition.init())
     
     func addTrackItem(_ trackItem: TrackItem) {
-        timeline.trackItems.append(trackItem)
+        timeline.performUpdate {
+            timeline.trackItems.append(trackItem)
+        }
         reloadPlayerItem()
     }
     
     func insertTrackItem(_ tackItem: TrackItem, at index: Int) {
-        timeline.trackItems.insert(tackItem, at: index)
+        timeline.performUpdate {
+            timeline.trackItems.insert(tackItem, at: index)
+        }
         reloadPlayerItem()
     }
     
@@ -38,13 +42,13 @@ class TimelineViewModel {
         var startTime = kCMTimeZero
         for i in (0..<index) {
             let trackItem = timeline.trackItems[i]
-            startTime = CMTimeAdd(startTime, trackItem.configuration.timeRange.duration)
+            startTime = CMTimeAdd(startTime, trackItem.resource.timeRange.duration)
         }
         if index >= timeline.trackItems.count {
             return CMTimeRangeMake(startTime, kCMTimeZero)
         }
         let trackItem = timeline.trackItems[index]
-        return trackItem.configuration.timeRange
+        return trackItem.resource.timeRange
     }
     
     fileprivate func reloadPlayerItem() {

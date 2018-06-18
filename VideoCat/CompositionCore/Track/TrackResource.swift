@@ -25,6 +25,8 @@ class TrackResource {
     
     /// supported type: audio and video
     open var trackAsset: AVAsset?
+    /// Resource's time range
+    var timeRange = kCMTimeRangeZero
     
     // MARK: - Load Media before use resource
     

@@ -11,7 +11,6 @@ import AVFoundation
 class TrackVideoResource: TrackResource {
     
     var assetURL: URL
-    var timeRange = kCMTimeRangeZero
     
     init(asset: AVURLAsset) {
         assetURL = asset.url
