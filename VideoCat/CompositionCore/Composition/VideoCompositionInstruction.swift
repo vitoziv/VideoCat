@@ -48,8 +48,7 @@ class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtoc
         var otherLayerInstructions: [VideoCompositionLayerInstruction] = []
         var mainLayerInstructions: [VideoCompositionLayerInstruction] = []
         
-        let currentLayerInstructions = layerInstructions.filter({ $0.timeRange.containsTime(time) })
-        for layerInstruction in currentLayerInstructions {
+        for layerInstruction in layerInstructions {
             if mainTrackIDs.contains(layerInstruction.trackID) {
                 mainLayerInstructions.append(layerInstruction)
             } else {

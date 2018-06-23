@@ -10,16 +10,7 @@ import AVFoundation
 
 class CompositionGenerator {
     
-    private var increasementTrackID: Int32 = 0
-    func generateNextTrackID() -> Int32 {
-        let trackID = increasementTrackID + 1
-        increasementTrackID = trackID
-        return trackID
-    }
-    
-    private var mainVideoTrackInfo: [AVCompositionTrack: TrackItem] = [:]
-    private var mainAudioTrackInfo: [AVCompositionTrack: TrackItem] = [:]
-    
+    // MARK: - Public
     var timeline: Timeline
     
     init(timeline: Timeline) {
@@ -46,8 +37,10 @@ class CompositionGenerator {
         // TODO: 导出
     }
     
+    // MARK: - Build Composition
+    
     private func buildComposition() -> AVMutableComposition {
-        increasementTrackID = 0
+        resetSetupInfo()
         let composition = AVMutableComposition(urlAssetInitializationOptions: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
         
         timeline.trackItems.forEach { (trackItem) in
@@ -74,7 +67,6 @@ class CompositionGenerator {
                     let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: trackID)
                     if let compositionTrack = compositionTrack {
                         self.mainAudioTrackInfo[compositionTrack] = trackItem
-                        compositionTrack.trackItem = trackItem
                         do {
                             try compositionTrack.insertTimeRange(trackItem.resource.timeRange, of: track, at: insertTime)
                         } catch {
@@ -97,17 +89,6 @@ class CompositionGenerator {
         
         let videoTracks = composition.tracks(withMediaType: .video)
         
-        let trackIDs = mainVideoTrackInfo.keys.map({ $0.trackID })
-        let timeRange: CMTimeRange = {
-            var duration = kCMTimeZero
-            if let time = videoTracks.max(by: { $0.timeRange.end < $1.timeRange.end })?.timeRange.end {
-                duration = time
-            }
-            return CMTimeRangeMake(kCMTimeZero, duration)
-        }()
-        let instruction = VideoCompositionInstruction(theSourceTrackIDs: trackIDs as [NSValue], forTimeRange: timeRange)
-        instruction.mainTrackIDs = mainVideoTrackInfo.keys.map({ $0.trackID })
-        
         var layerInstructions: [VideoCompositionLayerInstruction] = []
         videoTracks.forEach { (track) in
             if let trackItem = mainVideoTrackInfo[track] {
@@ -119,8 +100,50 @@ class CompositionGenerator {
             
             // TODO: Other video overlay
         }
-        instruction.layerInstructions = layerInstructions
-        videoComposition.instructions = [instruction]
+        
+        // 创建多个 instruction，每个 instruction 保存当前时间所有的 layerInstruction，在渲染的时候可以直接拿到对应时间点所需要的 layerInstruction。
+        var layerInstructionsSlices: [(CMTimeRange, [VideoCompositionLayerInstruction])] = []
+        layerInstructions.forEach { (layerInstruction) in
+            var slices = layerInstructionsSlices
+            
+            var leftTimeRanges: [CMTimeRange] = [layerInstruction.timeRange]
+            layerInstructionsSlices.enumerated().forEach({ (offset, slice) in
+                let intersectionTimeRange = slice.0.intersection(layerInstruction.timeRange)
+                if intersectionTimeRange.duration.seconds > 0 {
+                    slices.remove(at: offset)
+                    let sliceTimeRanges = CMTimeRange.sliceTimeRanges(for: layerInstruction.timeRange, timeRange2: slice.0)
+                    sliceTimeRanges.forEach({ (timeRange) in
+                        if slice.0.containsTimeRange(timeRange) && layerInstruction.timeRange.containsTimeRange(timeRange) {
+                            let newSlice = (timeRange, slice.1 + [layerInstruction])
+                            slices.append(newSlice)
+                            leftTimeRanges = leftTimeRanges.flatMap({ (leftTimeRange) -> [CMTimeRange] in
+                                return leftTimeRange.substruct(timeRange)
+                            })
+                        } else if slice.0.containsTimeRange(timeRange) {
+                            let newSlice = (timeRange, slice.1)
+                            slices.append(newSlice)
+                        }
+                    })
+                }
+            })
+            
+            leftTimeRanges.forEach({ (timeRange) in
+                slices.append((timeRange, [layerInstruction]))
+            })
+            
+            layerInstructionsSlices = slices
+        }
+        let mainTrackIDs = mainVideoTrackInfo.keys.map({ $0.trackID })
+        let instructions: [VideoCompositionInstruction] = layerInstructionsSlices.map({ (slice) in
+            let trackIDs = slice.1.map({ $0.trackID })
+            let instruction = VideoCompositionInstruction(theSourceTrackIDs: trackIDs as [NSValue], forTimeRange: slice.0)
+            instruction.layerInstructions = slice.1
+            instruction.mainTrackIDs = mainTrackIDs.filter({ trackIDs.contains($0) })
+            return instruction
+        })
+        
+        videoComposition.instructions = instructions
+        
         videoComposition.customVideoCompositorClass = VideoCompositor.self
         
         return videoComposition
@@ -131,7 +154,6 @@ class CompositionGenerator {
         let audioTracks = composition.tracks(withMediaType: .audio)
         // 没法像 instruction 一样，可以动态的修改处理行为。所以这里只能提前设置好指定的行为
         // 动态行为，可以放到 audio tap 里
-        
         audioTracks.forEach { (track) in
             if let trackItem = mainAudioTrackInfo[track] {
                 // Main track, should apply transition
@@ -151,21 +173,28 @@ class CompositionGenerator {
         return audioMix
     }
     
-}
-
-extension AVCompositionTrack {
+    // MARK: - Helper
     
-    private static var trackItemsAssociationKey: UInt8 = 0
-    var trackItem: TrackItem? {
-        get {
-            return objc_getAssociatedObject(self, &AVCompositionTrack.trackItemsAssociationKey) as? TrackItem
-        }
-        set(newValue) {
-            objc_setAssociatedObject(self, &AVCompositionTrack.trackItemsAssociationKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
-        }
+    private var increasementTrackID: Int32 = 0
+    private func generateNextTrackID() -> Int32 {
+        let trackID = increasementTrackID + 1
+        increasementTrackID = trackID
+        return trackID
     }
     
+    private var mainVideoTrackInfo: [AVCompositionTrack: TrackItem] = [:]
+    private var mainAudioTrackInfo: [AVCompositionTrack: TrackItem] = [:]
+    
+    private func resetSetupInfo() {
+        increasementTrackID = 0
+        mainVideoTrackInfo = [:]
+        mainAudioTrackInfo = [:]
+    }
+    
+    
 }
+
+// MARK: -
 
 extension AVMutableAudioMixInputParameters {
     private static var audioProcessingTapHolderKey: UInt8 = 0
@@ -179,3 +208,4 @@ extension AVMutableAudioMixInputParameters {
         }
     }
 }
+

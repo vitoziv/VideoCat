@@ -27,6 +27,7 @@
 		5F29D2391F740D9300D41F50 /* TrackVideoResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2381F740D9300D41F50 /* TrackVideoResource.swift */; };
 		5F29D2411F74146700D41F50 /* VideoCatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2401F74146700D41F50 /* VideoCatTests.swift */; };
 		5F2A987E1FA4738F0032B5DF /* TimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2A987D1FA4738F0032B5DF /* TimelineViewModel.swift */; };
+		5F39496D20DC7F0F0096A61F /* TimeRangeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F39496C20DC7F0F0096A61F /* TimeRangeExtension.swift */; };
 		5F3A1CB21F528FD5001895DB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3A1CB11F528FD5001895DB /* AppDelegate.swift */; };
 		5F3A1CB41F528FD5001895DB /* PanelViewController.swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3A1CB31F528FD5001895DB /* PanelViewController.swift.swift */; };
 		5F3A1CB71F528FD5001895DB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F3A1CB51F528FD5001895DB /* Main.storyboard */; };
@@ -95,6 +96,7 @@
 		5F29D2401F74146700D41F50 /* VideoCatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCatTests.swift; sourceTree = "<group>"; };
 		5F29D2421F74146700D41F50 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5F2A987D1FA4738F0032B5DF /* TimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewModel.swift; sourceTree = "<group>"; };
+		5F39496C20DC7F0F0096A61F /* TimeRangeExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangeExtension.swift; sourceTree = "<group>"; };
 		5F3A1CAE1F528FD5001895DB /* VideoCat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoCat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F3A1CB11F528FD5001895DB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5F3A1CB31F528FD5001895DB /* PanelViewController.swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelViewController.swift.swift; sourceTree = "<group>"; };
@@ -184,6 +186,7 @@
 				5FF8D33E2032B0D900240EE4 /* black_empty.mp4 */,
 				5FF8D3422046AFBF00240EE4 /* CGMathFunctions.swift */,
 				5F49914F20A30C64005C61C3 /* AudioProcessingTapHolder.swift */,
+				5F39496C20DC7F0F0096A61F /* TimeRangeExtension.swift */,
 			);
 			path = Composition;
 			sourceTree = "<group>";
@@ -616,6 +619,7 @@
 				5FF8D3432046AFBF00240EE4 /* CGMathFunctions.swift in Sources */,
 				5F2A987E1FA4738F0032B5DF /* TimelineViewModel.swift in Sources */,
 				5F01B00C1F77CF420049CD3A /* MBProgressExtension.swift in Sources */,
+				5F39496D20DC7F0F0096A61F /* TimeRangeExtension.swift in Sources */,
 				5F6099C01F7E576E00EA44A0 /* EnlargeImageView.swift in Sources */,
 				5F9DBECD202752E900E8BFC4 /* AVPlayerSeeker.swift in Sources */,
 				5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */,
