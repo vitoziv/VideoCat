@@ -9,18 +9,25 @@
 import AVFoundation
 
 public class Timeline {
-    public var trackItems: [TrackItem] = []
 
+    // MARK: - Global effect
     public var renderSize = CGSize.zero
-    public var items: [MediaGroup] = []
-    public var compositions: [CompositionTrackProvider] = []
-    public var overlays: [CompositionTrackProvider] = []
-    public var videoCompositions: [VideoCompositionProvider] = []
-    public var audioCompositions: [AudioCompositionProvider] = []
+    public var passingThroughVideoCompositionProvider: PassingThroughVideoCompositionProvider?
+    
+    // MARK: - Main content, arranged in order, support transition.
+    public var videoChannel: [TransitionableVideoProvider] = []
+    public var audioChannel: [AudioChannel] = []
+    
+    // MARK: - Other content, can place anywhere in timeline
+    public var overlays: [VideoProvider] = []
+    public var audios: [AudioProvider] = []
+    
+    
 }
 
-public class MediaGroup {
-    public var trackProviders: [CompositionTrackProvider] = []
-    public var mediaType = AVMediaType.video // AVMediaType
-    public var videoTransitions: [VideoTransition?] = []
+public class AudioChannel {
+    public var channelIdentifier: String = ""
+    public var audioProviders: [TransitionableAudioProvider] = []
 }
+
+

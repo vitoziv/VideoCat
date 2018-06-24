@@ -241,7 +241,7 @@ enum { kBannerHeight = 20, kIdealRowHeight = 36, kGapAfterRows = 4 };
 	rect = CGRectInset(rect, kLeftMarginInset, 4.0);
 	
 	NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-    [style setAlignment:kCTCenterTextAlignment];
+    [style setAlignment:NSTextAlignmentCenter];
 	
 	NSDictionary *textAttributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor], NSForegroundColorAttributeName, style, NSParagraphStyleAttributeName, nil];
 

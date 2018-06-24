@@ -8,7 +8,7 @@
 
 import AVFoundation
 
-class TrackConfiguration {
+public class TrackConfiguration {
     
     // MARK: - Timing
     
@@ -16,13 +16,15 @@ class TrackConfiguration {
     var timelineTimeRange: CMTimeRange = kCMTimeRangeZero
     
     // MARK: - Media
-    var videoConfiguration: VideoConfiguration = .default
-    var audioConfiguration: AudioConfiguration = .default
+    var videoConfiguration: VideoConfiguration = .createDefaultConfiguration()
+    var audioConfiguration: AudioConfiguration = .createDefaultConfiguration()
 }
 
-class VideoConfiguration {
+public class VideoConfiguration {
     
-    static let `default` = VideoConfiguration()
+    static func createDefaultConfiguration() -> VideoConfiguration {
+        return VideoConfiguration()
+    }
     
     enum BaseContentMode {
         case aspectFit
@@ -31,8 +33,12 @@ class VideoConfiguration {
     var baseContentMode: BaseContentMode = .aspectFit
 }
 
-class AudioConfiguration {
-    static let `default` = AudioConfiguration()
+public class AudioConfiguration {
+    
+    static func createDefaultConfiguration() -> AudioConfiguration {
+        return AudioConfiguration()
+    }
+
     var volume: Float = 1.0;
     var audioTapHolder: AudioProcessingTapHolder?
 }

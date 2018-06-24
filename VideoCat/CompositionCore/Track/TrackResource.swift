@@ -10,7 +10,7 @@ import AVFoundation
 import CoreImage
 import UIKit
 
-class ImageAsset {
+public class ImageAsset {
     var image: CIImage
     var duration: CMTime
     init(image: CIImage, duration: CMTime) {
@@ -19,7 +19,7 @@ class ImageAsset {
     }
 }
 
-class TrackResource {
+open class TrackResource {
     
     // MARK: - Resource Media
     
@@ -30,7 +30,7 @@ class TrackResource {
     
     // MARK: - Load Media before use resource
     
-    enum Status {
+    public enum Status {
         case unavaliable
         case avaliable
     }
@@ -65,7 +65,7 @@ class TrackResource {
         return json
     }
     
-    required init(with json: [String: Any]?) {
+    required public init(with json: [String: Any]?) {
         
     }
     

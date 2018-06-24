@@ -14,7 +14,6 @@ public protocol VideoTransition: class {
     func renderImage(foregroundImage: CIImage,
                      backgroundImage: CIImage,
                      forTweenFactor tween: Float64) -> CIImage
-    // TODO: Audio transition support
 }
 
 open class NoneTransition: VideoTransition {

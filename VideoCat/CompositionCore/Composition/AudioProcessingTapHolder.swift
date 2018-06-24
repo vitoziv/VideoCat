@@ -14,32 +14,32 @@ class AudioProcessingTapHolder {
         
         let nonOptionalSelf = clientInfo!.assumingMemoryBound(to: AppDelegate.self).pointee
         
-        print("init \(tap, clientInfo, tapStorageOut, nonOptionalSelf)\n")
+        Log.debug("init \(tap, clientInfo, tapStorageOut, nonOptionalSelf)\n")
         //            tapStorageOut.assignFrom(source:clientInfo, count: 1)
         //            tapStorageOut.init(clientInfo)
     }
     
     var tapFinalize: MTAudioProcessingTapFinalizeCallback = {
         (tap) in
-        print("finalize \(tap)\n")
+        Log.debug("finalize \(tap)\n")
     }
     
     var tapPrepare: MTAudioProcessingTapPrepareCallback = {
         (tap, b, c) in
-        print("prepare: \(tap, b, c)\n")
+        Log.debug("prepare: \(tap, b, c)\n")
     }
     
     var tapUnprepare: MTAudioProcessingTapUnprepareCallback = {
         (tap) in
-        print("unprepare \(tap)\n")
+        Log.debug("unprepare \(tap)\n")
     }
     
     var tapProcess: MTAudioProcessingTapProcessCallback = {
         (tap, numberFrames, flags, bufferListInOut, numberFramesOut, flagsOut) in
-        print("callback \(tap, numberFrames, flags, bufferListInOut, numberFramesOut, flagsOut)\n")
+        Log.debug("callback \(tap, numberFrames, flags, bufferListInOut, numberFramesOut, flagsOut)\n")
         
         let status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, nil, numberFramesOut)
-        print("get audio: \(status)\n")
+        Log.debug("get audio: \(status)\n")
     }
     
     var tap: Unmanaged<MTAudioProcessingTap>?
@@ -60,9 +60,9 @@ class AudioProcessingTapHolder {
         var tap: Unmanaged<MTAudioProcessingTap>?
         let err = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PostEffects, &tap)
         
-        print("err: \(err)\n")
+        Log.debug("err: \(err)\n")
         if err != noErr {
-            print("Warning: failed to create audioProcessingTap")
+            Log.debug("Warning: failed to create audioProcessingTap")
         }
         self.tap = tap
     }

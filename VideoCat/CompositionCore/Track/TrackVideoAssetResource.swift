@@ -33,12 +33,12 @@ class TrackVideoAssetResource: TrackResource {
                 var error: NSError?
                 let tracksStatus = asset.statusOfValue(forKey: "tracks", error: &error)
                 if tracksStatus != .loaded {
-                    print("Failed to load tracks, status: \(tracksStatus), error: \(String(describing: error))")
+                    Log.error("Failed to load tracks, status: \(tracksStatus), error: \(String(describing: error))")
                     return
                 }
                 let durationStatus = asset.statusOfValue(forKey: "duration", error: &error)
                 if durationStatus != .loaded {
-                    print("Failed to duration tracks, status: \(tracksStatus), error: \(String(describing: error))")
+                    Log.error("Failed to duration tracks, status: \(tracksStatus), error: \(String(describing: error))")
                     return
                 }
                 strongSelf.status = .avaliable

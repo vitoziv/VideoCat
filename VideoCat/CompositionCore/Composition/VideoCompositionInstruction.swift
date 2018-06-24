@@ -8,18 +8,19 @@
 
 import AVFoundation
 
-class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtocol {
+open class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtocol {
     
-    var timeRange: CMTimeRange = CMTimeRange()
-    var enablePostProcessing: Bool = false
-    var containsTweening: Bool = false
-    var requiredSourceTrackIDs: [NSValue]?
-    var passthroughTrackID: CMPersistentTrackID = 0
+    open var timeRange: CMTimeRange = CMTimeRange()
+    open var enablePostProcessing: Bool = false
+    open var containsTweening: Bool = false
+    open var requiredSourceTrackIDs: [NSValue]?
+    open var passthroughTrackID: CMPersistentTrackID = 0
     
-    var layerInstructions: [VideoCompositionLayerInstruction] = []
-    var mainTrackIDs: [Int32] = []
+    open var layerInstructions: [VideoCompositionLayerInstruction] = []
+    open var mainTrackIDs: [Int32] = []
+    public var passingThroughVideoCompositionProvider: PassingThroughVideoCompositionProvider?
     
-    init(thePassthroughTrackID: CMPersistentTrackID, forTimeRange theTimeRange: CMTimeRange) {
+    public init(thePassthroughTrackID: CMPersistentTrackID, forTimeRange theTimeRange: CMTimeRange) {
         super.init()
         
         passthroughTrackID = thePassthroughTrackID
@@ -30,7 +31,7 @@ class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtoc
         enablePostProcessing = false
     }
     
-    init(theSourceTrackIDs: [NSValue], forTimeRange theTimeRange: CMTimeRange) {
+    public init(theSourceTrackIDs: [NSValue], forTimeRange theTimeRange: CMTimeRange) {
         super.init()
         
         requiredSourceTrackIDs = theSourceTrackIDs
@@ -41,7 +42,7 @@ class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtoc
         enablePostProcessing = false
     }
     
-    func apply(request: AVAsynchronousVideoCompositionRequest) -> CIImage? {
+    open func apply(request: AVAsynchronousVideoCompositionRequest) -> CIImage? {
         let time = request.compositionTime
         let renderSize = request.renderContext.size
         
@@ -74,14 +75,17 @@ class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtoc
                 
                 let image1 = generateImage(from: sourcePixel1)
                 let sourceImage1 = layerInstruction1.apply(sourceImage: image1, at: time, renderSize: renderSize)
-                let image2 = generateImage(from: sourcePixel2)
-                let sourceImage2 = layerInstruction2.apply(sourceImage: image2, at: time, renderSize: renderSize)
-                
-                let transitionTimeRange = layerInstruction1.timeRange.intersection(layerInstruction2.timeRange)
-                let tweenFactor = factorForTimeInRange(time, range: transitionTimeRange)
-                let transitionImage = layerInstruction1.trackItem.transition?.renderImage(foregroundImage: sourceImage1, backgroundImage: sourceImage2, forTweenFactor: tweenFactor)
-                assert(layerInstruction1.trackItem.transition != nil)
-                image = transitionImage
+                if let transition = layerInstruction1.transition {
+                    let image2 = generateImage(from: sourcePixel2)
+                    let sourceImage2 = layerInstruction2.apply(sourceImage: image2, at: time, renderSize: renderSize)
+                    
+                    let transitionTimeRange = layerInstruction1.timeRange.intersection(layerInstruction2.timeRange)
+                    let tweenFactor = factorForTimeInRange(time, range: transitionTimeRange)
+                    let transitionImage = transition.renderImage(foregroundImage: sourceImage1, backgroundImage: sourceImage2, forTweenFactor: tweenFactor)
+                    image = transitionImage
+                } else {
+                    image = sourceImage1
+                }
             }
         } else {
             mainLayerInstructions.forEach { (layerInstruction) in
@@ -105,6 +109,10 @@ class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtoc
                     image = sourceImage
                 }
             }
+        }
+        
+        if let passingThroughVideoCompositionProvider = passingThroughVideoCompositionProvider, image != nil {
+            image = passingThroughVideoCompositionProvider.applyEffect(to: image!, at: time, renderSize: renderSize)
         }
         
         return image
@@ -132,42 +140,20 @@ class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtoc
     }
 }
 
-class VideoCompositionLayerInstruction {
+open class VideoCompositionLayerInstruction {
     
     var trackID: Int32
-    var trackItem: TrackItem
+    var videoCompositionProvider: VideoCompositionProvider
     var timeRange: CMTimeRange = kCMTimeRangeZero
+    var transition: VideoTransition?
     
-    init(trackID: Int32, trackItem: TrackItem) {
+    public init(trackID: Int32, videoCompositionProvider: VideoCompositionProvider) {
         self.trackID = trackID
-        self.trackItem = trackItem
+        self.videoCompositionProvider = videoCompositionProvider
     }
     
-    func apply(sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage {
-        var finalImage = sourceImage
-        
-        guard let track = trackItem.resource.trackAsset?.tracks(withMediaType: .video).first else {
-            return finalImage
-        }
-        
-        finalImage = finalImage.flipYCoordinate().transformed(by: track.preferredTransform).flipYCoordinate()
-        
-        var transform = CGAffineTransform.identity
-        switch trackItem.configuration.videoConfiguration.baseContentMode {
-        case .aspectFit:
-            let fitTransform = CGAffineTransform.transform(by: finalImage.extent, aspectFitInRect: CGRect(origin: .zero, size: renderSize))
-            transform = transform.concatenating(fitTransform)
-        case .aspectFill:
-            let fillTransform = CGAffineTransform.transform(by: finalImage.extent, aspectFillRect: CGRect(origin: .zero, size: renderSize))
-            transform = transform.concatenating(fillTransform)
-        }
-        finalImage = finalImage.transformed(by: transform)
-        
-        // TODO: other configuration
-        
-        let backgroundColor = CIColor(color: UIColor.black)
-        let backgroundImage = CIImage(color: backgroundColor).cropped(to: CGRect(origin: .zero, size: renderSize))
-        finalImage = finalImage.composited(over: backgroundImage)
+    open func apply(sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage {
+        let finalImage = videoCompositionProvider.applyEffect(to: sourceImage, at: time, renderSize: renderSize)
         return finalImage
     }
     
@@ -175,7 +161,6 @@ class VideoCompositionLayerInstruction {
 
 private extension CIImage {
     func flipYCoordinate() -> CIImage {
-        // Invert Y coordinate
         let flipYTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: extent.origin.y * 2 + extent.height)
         return transformed(by: flipYTransform)
     }

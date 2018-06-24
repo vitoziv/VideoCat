@@ -9,7 +9,7 @@
 import AVFoundation
 import CoreImage
 
-class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
+open class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
     
     static let ciContext: CIContext = CIContext()
     private let renderContextQueue: DispatchQueue = DispatchQueue(label: "videocore.rendercontextqueue")
@@ -18,15 +18,15 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
     private var shouldCancelAllRequests = false
     private var renderContext: AVVideoCompositionRenderContext?
     
-    var sourcePixelBufferAttributes: [String : Any]? =
+    public var sourcePixelBufferAttributes: [String : Any]? =
         [String(kCVPixelBufferPixelFormatTypeKey): kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
          String(kCVPixelBufferOpenGLESCompatibilityKey): true]
     
-    var requiredPixelBufferAttributesForRenderContext: [String : Any] =
+    public var requiredPixelBufferAttributesForRenderContext: [String : Any] =
         [String(kCVPixelBufferPixelFormatTypeKey): kCVPixelFormatType_420YpCbCr8BiPlanarFullRange,
          String(kCVPixelBufferOpenGLESCompatibilityKey): true]
     
-    func renderContextChanged(_ newRenderContext: AVVideoCompositionRenderContext) {
+    open func renderContextChanged(_ newRenderContext: AVVideoCompositionRenderContext) {
         renderContextQueue.sync(execute: { [weak self] in
             guard let strongSelf = self else { return }
             strongSelf.renderContext = newRenderContext
@@ -38,7 +38,7 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
         case newRenderedPixelBufferForRequestFailure
     }
     
-    func startRequest(_ request: AVAsynchronousVideoCompositionRequest) {
+    open func startRequest(_ request: AVAsynchronousVideoCompositionRequest) {
         autoreleasepool {
             renderingQueue.async(execute: { [weak self] in
                 guard let strongSelf = self else { return }
@@ -55,7 +55,7 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
         }
     }
     
-    func cancelAllPendingVideoCompositionRequests() {
+    open func cancelAllPendingVideoCompositionRequests() {
         shouldCancelAllRequests = true
         renderingQueue.async(flags: .barrier) { [weak self] in
             guard let strongSelf = self else { return }
@@ -63,7 +63,7 @@ class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
         }
     }
     
-    func newRenderedPixelBufferForRequest(request: AVAsynchronousVideoCompositionRequest) -> CVPixelBuffer? {
+    open func newRenderedPixelBufferForRequest(request: AVAsynchronousVideoCompositionRequest) -> CVPixelBuffer? {
         guard let outputPixels = renderContext?.newPixelBuffer() else { return nil }
         guard let instruction = request.videoCompositionInstruction as? VideoCompositionInstruction else {
             return nil

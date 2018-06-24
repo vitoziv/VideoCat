@@ -6,4 +6,10 @@
 //  Copyright © 2018 Vito. All rights reserved.
 //
 
-import Foundation
+import AVFoundation
+
+public protocol AudioTransition: class {
+    var identifier: String { get }
+    var duration: CMTime { get }
+    func apply(foregroundAudioMix: AVMutableAudioMixInputParameters, backgroundAudioMix: AVMutableAudioMixInputParameters)
+}

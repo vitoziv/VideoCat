@@ -41,42 +41,40 @@ class CompositionGenerator {
     
     private func buildComposition() -> AVMutableComposition {
         resetSetupInfo()
-        let composition = AVMutableComposition(urlAssetInitializationOptions: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
         
-        timeline.trackItems.forEach { (trackItem) in
-            let insertTime = trackItem.configuration.timelineTimeRange.start
-            
-            // Main video and audio
-            if let asset = trackItem.resource.trackAsset {
-                if let track = asset.tracks(withMediaType: .video).first {
-                    let trackID: Int32 = generateNextTrackID()
-                    let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: trackID)
-                    if let compositionTrack = compositionTrack {
-                        self.mainVideoTrackInfo[compositionTrack] = trackItem
-                        compositionTrack.preferredTransform = track.preferredTransform
-                        do {
-                            try compositionTrack.insertTimeRange(trackItem.resource.timeRange, of: track, at: insertTime)
-                        } catch {
-                            print(error.localizedDescription)
-                        }
-                    }
-                }
-                asset.tracks.filter({ $0.mediaType == .audio }).enumerated().forEach({ (offset, track) in
-                    // If audio bitrate is different, can't put them on the same track, otherwise, the compositor can't handle audio play rate.
-                    let trackID: Int32 = generateNextTrackID()
-                    let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: trackID)
-                    if let compositionTrack = compositionTrack {
-                        self.mainAudioTrackInfo[compositionTrack] = trackItem
-                        do {
-                            try compositionTrack.insertTimeRange(trackItem.resource.timeRange, of: track, at: insertTime)
-                        } catch {
-                            print(error.localizedDescription)
-                        }
-                    }
-                })
+        let composition = AVMutableComposition(urlAssetInitializationOptions: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
+        timeline.videoChannel.forEach({ (provider) in
+            let trackID: Int32 = generateNextTrackID()
+            if let compositionTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: trackID) {
+                provider.configure(compositionTrack: compositionTrack, channelID: "")
+                self.mainVideoTrackInfo[compositionTrack] = provider
             }
-            
-            // Other track. exp: overlay, image, video
+        })
+        
+        timeline.audioChannel.forEach { (channel) in
+            channel.audioProviders.forEach({ (provider) in
+                let trackID: Int32 = generateNextTrackID()
+                if let compositionTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: trackID) {
+                    provider.configure(compositionTrack: compositionTrack, channelID: channel.channelIdentifier)
+                    self.mainAudioTrackInfo[compositionTrack] = provider
+                }
+            })
+        }
+        
+        timeline.overlays.forEach { (provider) in
+            let trackID: Int32 = generateNextTrackID()
+            if let compositionTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: trackID) {
+                provider.configure(compositionTrack: compositionTrack, channelID: "")
+                self.overlayTrackInfo[compositionTrack] = provider
+            }
+        }
+        
+        timeline.audios.forEach { (provider) in
+            let trackID: Int32 = generateNextTrackID()
+            if let compositionTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: trackID) {
+                provider.configure(compositionTrack: compositionTrack, channelID: "")
+                self.audioTrackInfo[compositionTrack] = provider
+            }
         }
         
         return composition
@@ -91,14 +89,17 @@ class CompositionGenerator {
         
         var layerInstructions: [VideoCompositionLayerInstruction] = []
         videoTracks.forEach { (track) in
-            if let trackItem = mainVideoTrackInfo[track] {
-                let layerInstruction = VideoCompositionLayerInstruction(trackID: track.trackID, trackItem: trackItem)
-                layerInstruction.timeRange = trackItem.configuration.timelineTimeRange
-                layerInstruction.trackItem = trackItem
+            if let provider = mainVideoTrackInfo[track] {
+                let layerInstruction = VideoCompositionLayerInstruction.init(trackID: track.trackID, videoCompositionProvider: provider)
+                layerInstruction.timeRange = provider.timeRange
+                layerInstruction.transition = provider.videoTransition
+                layerInstructions.append(layerInstruction)
+            } else if let provider = overlayTrackInfo[track] {
+                // Other video overlay
+                let layerInstruction = VideoCompositionLayerInstruction.init(trackID: track.trackID, videoCompositionProvider: provider)
+                layerInstruction.timeRange = provider.timeRange
                 layerInstructions.append(layerInstruction)
             }
-            
-            // TODO: Other video overlay
         }
         
         // 创建多个 instruction，每个 instruction 保存当前时间所有的 layerInstruction，在渲染的时候可以直接拿到对应时间点所需要的 layerInstruction。
@@ -138,6 +139,7 @@ class CompositionGenerator {
             let trackIDs = slice.1.map({ $0.trackID })
             let instruction = VideoCompositionInstruction(theSourceTrackIDs: trackIDs as [NSValue], forTimeRange: slice.0)
             instruction.layerInstructions = slice.1
+            instruction.passingThroughVideoCompositionProvider = timeline.passingThroughVideoCompositionProvider
             instruction.mainTrackIDs = mainTrackIDs.filter({ trackIDs.contains($0) })
             return instruction
         })
@@ -152,15 +154,17 @@ class CompositionGenerator {
     fileprivate func buildAudioMix(with composition: AVComposition) -> AVMutableAudioMix? {
         var audioParameters = [AVMutableAudioMixInputParameters]()
         let audioTracks = composition.tracks(withMediaType: .audio)
-        // 没法像 instruction 一样，可以动态的修改处理行为。所以这里只能提前设置好指定的行为
-        // 动态行为，可以放到 audio tap 里
         audioTracks.forEach { (track) in
-            if let trackItem = mainAudioTrackInfo[track] {
+            if let provider = mainAudioTrackInfo[track] {
                 // Main track, should apply transition
                 let inputParameter = AVMutableAudioMixInputParameters(track: track)
-                let volume = trackItem.configuration.audioConfiguration.volume
-                inputParameter.setVolumeRamp(fromStartVolume: volume, toEndVolume: volume, timeRange: trackItem.configuration.timelineTimeRange)
-                inputParameter.audioProcessingTapHolder = trackItem.configuration.audioConfiguration.audioTapHolder
+                provider.configure(audioMixParameters: inputParameter)
+                audioParameters.append(inputParameter)
+                
+                // TODO: Transition support
+            } else if let provider = audioTrackInfo[track] {
+                let inputParameter = AVMutableAudioMixInputParameters(track: track)
+                provider.configure(audioMixParameters: inputParameter)
                 audioParameters.append(inputParameter)
             }
         }
@@ -182,15 +186,18 @@ class CompositionGenerator {
         return trackID
     }
     
-    private var mainVideoTrackInfo: [AVCompositionTrack: TrackItem] = [:]
-    private var mainAudioTrackInfo: [AVCompositionTrack: TrackItem] = [:]
+    private var mainVideoTrackInfo: [AVCompositionTrack: TransitionableVideoProvider] = [:]
+    private var mainAudioTrackInfo: [AVCompositionTrack: TransitionableAudioProvider] = [:]
+    private var overlayTrackInfo: [AVCompositionTrack: VideoProvider] = [:]
+    private var audioTrackInfo: [AVCompositionTrack: AudioProvider] = [:]
     
     private func resetSetupInfo() {
         increasementTrackID = 0
         mainVideoTrackInfo = [:]
         mainAudioTrackInfo = [:]
+        overlayTrackInfo = [:]
+        audioTrackInfo = [:]
     }
-    
     
 }
 
