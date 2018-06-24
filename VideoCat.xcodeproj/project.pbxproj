@@ -28,6 +28,7 @@
 		5F29D2411F74146700D41F50 /* VideoCatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2401F74146700D41F50 /* VideoCatTests.swift */; };
 		5F2A987E1FA4738F0032B5DF /* TimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2A987D1FA4738F0032B5DF /* TimelineViewModel.swift */; };
 		5F39496D20DC7F0F0096A61F /* TimeRangeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F39496C20DC7F0F0096A61F /* TimeRangeExtension.swift */; };
+		5F39497020DE12960096A61F /* CompositionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F39496F20DE12960096A61F /* CompositionProvider.swift */; };
 		5F3A1CB21F528FD5001895DB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3A1CB11F528FD5001895DB /* AppDelegate.swift */; };
 		5F3A1CB41F528FD5001895DB /* PanelViewController.swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3A1CB31F528FD5001895DB /* PanelViewController.swift.swift */; };
 		5F3A1CB71F528FD5001895DB /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5F3A1CB51F528FD5001895DB /* Main.storyboard */; };
@@ -38,6 +39,8 @@
 		5F6099B51F7DFD9800EA44A0 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0331F7D31580049CD3A /* WaveformView.swift */; };
 		5F6099B61F7DFDA000EA44A0 /* TimeRangePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0321F7D31580049CD3A /* TimeRangePickerView.swift */; };
 		5F6099C01F7E576E00EA44A0 /* EnlargeImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6099BF1F7E576E00EA44A0 /* EnlargeImageView.swift */; };
+		5F6429F920DF8C6F00080942 /* AudioTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6429F820DF8C6F00080942 /* AudioTransition.swift */; };
+		5F6429FB20DFA6FF00080942 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6429FA20DFA6FF00080942 /* Log.swift */; };
 		5F81A7F71F8D06B300D65DAA /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F81A7F61F8D06B300D65DAA /* VideoTimelineView.swift */; };
 		5F81A7F91F8D092800D65DAA /* TimeRangeProviderExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F81A7F81F8D092800D65DAA /* TimeRangeProviderExtensions.swift */; };
 		5F977C351F8B4CF90029156E /* AudioSampleOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F977C341F8B4CF90029156E /* AudioSampleOperation.swift */; };
@@ -97,6 +100,7 @@
 		5F29D2421F74146700D41F50 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5F2A987D1FA4738F0032B5DF /* TimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewModel.swift; sourceTree = "<group>"; };
 		5F39496C20DC7F0F0096A61F /* TimeRangeExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangeExtension.swift; sourceTree = "<group>"; };
+		5F39496F20DE12960096A61F /* CompositionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositionProvider.swift; sourceTree = "<group>"; };
 		5F3A1CAE1F528FD5001895DB /* VideoCat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoCat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F3A1CB11F528FD5001895DB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5F3A1CB31F528FD5001895DB /* PanelViewController.swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PanelViewController.swift.swift; sourceTree = "<group>"; };
@@ -108,6 +112,8 @@
 		5F5037A120482BBB00C5270B /* VideoTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTransition.swift; sourceTree = "<group>"; };
 		5F6099BB1F7DFDED00EA44A0 /* VideoCat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoCat-Bridging-Header.h"; sourceTree = "<group>"; };
 		5F6099BF1F7E576E00EA44A0 /* EnlargeImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EnlargeImageView.swift; path = ../../../../Videocat/VideoCat/Main/Util/EnlargeImageView.swift; sourceTree = "<group>"; };
+		5F6429F820DF8C6F00080942 /* AudioTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTransition.swift; sourceTree = "<group>"; };
+		5F6429FA20DFA6FF00080942 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		5F81A7F61F8D06B300D65DAA /* VideoTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
 		5F81A7F81F8D092800D65DAA /* TimeRangeProviderExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangeProviderExtensions.swift; sourceTree = "<group>"; };
 		5F977C341F8B4CF90029156E /* AudioSampleOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSampleOperation.swift; sourceTree = "<group>"; };
@@ -164,7 +170,6 @@
 		5F01AFF81F741D350049CD3A /* Track */ = {
 			isa = PBXGroup;
 			children = (
-				5F01AFFC1F741E0E0049CD3A /* Timeline.swift */,
 				5F29D2321F73F25B00D41F50 /* TrackItem.swift */,
 				5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */,
 				5F29D2361F73FEE200D41F50 /* TrackResource.swift */,
@@ -180,13 +185,11 @@
 				5FF8D3402032CEFF00240EE4 /* CompositionGenerator.swift */,
 				5F9DBECE2029F41300E8BFC4 /* VideoCompositor.swift */,
 				5F9DBED0202EA6C800E8BFC4 /* VideoCompositionInstruction.swift */,
-				5F5037A120482BBB00C5270B /* VideoTransition.swift */,
-				5FB64C272031977B004A09F8 /* APLCompositionDebugView.h */,
-				5FB64C282031977B004A09F8 /* APLCompositionDebugView.m */,
-				5FF8D33E2032B0D900240EE4 /* black_empty.mp4 */,
-				5FF8D3422046AFBF00240EE4 /* CGMathFunctions.swift */,
 				5F49914F20A30C64005C61C3 /* AudioProcessingTapHolder.swift */,
-				5F39496C20DC7F0F0096A61F /* TimeRangeExtension.swift */,
+				5F6429F520DF8B9900080942 /* Model */,
+				5F6429F620DF8BB300080942 /* Uitl */,
+				5F6429F720DF8BE600080942 /* Resource */,
+				5F39496E20DE12700096A61F /* Debug */,
 			);
 			path = Composition;
 			sourceTree = "<group>";
@@ -315,6 +318,15 @@
 			path = VideoCatTests;
 			sourceTree = "<group>";
 		};
+		5F39496E20DE12700096A61F /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				5FB64C272031977B004A09F8 /* APLCompositionDebugView.h */,
+				5FB64C282031977B004A09F8 /* APLCompositionDebugView.m */,
+			);
+			path = Debug;
+			sourceTree = "<group>";
+		};
 		5F3A1CA51F528FD5001895DB = {
 			isa = PBXGroup;
 			children = (
@@ -354,6 +366,35 @@
 				5F3A1CBD1F528FD5001895DB /* Info.plist */,
 			);
 			path = SupportFiles;
+			sourceTree = "<group>";
+		};
+		5F6429F520DF8B9900080942 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				5F01AFFC1F741E0E0049CD3A /* Timeline.swift */,
+				5F39496F20DE12960096A61F /* CompositionProvider.swift */,
+				5F5037A120482BBB00C5270B /* VideoTransition.swift */,
+				5F6429F820DF8C6F00080942 /* AudioTransition.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		5F6429F620DF8BB300080942 /* Uitl */ = {
+			isa = PBXGroup;
+			children = (
+				5FF8D3422046AFBF00240EE4 /* CGMathFunctions.swift */,
+				5F39496C20DC7F0F0096A61F /* TimeRangeExtension.swift */,
+				5F6429FA20DFA6FF00080942 /* Log.swift */,
+			);
+			path = Uitl;
+			sourceTree = "<group>";
+		};
+		5F6429F720DF8BE600080942 /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				5FF8D33E2032B0D900240EE4 /* black_empty.mp4 */,
+			);
+			path = Resource;
 			sourceTree = "<group>";
 		};
 		5F81A7F41F8D04F700D65DAA /* Component */ = {
@@ -459,7 +500,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0900;
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = Vito;
 				TargetAttributes = {
 					5F29D23D1F74146700D41F50 = {
@@ -594,6 +635,7 @@
 			files = (
 				5FE0883D1FB1EA1A00EA7963 /* UIStyle.swift in Sources */,
 				5F9DBED1202EA6C800E8BFC4 /* VideoCompositionInstruction.swift in Sources */,
+				5F6429FB20DFA6FF00080942 /* Log.swift in Sources */,
 				5F5037A220482BBB00C5270B /* VideoTransition.swift in Sources */,
 				5FB240EF2014C5B600A84411 /* TimelineCenter.swift in Sources */,
 				5F01B0151F794AD40049CD3A /* VIPlayer.swift in Sources */,
@@ -601,6 +643,7 @@
 				5FB64C292031977C004A09F8 /* APLCompositionDebugView.m in Sources */,
 				5F01AFFD1F741E0E0049CD3A /* Timeline.swift in Sources */,
 				5F49915020A30C64005C61C3 /* AudioProcessingTapHolder.swift in Sources */,
+				5F39497020DE12960096A61F /* CompositionProvider.swift in Sources */,
 				5F29D2391F740D9300D41F50 /* TrackVideoResource.swift in Sources */,
 				5FE088441FB9D75900EA7963 /* TimeLineView.swift in Sources */,
 				5F977C351F8B4CF90029156E /* AudioSampleOperation.swift in Sources */,
@@ -620,6 +663,7 @@
 				5F2A987E1FA4738F0032B5DF /* TimelineViewModel.swift in Sources */,
 				5F01B00C1F77CF420049CD3A /* MBProgressExtension.swift in Sources */,
 				5F39496D20DC7F0F0096A61F /* TimeRangeExtension.swift in Sources */,
+				5F6429F920DF8C6F00080942 /* AudioTransition.swift in Sources */,
 				5F6099C01F7E576E00EA44A0 /* EnlargeImageView.swift in Sources */,
 				5F9DBECD202752E900E8BFC4 /* AVPlayerSeeker.swift in Sources */,
 				5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */,
@@ -711,7 +755,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = arm64;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -722,6 +765,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -729,6 +773,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -761,6 +806,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
 				VALID_ARCHS = arm64;
 			};
 			name = Debug;
@@ -769,7 +815,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = arm64;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -780,6 +825,7 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -787,6 +833,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -811,6 +858,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = arm64;
 			};
