@@ -110,6 +110,10 @@ extension TrackItem: AudioProvider {
     public func configure(audioMixParameters: AVMutableAudioMixInputParameters) {
         let volume = configuration.audioConfiguration.volume
         audioMixParameters.setVolumeRamp(fromStartVolume: volume, toEndVolume: volume, timeRange: configuration.timelineTimeRange)
+        
+        let node = VolumeAudioProcessingNode.init()
+        let chain = AudioProcessingChain(node: node)
+        configuration.audioConfiguration.audioTapHolder?.audioProcessingChain = chain
         audioMixParameters.audioProcessingTapHolder = configuration.audioConfiguration.audioTapHolder
     }
 }

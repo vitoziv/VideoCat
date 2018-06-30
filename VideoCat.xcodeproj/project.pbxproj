@@ -21,6 +21,8 @@
 		5F01B0271F7BFC140049CD3A /* Moon River.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 5F01B0261F7BFC0F0049CD3A /* Moon River.mp3 */; };
 		5F01B0351F7D334D0049CD3A /* WaveformScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0341F7D334D0049CD3A /* WaveformScrollView.swift */; };
 		5F0E3D341FAA09720055904C /* PlayerTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F0E3D331FAA09720055904C /* PlayerTestViewController.swift */; };
+		5F2874CC20E7CAD600E51F85 /* AudioProcessingChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2874CB20E7CAD600E51F85 /* AudioProcessingChain.swift */; };
+		5F2874CE20E7CC2B00E51F85 /* AudioMixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2874CD20E7CC2B00E51F85 /* AudioMixer.swift */; };
 		5F29D2331F73F25B00D41F50 /* TrackItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2321F73F25B00D41F50 /* TrackItem.swift */; };
 		5F29D2351F73F41900D41F50 /* TrackConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */; };
 		5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2361F73FEE200D41F50 /* TrackResource.swift */; };
@@ -92,6 +94,8 @@
 		5F01B0331F7D31580049CD3A /* WaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
 		5F01B0341F7D334D0049CD3A /* WaveformScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformScrollView.swift; sourceTree = "<group>"; };
 		5F0E3D331FAA09720055904C /* PlayerTestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTestViewController.swift; sourceTree = "<group>"; };
+		5F2874CB20E7CAD600E51F85 /* AudioProcessingChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProcessingChain.swift; sourceTree = "<group>"; };
+		5F2874CD20E7CC2B00E51F85 /* AudioMixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMixer.swift; sourceTree = "<group>"; };
 		5F29D2321F73F25B00D41F50 /* TrackItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackItem.swift; sourceTree = "<group>"; };
 		5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackConfiguration.swift; sourceTree = "<group>"; };
 		5F29D2361F73FEE200D41F50 /* TrackResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackResource.swift; sourceTree = "<group>"; };
@@ -188,6 +192,8 @@
 				5F9DBECE2029F41300E8BFC4 /* VideoCompositor.swift */,
 				5F9DBED0202EA6C800E8BFC4 /* VideoCompositionInstruction.swift */,
 				5F49914F20A30C64005C61C3 /* AudioProcessingTapHolder.swift */,
+				5F2874CB20E7CAD600E51F85 /* AudioProcessingChain.swift */,
+				5F2874CD20E7CC2B00E51F85 /* AudioMixer.swift */,
 				5F6429F520DF8B9900080942 /* Model */,
 				5F6429F620DF8BB300080942 /* Uitl */,
 				5F6429F720DF8BE600080942 /* Resource */,
@@ -646,9 +652,11 @@
 			files = (
 				5FE0883D1FB1EA1A00EA7963 /* UIStyle.swift in Sources */,
 				5F9DBED1202EA6C800E8BFC4 /* VideoCompositionInstruction.swift in Sources */,
+				5F2874CE20E7CC2B00E51F85 /* AudioMixer.swift in Sources */,
 				5F6429FB20DFA6FF00080942 /* Log.swift in Sources */,
 				5F5037A220482BBB00C5270B /* VideoTransition.swift in Sources */,
 				5FB240EF2014C5B600A84411 /* TimelineCenter.swift in Sources */,
+				5F2874CC20E7CAD600E51F85 /* AudioProcessingChain.swift in Sources */,
 				5F01B0151F794AD40049CD3A /* VIPlayer.swift in Sources */,
 				5FF8D3412032CEFF00240EE4 /* CompositionGenerator.swift in Sources */,
 				5FB64C292031977C004A09F8 /* APLCompositionDebugView.m in Sources */,

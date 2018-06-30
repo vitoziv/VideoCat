@@ -98,6 +98,8 @@ extension PanelViewController: AssetsViewControllerDelegate {
                 transition.duration = CMTime(value: 3, timescale: 2)
                 trackItem.videoTransition = transition
                 trackItem.resource.timeRange = CMTimeRangeMake(kCMTimeZero, resource.trackAsset!.duration)
+                let audioTapHolder = AudioProcessingTapHolder()
+                trackItem.configuration.audioConfiguration.audioTapHolder = audioTapHolder
                 strongSelf.viewModel.insertTrackItem(trackItem, at: index)
                 strongSelf.videoView.player.replaceCurrentItem(strongSelf.viewModel.playerItem)
                 strongSelf.compositionDebugView.synchronize(to: strongSelf.viewModel.playerItem.asset as! AVComposition,

@@ -56,7 +56,7 @@ class CompositionGenerator {
                 let trackID: Int32 = generateNextTrackID()
                 if let compositionTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: trackID) {
                     provider.configure(compositionTrack: compositionTrack, channelID: channel.channelIdentifier)
-                    self.mainAudioTrackInfo[compositionTrack] = provider
+                    self.audioTrackInfo[compositionTrack] = provider
                 }
             })
         }
@@ -155,14 +155,7 @@ class CompositionGenerator {
         var audioParameters = [AVMutableAudioMixInputParameters]()
         let audioTracks = composition.tracks(withMediaType: .audio)
         audioTracks.forEach { (track) in
-            if let provider = mainAudioTrackInfo[track] {
-                // Main track, should apply transition
-                let inputParameter = AVMutableAudioMixInputParameters(track: track)
-                provider.configure(audioMixParameters: inputParameter)
-                audioParameters.append(inputParameter)
-                
-                // TODO: Transition support
-            } else if let provider = audioTrackInfo[track] {
+            if let provider = audioTrackInfo[track] {
                 let inputParameter = AVMutableAudioMixInputParameters(track: track)
                 provider.configure(audioMixParameters: inputParameter)
                 audioParameters.append(inputParameter)
@@ -187,14 +180,12 @@ class CompositionGenerator {
     }
     
     private var mainVideoTrackInfo: [AVCompositionTrack: TransitionableVideoProvider] = [:]
-    private var mainAudioTrackInfo: [AVCompositionTrack: TransitionableAudioProvider] = [:]
     private var overlayTrackInfo: [AVCompositionTrack: VideoProvider] = [:]
     private var audioTrackInfo: [AVCompositionTrack: AudioProvider] = [:]
     
     private func resetSetupInfo() {
         increasementTrackID = 0
         mainVideoTrackInfo = [:]
-        mainAudioTrackInfo = [:]
         overlayTrackInfo = [:]
         audioTrackInfo = [:]
     }
@@ -211,7 +202,7 @@ extension AVMutableAudioMixInputParameters {
         }
         set(newValue) {
             objc_setAssociatedObject(self, &AVMutableAudioMixInputParameters.audioProcessingTapHolderKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
-            audioTapProcessor = newValue?.tap?.takeRetainedValue()
+            audioTapProcessor = newValue?.tap
         }
     }
 }

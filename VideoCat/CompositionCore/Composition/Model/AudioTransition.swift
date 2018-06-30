@@ -8,8 +8,19 @@
 
 import AVFoundation
 
-public protocol AudioTransition: class {
-    var identifier: String { get }
-    var duration: CMTime { get }
-    func apply(foregroundAudioMix: AVMutableAudioMixInputParameters, backgroundAudioMix: AVMutableAudioMixInputParameters)
+open class AudioTransition {
+    
+    public var identifier: String
+    open var duration: CMTime
+    
+    public var previousAudioMixEndVolume: Float
+    public var nextAudioMixStartVolume: Float
+    
+    public init(duration: CMTime = kCMTimeZero) {
+        self.identifier = ""
+        self.duration = duration
+        self.previousAudioMixEndVolume = 0
+        self.nextAudioMixStartVolume = 0
+    }
+    
 }

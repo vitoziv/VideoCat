@@ -9,46 +9,11 @@
 import AVFoundation
 
 class AudioProcessingTapHolder {
-    var tapInit: MTAudioProcessingTapInitCallback = {
-        (tap, clientInfo, tapStorageOut) in
-        
-        let nonOptionalSelf = clientInfo!.assumingMemoryBound(to: AppDelegate.self).pointee
-        
-        Log.debug("init \(tap, clientInfo, tapStorageOut, nonOptionalSelf)\n")
-        //            tapStorageOut.assignFrom(source:clientInfo, count: 1)
-        //            tapStorageOut.init(clientInfo)
-    }
     
-    var tapFinalize: MTAudioProcessingTapFinalizeCallback = {
-        (tap) in
-        Log.debug("finalize \(tap)\n")
-    }
+    fileprivate(set) var tap: MTAudioProcessingTap?
+    var audioProcessingChain: AudioProcessingChain?
     
-    var tapPrepare: MTAudioProcessingTapPrepareCallback = {
-        (tap, b, c) in
-        Log.debug("prepare: \(tap, b, c)\n")
-    }
-    
-    var tapUnprepare: MTAudioProcessingTapUnprepareCallback = {
-        (tap) in
-        Log.debug("unprepare \(tap)\n")
-    }
-    
-    var tapProcess: MTAudioProcessingTapProcessCallback = {
-        (tap, numberFrames, flags, bufferListInOut, numberFramesOut, flagsOut) in
-        Log.debug("callback \(tap, numberFrames, flags, bufferListInOut, numberFramesOut, flagsOut)\n")
-        
-        let status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, nil, numberFramesOut)
-        Log.debug("get audio: \(status)\n")
-    }
-    
-    var tap: Unmanaged<MTAudioProcessingTap>?
-    
-    deinit {
-        tap?.release()
-    }
-    
-    init() {
+    init() {        
         var callbacks = MTAudioProcessingTapCallbacks(
             version: kMTAudioProcessingTapCallbacksVersion_0,
             clientInfo: UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()),
@@ -59,11 +24,47 @@ class AudioProcessingTapHolder {
             process: tapProcess)
         var tap: Unmanaged<MTAudioProcessingTap>?
         let err = MTAudioProcessingTapCreate(kCFAllocatorDefault, &callbacks, kMTAudioProcessingTapCreationFlag_PostEffects, &tap)
-        
-        Log.debug("err: \(err)\n")
         if err != noErr {
-            Log.debug("Warning: failed to create audioProcessingTap")
+            Log.error("error: failed to create audioProcessingTap")
         }
-        self.tap = tap
+        self.tap = tap?.autorelease().takeRetainedValue()
+    }
+    
+    // MARK: - Handler
+    fileprivate var tapInit: MTAudioProcessingTapInitCallback = {
+        (tap, clientInfo, tapStorageOut) in
+        Log.info("init \(tap, clientInfo, tapStorageOut)\n")
+        tapStorageOut.pointee = clientInfo
+    }
+    
+    fileprivate var tapFinalize: MTAudioProcessingTapFinalizeCallback = {
+        (tap) in
+        Log.info("finalize \(tap)\n")
+    }
+    
+    fileprivate var tapPrepare: MTAudioProcessingTapPrepareCallback = {
+        (tap, maxFrames, processingFormat) in
+        Log.info("prepare: \(tap, maxFrames, processingFormat)\n")
+    }
+    
+    fileprivate var tapUnprepare: MTAudioProcessingTapUnprepareCallback = {
+        (tap) in
+        Log.info("unprepare \(tap)\n")
+    }
+    
+    fileprivate var tapProcess: MTAudioProcessingTapProcessCallback = {
+        (tap, numberFrames, flags, bufferListInOut, numberFramesOut, flagsOut) in
+        Log.info("callback \(tap, numberFrames, flags, bufferListInOut, numberFramesOut, flagsOut)\n")
+        let tapHolderStorage = Unmanaged<AudioProcessingTapHolder>.fromOpaque(MTAudioProcessingTapGetStorage(tap))
+        let tapHolder = tapHolderStorage.takeUnretainedValue()
+        
+        var timeRange: CMTimeRange = kCMTimeRangeZero
+        let status = MTAudioProcessingTapGetSourceAudio(tap, numberFrames, bufferListInOut, flagsOut, &timeRange, numberFramesOut)
+        if status != noErr {
+            Log.error("error: failed to get source audio")
+            return;
+        }
+        tapHolder.audioProcessingChain?.process(timeRange: timeRange, bufferListInOut: bufferListInOut)
     }
 }
+
