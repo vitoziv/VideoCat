@@ -9,7 +9,8 @@
 import Foundation
 
 public protocol CompositionTrackProvider {
-    func configure(compositionTrack: AVMutableCompositionTrack, channelID: String)
+    func numberOfTracks(for mediaType: AVMediaType) -> Int 
+    func configure(compositionTrack: AVMutableCompositionTrack, index: Int)
 }
 
 public protocol AudioMixProvider {
@@ -36,8 +37,4 @@ public protocol AudioProvider: CompositionTrackProvider, AudioMixProvider { }
 
 public protocol TransitionableVideoProvider: VideoProvider {
     var videoTransition: VideoTransition? { get }
-}
-
-public protocol TransitionableAudioProvider: AudioProvider {
-    var audioTransition: AudioTransition? { get }
 }

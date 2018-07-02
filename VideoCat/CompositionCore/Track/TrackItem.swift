@@ -15,7 +15,6 @@ public class TrackItem {
     public var configuration: TrackConfiguration
     
     public var videoTransition: VideoTransition?
-    public var audioTransition: AudioTransition?
     
     init(resource: TrackResource) {
         identifier = ProcessInfo.processInfo.globallyUniqueString
@@ -34,11 +33,15 @@ public extension TrackItem {
     }
 }
 
-let TrackItem_AudioChannelIdentifier1 = "1"
-let TrackItem_AudioChannelIdentifier2 = "2"
-
 extension TrackItem: CompositionTrackProvider {
-    public func configure(compositionTrack: AVMutableCompositionTrack, channelID: String) {
+    public func numberOfTracks(for mediaType: AVMediaType) -> Int {
+        if let asset = resource.trackAsset {
+            return asset.tracks(withMediaType: mediaType).count
+        }
+        return 0
+    }
+    
+    public func configure(compositionTrack: AVMutableCompositionTrack, index: Int) {
         if let asset = resource.trackAsset {
             func insertTrackToCompositionTrack(_ track: AVAssetTrack) {
                 do {
@@ -54,18 +57,8 @@ extension TrackItem: CompositionTrackProvider {
                 }
             } else if compositionTrack.mediaType == .audio {
                 let tracks = asset.tracks(withMediaType: .audio)
-                if channelID == TrackItem_AudioChannelIdentifier1 {
-                    if tracks.count > 0 {
-                        insertTrackToCompositionTrack(tracks[0])
-                    }
-                } else if channelID == TrackItem_AudioChannelIdentifier2 {
-                    if tracks.count > 0 {
-                        insertTrackToCompositionTrack(tracks[1])
-                    }
-                } else {
-                    if let track = tracks.first {
-                        insertTrackToCompositionTrack(track)
-                    }
+                if tracks.count > index {
+                    insertTrackToCompositionTrack(tracks[index])
                 }
             }
         }
@@ -122,10 +115,6 @@ extension TrackItem: TransitionableVideoProvider {
     
 }
 
-extension TrackItem: TransitionableAudioProvider {
-    
-    
-}
 
 private extension CIImage {
     func flipYCoordinate() -> CIImage {

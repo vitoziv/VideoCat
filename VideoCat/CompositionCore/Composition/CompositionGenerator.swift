@@ -44,36 +44,42 @@ class CompositionGenerator {
         
         let composition = AVMutableComposition(urlAssetInitializationOptions: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
         timeline.videoChannel.forEach({ (provider) in
-            let trackID: Int32 = generateNextTrackID()
-            if let compositionTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: trackID) {
-                provider.configure(compositionTrack: compositionTrack, channelID: "")
-                self.mainVideoTrackInfo[compositionTrack] = provider
+            for index in 0..<provider.numberOfTracks(for: .video) {
+                let trackID: Int32 = generateNextTrackID()
+                if let compositionTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: trackID) {
+                    provider.configure(compositionTrack: compositionTrack, index: index)
+                    self.mainVideoTrackInfo[compositionTrack] = provider
+                }
             }
         })
         
-        timeline.audioChannel.forEach { (channel) in
-            channel.audioProviders.forEach({ (provider) in
+        timeline.audioChannel.forEach { (provider) in
+            for index in 0..<provider.numberOfTracks(for: .audio) {
                 let trackID: Int32 = generateNextTrackID()
                 if let compositionTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: trackID) {
-                    provider.configure(compositionTrack: compositionTrack, channelID: channel.channelIdentifier)
+                    provider.configure(compositionTrack: compositionTrack, index: index)
                     self.audioTrackInfo[compositionTrack] = provider
                 }
-            })
+            }
         }
         
         timeline.overlays.forEach { (provider) in
-            let trackID: Int32 = generateNextTrackID()
-            if let compositionTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: trackID) {
-                provider.configure(compositionTrack: compositionTrack, channelID: "")
-                self.overlayTrackInfo[compositionTrack] = provider
+            for index in 0..<provider.numberOfTracks(for: .video) {
+                let trackID: Int32 = generateNextTrackID()
+                if let compositionTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: trackID) {
+                    provider.configure(compositionTrack: compositionTrack, index: index)
+                    self.overlayTrackInfo[compositionTrack] = provider
+                }
             }
         }
         
         timeline.audios.forEach { (provider) in
-            let trackID: Int32 = generateNextTrackID()
-            if let compositionTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: trackID) {
-                provider.configure(compositionTrack: compositionTrack, channelID: "")
-                self.audioTrackInfo[compositionTrack] = provider
+            for index in 0..<provider.numberOfTracks(for: .audio) {
+                let trackID: Int32 = generateNextTrackID()
+                if let compositionTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: trackID) {
+                    provider.configure(compositionTrack: compositionTrack, index: index)
+                    self.audioTrackInfo[compositionTrack] = provider
+                }
             }
         }
         

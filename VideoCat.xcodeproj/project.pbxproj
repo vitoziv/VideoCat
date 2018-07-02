@@ -41,7 +41,6 @@
 		5F6099B51F7DFD9800EA44A0 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0331F7D31580049CD3A /* WaveformView.swift */; };
 		5F6099B61F7DFDA000EA44A0 /* TimeRangePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F01B0321F7D31580049CD3A /* TimeRangePickerView.swift */; };
 		5F6099C01F7E576E00EA44A0 /* EnlargeImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6099BF1F7E576E00EA44A0 /* EnlargeImageView.swift */; };
-		5F6429F920DF8C6F00080942 /* AudioTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6429F820DF8C6F00080942 /* AudioTransition.swift */; };
 		5F6429FB20DFA6FF00080942 /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6429FA20DFA6FF00080942 /* Log.swift */; };
 		5F6429FE20E0016700080942 /* TimeRangeStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6429FD20E0016700080942 /* TimeRangeStore.swift */; };
 		5F81A7F71F8D06B300D65DAA /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F81A7F61F8D06B300D65DAA /* VideoTimelineView.swift */; };
@@ -117,7 +116,6 @@
 		5F5037A120482BBB00C5270B /* VideoTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTransition.swift; sourceTree = "<group>"; };
 		5F6099BB1F7DFDED00EA44A0 /* VideoCat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VideoCat-Bridging-Header.h"; sourceTree = "<group>"; };
 		5F6099BF1F7E576E00EA44A0 /* EnlargeImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = EnlargeImageView.swift; path = ../../../../Videocat/VideoCat/Main/Util/EnlargeImageView.swift; sourceTree = "<group>"; };
-		5F6429F820DF8C6F00080942 /* AudioTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTransition.swift; sourceTree = "<group>"; };
 		5F6429FA20DFA6FF00080942 /* Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		5F6429FD20E0016700080942 /* TimeRangeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangeStore.swift; sourceTree = "<group>"; };
 		5F81A7F61F8D06B300D65DAA /* VideoTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
@@ -382,7 +380,6 @@
 				5F01AFFC1F741E0E0049CD3A /* Timeline.swift */,
 				5F39496F20DE12960096A61F /* CompositionProvider.swift */,
 				5F5037A120482BBB00C5270B /* VideoTransition.swift */,
-				5F6429F820DF8C6F00080942 /* AudioTransition.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -683,7 +680,6 @@
 				5F2A987E1FA4738F0032B5DF /* TimelineViewModel.swift in Sources */,
 				5F01B00C1F77CF420049CD3A /* MBProgressExtension.swift in Sources */,
 				5F39496D20DC7F0F0096A61F /* TimeRangeExtension.swift in Sources */,
-				5F6429F920DF8C6F00080942 /* AudioTransition.swift in Sources */,
 				5F6099C01F7E576E00EA44A0 /* EnlargeImageView.swift in Sources */,
 				5F9DBECD202752E900E8BFC4 /* AVPlayerSeeker.swift in Sources */,
 				5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */,

@@ -66,15 +66,7 @@ class TimelineViewModel {
     
     fileprivate func reloadTimeline(_ timeline: Timeline) {
         timeline.videoChannel = trackItems
-        timeline.audioChannel = {
-            let audioChannel1 = AudioChannel()
-            audioChannel1.audioProviders = trackItems
-            audioChannel1.channelIdentifier = TrackItem_AudioChannelIdentifier1
-            let audioChannel2 = AudioChannel()
-            audioChannel2.audioProviders = trackItems
-            audioChannel2.channelIdentifier = TrackItem_AudioChannelIdentifier1
-            return [audioChannel1, audioChannel2]
-        }()
+        timeline.audioChannel = trackItems
     }
     
 }

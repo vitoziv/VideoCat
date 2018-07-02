@@ -14,20 +14,12 @@ public class Timeline {
     public var renderSize = CGSize.zero
     public var passingThroughVideoCompositionProvider: PassingThroughVideoCompositionProvider?
     
-    // MARK: - Main content, arranged in order, support transition.
+    // MARK: - Main content, support transition.
     public var videoChannel: [TransitionableVideoProvider] = []
-    public var audioChannel: [AudioChannel] = []
+    public var audioChannel: [AudioProvider] = []
     
     // MARK: - Other content, can place anywhere in timeline
     public var overlays: [VideoProvider] = []
     public var audios: [AudioProvider] = []
     
-    
 }
-
-public class AudioChannel {
-    public var channelIdentifier: String = ""
-    public var audioProviders: [TransitionableAudioProvider] = []
-}
-
-
