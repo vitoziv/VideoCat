@@ -53,14 +53,17 @@ class CompositionGenerator {
             }
         })
         
+        var previousAudioTransition: AudioTransition?
         timeline.audioChannel.forEach { (provider) in
             for index in 0..<provider.numberOfTracks(for: .audio) {
                 let trackID: Int32 = generateNextTrackID()
                 if let compositionTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: trackID) {
                     provider.configure(compositionTrack: compositionTrack, index: index)
-                    self.audioTrackInfo[compositionTrack] = provider
+                    self.mainAudioTrackInfo[compositionTrack] = provider
+                    audioTransitionInfo[compositionTrack] = (previousAudioTransition, provider.audioTransition)
                 }
             }
+            previousAudioTransition = provider.audioTransition
         }
         
         timeline.overlays.forEach { (provider) in
@@ -109,6 +112,85 @@ class CompositionGenerator {
         }
         
         // 创建多个 instruction，每个 instruction 保存当前时间所有的 layerInstruction，在渲染的时候可以直接拿到对应时间点所需要的 layerInstruction。
+        let layerInstructionsSlices = calculateSlices(for: layerInstructions)
+        let mainTrackIDs = mainVideoTrackInfo.keys.map({ $0.trackID })
+        let instructions: [VideoCompositionInstruction] = layerInstructionsSlices.map({ (slice) in
+            let trackIDs = slice.1.map({ $0.trackID })
+            let instruction = VideoCompositionInstruction(theSourceTrackIDs: trackIDs as [NSValue], forTimeRange: slice.0)
+            instruction.layerInstructions = slice.1
+            instruction.passingThroughVideoCompositionProvider = timeline.passingThroughVideoCompositionProvider
+            instruction.mainTrackIDs = mainTrackIDs.filter({ trackIDs.contains($0) })
+            return instruction
+        })
+        
+        videoComposition.instructions = instructions
+        
+        videoComposition.customVideoCompositorClass = VideoCompositor.self
+        
+        return videoComposition
+    }
+    
+    fileprivate func buildAudioMix(with composition: AVComposition) -> AVMutableAudioMix? {
+        var audioParameters = [AVMutableAudioMixInputParameters]()
+        let audioTracks = composition.tracks(withMediaType: .audio)
+        
+        audioTracks.forEach { (track) in
+            if let provider = mainAudioTrackInfo[track] {
+                let inputParameter = AVMutableAudioMixInputParameters(track: track)
+                provider.configure(audioMixParameters: inputParameter)
+                let transitions = audioTransitionInfo[track]
+                if let transition = transitions?.0 {
+                    if let targetTimeRange = track.segments.first?.timeMapping.target {
+                        transition.applyNextAudioMixInputParameters(inputParameter, timeRange: targetTimeRange)
+                    }
+                }
+                if let transition = transitions?.1 {
+                    if let targetTimeRange = track.segments.first?.timeMapping.target {
+                        transition.applyPreviousAudioMixInputParameters(inputParameter, timeRange: targetTimeRange)
+                    }
+                }
+                
+                audioParameters.append(inputParameter)
+            } else if let provider = audioTrackInfo[track] {
+                let inputParameter = AVMutableAudioMixInputParameters(track: track)
+                provider.configure(audioMixParameters: inputParameter)
+                audioParameters.append(inputParameter)
+            }
+        }
+        if audioParameters.count == 0 {
+            return nil
+        }
+        
+        let audioMix = AVMutableAudioMix()
+        audioMix.inputParameters = audioParameters
+        return audioMix
+    }
+    
+    // MARK: - Helper
+    
+    private var increasementTrackID: Int32 = 0
+    private func generateNextTrackID() -> Int32 {
+        let trackID = increasementTrackID + 1
+        increasementTrackID = trackID
+        return trackID
+    }
+    
+    private var mainVideoTrackInfo: [AVCompositionTrack: TransitionableVideoProvider] = [:]
+    private var mainAudioTrackInfo: [AVCompositionTrack: TransitionableAudioProvider] = [:]
+    private var overlayTrackInfo: [AVCompositionTrack: VideoProvider] = [:]
+    private var audioTrackInfo: [AVCompositionTrack: AudioProvider] = [:]
+    private var audioTransitionInfo = [AVCompositionTrack: (AudioTransition?, AudioTransition?)]()
+    
+    private func resetSetupInfo() {
+        increasementTrackID = 0
+        mainVideoTrackInfo = [:]
+        mainAudioTrackInfo = [:]
+        overlayTrackInfo = [:]
+        audioTrackInfo = [:]
+        audioTransitionInfo = [:]
+    }
+    
+    private func calculateSlices(for layerInstructions: [VideoCompositionLayerInstruction]) -> [(CMTimeRange, [VideoCompositionLayerInstruction])] {
         var layerInstructionsSlices: [(CMTimeRange, [VideoCompositionLayerInstruction])] = []
         layerInstructions.forEach { (layerInstruction) in
             var slices = layerInstructionsSlices
@@ -140,62 +222,8 @@ class CompositionGenerator {
             
             layerInstructionsSlices = slices
         }
-        let mainTrackIDs = mainVideoTrackInfo.keys.map({ $0.trackID })
-        let instructions: [VideoCompositionInstruction] = layerInstructionsSlices.map({ (slice) in
-            let trackIDs = slice.1.map({ $0.trackID })
-            let instruction = VideoCompositionInstruction(theSourceTrackIDs: trackIDs as [NSValue], forTimeRange: slice.0)
-            instruction.layerInstructions = slice.1
-            instruction.passingThroughVideoCompositionProvider = timeline.passingThroughVideoCompositionProvider
-            instruction.mainTrackIDs = mainTrackIDs.filter({ trackIDs.contains($0) })
-            return instruction
-        })
-        
-        videoComposition.instructions = instructions
-        
-        videoComposition.customVideoCompositorClass = VideoCompositor.self
-        
-        return videoComposition
+        return layerInstructionsSlices
     }
-    
-    fileprivate func buildAudioMix(with composition: AVComposition) -> AVMutableAudioMix? {
-        var audioParameters = [AVMutableAudioMixInputParameters]()
-        let audioTracks = composition.tracks(withMediaType: .audio)
-        audioTracks.forEach { (track) in
-            if let provider = audioTrackInfo[track] {
-                let inputParameter = AVMutableAudioMixInputParameters(track: track)
-                provider.configure(audioMixParameters: inputParameter)
-                audioParameters.append(inputParameter)
-            }
-        }
-        if audioParameters.count == 0 {
-            return nil
-        }
-        
-        let audioMix = AVMutableAudioMix()
-        audioMix.inputParameters = audioParameters
-        return audioMix
-    }
-    
-    // MARK: - Helper
-    
-    private var increasementTrackID: Int32 = 0
-    private func generateNextTrackID() -> Int32 {
-        let trackID = increasementTrackID + 1
-        increasementTrackID = trackID
-        return trackID
-    }
-    
-    private var mainVideoTrackInfo: [AVCompositionTrack: TransitionableVideoProvider] = [:]
-    private var overlayTrackInfo: [AVCompositionTrack: VideoProvider] = [:]
-    private var audioTrackInfo: [AVCompositionTrack: AudioProvider] = [:]
-    
-    private func resetSetupInfo() {
-        increasementTrackID = 0
-        mainVideoTrackInfo = [:]
-        overlayTrackInfo = [:]
-        audioTrackInfo = [:]
-    }
-    
 }
 
 // MARK: -
@@ -210,6 +238,13 @@ extension AVMutableAudioMixInputParameters {
             objc_setAssociatedObject(self, &AVMutableAudioMixInputParameters.audioProcessingTapHolderKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN)
             audioTapProcessor = newValue?.tap
         }
+    }
+    
+    func appendAudioProcessNode(_ node: AudioProcessingNode) {
+        if audioProcessingTapHolder == nil {
+            audioProcessingTapHolder = AudioProcessingTapHolder()
+        }
+        audioProcessingTapHolder?.audioProcessingChain.nodes.append(node)
     }
 }
 

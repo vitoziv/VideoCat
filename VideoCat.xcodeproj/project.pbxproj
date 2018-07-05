@@ -23,6 +23,8 @@
 		5F0E3D341FAA09720055904C /* PlayerTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F0E3D331FAA09720055904C /* PlayerTestViewController.swift */; };
 		5F2874CC20E7CAD600E51F85 /* AudioProcessingChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2874CB20E7CAD600E51F85 /* AudioProcessingChain.swift */; };
 		5F2874CE20E7CC2B00E51F85 /* AudioMixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2874CD20E7CC2B00E51F85 /* AudioMixer.swift */; };
+		5F2874D020EB07C500E51F85 /* AudioTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2874CF20EB07C500E51F85 /* AudioTransition.swift */; };
+		5F2874D220EDAEC800E51F85 /* TimingFunction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2874D120EDAEC800E51F85 /* TimingFunction.swift */; };
 		5F29D2331F73F25B00D41F50 /* TrackItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2321F73F25B00D41F50 /* TrackItem.swift */; };
 		5F29D2351F73F41900D41F50 /* TrackConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */; };
 		5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2361F73FEE200D41F50 /* TrackResource.swift */; };
@@ -95,6 +97,8 @@
 		5F0E3D331FAA09720055904C /* PlayerTestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerTestViewController.swift; sourceTree = "<group>"; };
 		5F2874CB20E7CAD600E51F85 /* AudioProcessingChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioProcessingChain.swift; sourceTree = "<group>"; };
 		5F2874CD20E7CC2B00E51F85 /* AudioMixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioMixer.swift; sourceTree = "<group>"; };
+		5F2874CF20EB07C500E51F85 /* AudioTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTransition.swift; sourceTree = "<group>"; };
+		5F2874D120EDAEC800E51F85 /* TimingFunction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingFunction.swift; sourceTree = "<group>"; };
 		5F29D2321F73F25B00D41F50 /* TrackItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackItem.swift; sourceTree = "<group>"; };
 		5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackConfiguration.swift; sourceTree = "<group>"; };
 		5F29D2361F73FEE200D41F50 /* TrackResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackResource.swift; sourceTree = "<group>"; };
@@ -380,6 +384,7 @@
 				5F01AFFC1F741E0E0049CD3A /* Timeline.swift */,
 				5F39496F20DE12960096A61F /* CompositionProvider.swift */,
 				5F5037A120482BBB00C5270B /* VideoTransition.swift */,
+				5F2874CF20EB07C500E51F85 /* AudioTransition.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -390,6 +395,7 @@
 				5FF8D3422046AFBF00240EE4 /* CGMathFunctions.swift */,
 				5F39496C20DC7F0F0096A61F /* TimeRangeExtension.swift */,
 				5F6429FA20DFA6FF00080942 /* Log.swift */,
+				5F2874D120EDAEC800E51F85 /* TimingFunction.swift */,
 			);
 			path = Uitl;
 			sourceTree = "<group>";
@@ -675,6 +681,7 @@
 				5F01AFFF1F7794370049CD3A /* AssetsViewController.swift in Sources */,
 				5F6429FE20E0016700080942 /* TimeRangeStore.swift in Sources */,
 				5F81A7F71F8D06B300D65DAA /* VideoTimelineView.swift in Sources */,
+				5F2874D220EDAEC800E51F85 /* TimingFunction.swift in Sources */,
 				5F29D2331F73F25B00D41F50 /* TrackItem.swift in Sources */,
 				5FF8D3432046AFBF00240EE4 /* CGMathFunctions.swift in Sources */,
 				5F2A987E1FA4738F0032B5DF /* TimelineViewModel.swift in Sources */,
@@ -692,6 +699,7 @@
 				5F01B0071F77A08C0049CD3A /* StringExtension.swift in Sources */,
 				5F01B0101F79447B0049CD3A /* PrepareVideoViewController.swift in Sources */,
 				5F81A7F91F8D092800D65DAA /* TimeRangeProviderExtensions.swift in Sources */,
+				5F2874D020EB07C500E51F85 /* AudioTransition.swift in Sources */,
 				5F29D2351F73F41900D41F50 /* TrackConfiguration.swift in Sources */,
 				5FE088421FB846D200EA7963 /* VideoRangeView.swift in Sources */,
 			);

@@ -11,7 +11,7 @@ import AVFoundation
 class AudioProcessingTapHolder {
     
     fileprivate(set) var tap: MTAudioProcessingTap?
-    var audioProcessingChain: AudioProcessingChain?
+    var audioProcessingChain = AudioProcessingChain()
     
     init() {        
         var callbacks = MTAudioProcessingTapCallbacks(
@@ -64,7 +64,7 @@ class AudioProcessingTapHolder {
             Log.error("error: failed to get source audio")
             return;
         }
-        tapHolder.audioProcessingChain?.process(timeRange: timeRange, bufferListInOut: bufferListInOut)
+        tapHolder.audioProcessingChain.process(timeRange: timeRange, bufferListInOut: bufferListInOut)
     }
 }
 

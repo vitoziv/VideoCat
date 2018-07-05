@@ -9,40 +9,42 @@
 import Foundation
 
 protocol AudioProcessingNode: class {
-    var next: AudioProcessingNode? { get }
     func process(timeRange: CMTimeRange, bufferListInOut: UnsafeMutablePointer<AudioBufferList>)
 }
 
-class BaseAudioProcessingNode: AudioProcessingNode {
-    var next: AudioProcessingNode?
+class VolumeAudioProcessingNode: AudioProcessingNode {
     
-    func process(timeRange: CMTimeRange, bufferListInOut: UnsafeMutablePointer<AudioBufferList>) { }
-}
-
-class VolumeAudioProcessingNode: BaseAudioProcessingNode {
+    var timeRange: CMTimeRange
+    var startVolume: Float
+    var endVolume: Float
+    var timingFunction: ((Double) -> Double)?
+    init(timeRange: CMTimeRange, startVolume: Float, endVolume: Float) {
+        self.timeRange = timeRange
+        self.startVolume = startVolume
+        self.endVolume = endVolume
+    }
     
-    override func process(timeRange: CMTimeRange, bufferListInOut: UnsafeMutablePointer<AudioBufferList>) {
-        // TODO: 支持音频的转场设置
-        // 音量从小变大算法
-        if timeRange.duration.isValid && timeRange.start.seconds < 2 {
-            var volume: Float = 1
-            volume = volume * Float(timeRange.start.seconds / 2)
-            AudioMixer.changeVolume(for: bufferListInOut, volume: volume)
+     func process(timeRange: CMTimeRange, bufferListInOut: UnsafeMutablePointer<AudioBufferList>) {
+        if timeRange.duration.isValid {
+            if self.timeRange.intersection(timeRange).duration.seconds > 0 {
+                var percent = (timeRange.end.seconds - self.timeRange.start.seconds) / self.timeRange.duration.seconds
+                if let timingFunction = timingFunction {
+                    percent = timingFunction(percent)
+                }
+                let volume = startVolume + (endVolume - startVolume) * Float(percent)
+                AudioMixer.changeVolume(for: bufferListInOut, volume: volume)
+            }
         }
     }
+    
 }
 
 class AudioProcessingChain {
-    var node: AudioProcessingNode?
-    init(node: AudioProcessingNode) {
-        self.node = node
-    }
+    var nodes: [AudioProcessingNode] = []
     
     func process(timeRange: CMTimeRange, bufferListInOut: UnsafeMutablePointer<AudioBufferList>) {
-        var nextNode = node
-        while nextNode != nil {
-            nextNode?.process(timeRange: timeRange, bufferListInOut: bufferListInOut)
-            nextNode = nextNode?.next
+        nodes.forEach { (node) in
+            node.process(timeRange: timeRange, bufferListInOut: bufferListInOut)
         }
     }
 }

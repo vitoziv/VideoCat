@@ -97,6 +97,8 @@ extension PanelViewController: AssetsViewControllerDelegate {
                 let transition = CrossDissolveTransition()
                 transition.duration = CMTime(value: 3, timescale: 2)
                 trackItem.videoTransition = transition
+                let audioTransition = FadeInOutAudioTransition(duration: transition.duration)
+                trackItem.audioTransition = audioTransition
                 trackItem.resource.timeRange = CMTimeRangeMake(kCMTimeZero, resource.trackAsset!.duration)
                 let audioTapHolder = AudioProcessingTapHolder()
                 trackItem.configuration.audioConfiguration.audioTapHolder = audioTapHolder

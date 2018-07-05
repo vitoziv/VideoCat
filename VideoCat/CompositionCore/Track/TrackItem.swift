@@ -15,6 +15,7 @@ public class TrackItem {
     public var configuration: TrackConfiguration
     
     public var videoTransition: VideoTransition?
+    public var audioTransition: AudioTransition?
     
     init(resource: TrackResource) {
         identifier = ProcessInfo.processInfo.globallyUniqueString
@@ -34,6 +35,11 @@ public extension TrackItem {
 }
 
 extension TrackItem: CompositionTrackProvider {
+    
+    public var timeRange: CMTimeRange {
+        return configuration.timelineTimeRange
+    }
+    
     public func numberOfTracks(for mediaType: AVMediaType) -> Int {
         if let asset = resource.trackAsset {
             return asset.tracks(withMediaType: mediaType).count
@@ -45,7 +51,7 @@ extension TrackItem: CompositionTrackProvider {
         if let asset = resource.trackAsset {
             func insertTrackToCompositionTrack(_ track: AVAssetTrack) {
                 do {
-                    try compositionTrack.insertTimeRange(resource.timeRange, of: track, at: configuration.timelineTimeRange.start)
+                    try compositionTrack.insertTimeRange(resource.timeRange, of: track, at: timeRange.start)
                 } catch {
                     Log.error(error.localizedDescription)
                 }
@@ -63,13 +69,10 @@ extension TrackItem: CompositionTrackProvider {
             }
         }
     }
+    
 }
 
 extension TrackItem: VideoCompositionProvider {
-    
-    public var timeRange: CMTimeRange {
-        return configuration.timelineTimeRange
-    }
     
     public func applyEffect(to sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage {
         var finalImage = sourceImage
@@ -103,15 +106,13 @@ extension TrackItem: AudioProvider {
     public func configure(audioMixParameters: AVMutableAudioMixInputParameters) {
         let volume = configuration.audioConfiguration.volume
         audioMixParameters.setVolumeRamp(fromStartVolume: volume, toEndVolume: volume, timeRange: configuration.timelineTimeRange)
-        
-        let node = VolumeAudioProcessingNode.init()
-        let chain = AudioProcessingChain(node: node)
-        configuration.audioConfiguration.audioTapHolder?.audioProcessingChain = chain
-        audioMixParameters.audioProcessingTapHolder = configuration.audioConfiguration.audioTapHolder
     }
 }
 
 extension TrackItem: TransitionableVideoProvider {
+    
+}
+extension TrackItem: TransitionableAudioProvider {
     
 }
 

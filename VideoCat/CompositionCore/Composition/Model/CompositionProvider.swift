@@ -9,6 +9,8 @@
 import Foundation
 
 public protocol CompositionTrackProvider {
+    var timeRange: CMTimeRange { get }
+    
     func numberOfTracks(for mediaType: AVMediaType) -> Int 
     func configure(compositionTrack: AVMutableCompositionTrack, index: Int)
 }
@@ -18,8 +20,6 @@ public protocol AudioMixProvider {
 }
 
 public protocol VideoCompositionProvider {
-    
-    var timeRange: CMTimeRange { get }
     
     /// 应有图像效果
     func applyEffect(to sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage
@@ -37,4 +37,7 @@ public protocol AudioProvider: CompositionTrackProvider, AudioMixProvider { }
 
 public protocol TransitionableVideoProvider: VideoProvider {
     var videoTransition: VideoTransition? { get }
+}
+public protocol TransitionableAudioProvider: AudioProvider {
+    var audioTransition: AudioTransition? { get }
 }
