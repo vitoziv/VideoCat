@@ -27,7 +27,7 @@ class AudioProcessingTapHolder {
         if err != noErr {
             Log.error("error: failed to create audioProcessingTap")
         }
-        self.tap = tap?.autorelease().takeRetainedValue()
+        self.tap = tap?.takeRetainedValue()
     }
     
     // MARK: - Handler
