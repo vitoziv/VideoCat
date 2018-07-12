@@ -14,11 +14,20 @@ class TimeLineView: UIView {
     private(set) var scrollView: UIScrollView!
     private(set) var contentView: UIView!
     private(set) var centerLineView: UIView!
+    private(set) var totalTimeLabel: UILabel!
     
     private(set) var scrollContentHeightConstraint: NSLayoutConstraint!
     var widthPerSecond: CGFloat = 60
     
-    private(set) var rangeViews: [VideoRangeView] = []
+    private(set) var rangeViews: [VideoRangeView] = [] {
+        didSet {
+            var duration: CGFloat = 0
+            rangeViews.forEach { (view) in
+                duration = duration + view.frame.size.width / widthPerSecond
+            }
+            totalTimeLabel.text = "\(duration)"
+        }
+    }
     var rangeViewsIndex: Int {
         var index = 0
         let center = centerLineView.center
@@ -61,6 +70,11 @@ class TimeLineView: UIView {
         centerLineView.isUserInteractionEnabled = false
         centerLineView.backgroundColor = UIColor.orange
         
+        totalTimeLabel = UILabel()
+        addSubview(totalTimeLabel)
+        totalTimeLabel.textColor = UIColor.white
+        totalTimeLabel.font = UIFont.systemFont(ofSize: 16)
+        
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         scrollView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
@@ -79,6 +93,14 @@ class TimeLineView: UIView {
         centerLineView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         centerLineView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
         centerLineView.widthAnchor.constraint(equalToConstant: 1).isActive = true
+        
+        totalTimeLabel.translatesAutoresizingMaskIntoConstraints = false
+        let timeLabelRightConstraint = totalTimeLabel.rightAnchor.constraint(equalTo: rightAnchor)
+        timeLabelRightConstraint.constant = -15
+        timeLabelRightConstraint.isActive = true
+        let timeLabelBottomConstraint = totalTimeLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
+        timeLabelBottomConstraint.constant = -10
+        timeLabelBottomConstraint.isActive = true
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapLineViewAction(_:)))
         addGestureRecognizer(tapGesture)

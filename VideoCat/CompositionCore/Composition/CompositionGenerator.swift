@@ -33,8 +33,13 @@ class CompositionGenerator {
         return imageGenerator
     }
     
-    func buildExportSession()  {
+    func buildExportSession() -> AVAssetExportSession? {
         // TODO: 导出
+        let composition = buildComposition()
+        let exportSession = AVAssetExportSession.init(asset: composition, presetName: "")
+        exportSession?.videoComposition = buildVideoComposition(with: composition)
+        exportSession?.audioMix = buildAudioMix(with: composition)
+        return exportSession
     }
     
     // MARK: - Build Composition

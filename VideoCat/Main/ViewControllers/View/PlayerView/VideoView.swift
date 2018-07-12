@@ -39,7 +39,8 @@ class VideoView: UIView {
         playerView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
         playerView.topAnchor.constraint(equalTo: topAnchor).isActive = true
         playerView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
-        playerView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
+        playerView.bottomAnchor.constraint(equalTo: controlView.topAnchor).isActive = true
+        playerView.widthAnchor.constraint(equalTo: playerView.heightAnchor, multiplier: 16/9).isActive = true
         
         controlView.translatesAutoresizingMaskIntoConstraints = false
         controlView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true

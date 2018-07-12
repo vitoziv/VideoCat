@@ -10,7 +10,7 @@ import UIKit
 
 extension UIColor {
     static let titleColor = UIColor(white: 0.16, alpha: 1)
-    static let contentColor = UIColor(white: 0.26, alpha: 1)
+    static let contentColor = UIColor(white: 0.86, alpha: 1)
     static let detailColor = UIColor(white: 0.38, alpha: 1)
 }
 
