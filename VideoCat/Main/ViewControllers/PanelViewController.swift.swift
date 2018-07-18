@@ -15,6 +15,7 @@ class EditContext {
     var timelineView: TimeLineView
     var videoView: VideoView
     var viewModel: TimelineViewModel
+    var editToolView: EditToolView!
     
     init(timelineView: TimeLineView, videoView: VideoView, viewModel: TimelineViewModel) {
         self.timelineView = timelineView
@@ -43,8 +44,10 @@ class PanelViewController: UIViewController {
         bindAction()
         
         editContext = EditContext.init(timelineView: timeLineView, videoView: videoView, viewModel: viewModel)
+        editContext?.editToolView = self.editToolView
         
-        editToolView.itemsProvider = PassingThroughEditItem()
+        editToolView.itemsProvider = PassingThroughEditItemProvider()
+        editToolView.hideBackButton()
     }
 
     

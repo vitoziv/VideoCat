@@ -8,6 +8,7 @@
 
 import AVFoundation
 import CoreImage
+import UIKit
 
 open class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
     

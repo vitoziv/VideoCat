@@ -7,6 +7,7 @@
 //
 
 import AVFoundation
+import CoreImage
 
 public class TrackItem {
     
@@ -92,6 +93,10 @@ extension TrackItem: VideoCompositionProvider {
             transform = transform.concatenating(fillTransform)
         }
         finalImage = finalImage.transformed(by: transform)
+        
+        if let filterProcessor = configuration.videoConfiguration.filterProcessor {
+            finalImage = filterProcessor(finalImage)
+        }
         return finalImage
     }
     

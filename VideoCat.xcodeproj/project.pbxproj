@@ -33,8 +33,13 @@
 		5F29D2411F74146700D41F50 /* VideoCatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2401F74146700D41F50 /* VideoCatTests.swift */; };
 		5F2A987E1FA4738F0032B5DF /* TimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2A987D1FA4738F0032B5DF /* TimelineViewModel.swift */; };
 		5F353BDD20F5948900DABF5E /* EditItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F353BDC20F5948900DABF5E /* EditItem.swift */; };
-		5F353BDF20F6E2CF00DABF5E /* PassingThroughEditItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F353BDE20F6E2CF00DABF5E /* PassingThroughEditItem.swift */; };
+		5F353BDF20F6E2CF00DABF5E /* PassingThroughEditItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F353BDE20F6E2CF00DABF5E /* PassingThroughEditItemProvider.swift */; };
 		5F353BE120F6E4CD00DABF5E /* UIViewController+Topmost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F353BE020F6E4CD00DABF5E /* UIViewController+Topmost.swift */; };
+		5F353BE320F8EC6100DABF5E /* FilterItemProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F353BE220F8EC6100DABF5E /* FilterItemProvider.swift */; };
+		5F353BE720FCE8D400DABF5E /* LUTDataConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F353BE620FCE8D400DABF5E /* LUTDataConverter.swift */; };
+		5F353BE920FCEBD300DABF5E /* original_lut.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F353BE820FCEBD300DABF5E /* original_lut.png */; };
+		5F353C3E20FE447800DABF5E /* lut_aden.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F353C3C20FE447800DABF5E /* lut_aden.png */; };
+		5F353C3F20FE447800DABF5E /* lut_1977.png in Resources */ = {isa = PBXBuildFile; fileRef = 5F353C3D20FE447800DABF5E /* lut_1977.png */; };
 		5F39496D20DC7F0F0096A61F /* TimeRangeExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F39496C20DC7F0F0096A61F /* TimeRangeExtension.swift */; };
 		5F39497020DE12960096A61F /* CompositionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F39496F20DE12960096A61F /* CompositionProvider.swift */; };
 		5F3A1CB21F528FD5001895DB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3A1CB11F528FD5001895DB /* AppDelegate.swift */; };
@@ -58,6 +63,8 @@
 		5FA8F81C1FEF912200602295 /* DisplayTriggerMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA8F81B1FEF912200602295 /* DisplayTriggerMachine.swift */; };
 		5FA8F81E1FEFCE4200602295 /* VideoRangeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA8F81D1FEFCE4200602295 /* VideoRangeContentView.swift */; };
 		5FB64C292031977C004A09F8 /* APLCompositionDebugView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FB64C282031977B004A09F8 /* APLCompositionDebugView.m */; };
+		5FB72CDB20FE4F1700532CA7 /* AVPlayerExtensition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CDA20FE4F1700532CA7 /* AVPlayerExtensition.swift */; };
+		5FB72CDD20FE525A00532CA7 /* lut_bmdfilm.png in Resources */ = {isa = PBXBuildFile; fileRef = 5FB72CDC20FE525A00532CA7 /* lut_bmdfilm.png */; };
 		5FE0883B1FB0AD9B00EA7963 /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0883A1FB0AD9B00EA7963 /* VideoView.swift */; };
 		5FE0883D1FB1EA1A00EA7963 /* UIStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0883C1FB1EA1A00EA7963 /* UIStyle.swift */; };
 		5FE088421FB846D200EA7963 /* VideoRangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE088411FB846D200EA7963 /* VideoRangeView.swift */; };
@@ -111,8 +118,13 @@
 		5F29D2421F74146700D41F50 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5F2A987D1FA4738F0032B5DF /* TimelineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineViewModel.swift; sourceTree = "<group>"; };
 		5F353BDC20F5948900DABF5E /* EditItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditItem.swift; sourceTree = "<group>"; };
-		5F353BDE20F6E2CF00DABF5E /* PassingThroughEditItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassingThroughEditItem.swift; sourceTree = "<group>"; };
+		5F353BDE20F6E2CF00DABF5E /* PassingThroughEditItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassingThroughEditItemProvider.swift; sourceTree = "<group>"; };
 		5F353BE020F6E4CD00DABF5E /* UIViewController+Topmost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Topmost.swift"; sourceTree = "<group>"; };
+		5F353BE220F8EC6100DABF5E /* FilterItemProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterItemProvider.swift; sourceTree = "<group>"; };
+		5F353BE620FCE8D400DABF5E /* LUTDataConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LUTDataConverter.swift; sourceTree = "<group>"; };
+		5F353BE820FCEBD300DABF5E /* original_lut.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = original_lut.png; sourceTree = "<group>"; };
+		5F353C3C20FE447800DABF5E /* lut_aden.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lut_aden.png; sourceTree = "<group>"; };
+		5F353C3D20FE447800DABF5E /* lut_1977.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lut_1977.png; sourceTree = "<group>"; };
 		5F39496C20DC7F0F0096A61F /* TimeRangeExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangeExtension.swift; sourceTree = "<group>"; };
 		5F39496F20DE12960096A61F /* CompositionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompositionProvider.swift; sourceTree = "<group>"; };
 		5F3A1CAE1F528FD5001895DB /* VideoCat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VideoCat.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -138,6 +150,8 @@
 		5FA8F81D1FEFCE4200602295 /* VideoRangeContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRangeContentView.swift; sourceTree = "<group>"; };
 		5FB64C272031977B004A09F8 /* APLCompositionDebugView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APLCompositionDebugView.h; sourceTree = "<group>"; };
 		5FB64C282031977B004A09F8 /* APLCompositionDebugView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APLCompositionDebugView.m; sourceTree = "<group>"; };
+		5FB72CDA20FE4F1700532CA7 /* AVPlayerExtensition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerExtensition.swift; sourceTree = "<group>"; };
+		5FB72CDC20FE525A00532CA7 /* lut_bmdfilm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lut_bmdfilm.png; sourceTree = "<group>"; };
 		5FE0883A1FB0AD9B00EA7963 /* VideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
 		5FE0883C1FB1EA1A00EA7963 /* UIStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStyle.swift; sourceTree = "<group>"; };
 		5FE088411FB846D200EA7963 /* VideoRangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRangeView.swift; sourceTree = "<group>"; };
@@ -203,7 +217,6 @@
 				5F6429F520DF8B9900080942 /* Model */,
 				5F6429F620DF8BB300080942 /* Uitl */,
 				5F6429F720DF8BE600080942 /* Resource */,
-				5F39496E20DE12700096A61F /* Debug */,
 			);
 			path = Composition;
 			sourceTree = "<group>";
@@ -250,6 +263,8 @@
 				5F01B00B1F77CF420049CD3A /* MBProgressExtension.swift */,
 				5F6099BF1F7E576E00EA44A0 /* EnlargeImageView.swift */,
 				5FE0883C1FB1EA1A00EA7963 /* UIStyle.swift */,
+				5F353BE020F6E4CD00DABF5E /* UIViewController+Topmost.swift */,
+				5FB72CDA20FE4F1700532CA7 /* AVPlayerExtensition.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -298,6 +313,8 @@
 			isa = PBXGroup;
 			children = (
 				5F0E3D331FAA09720055904C /* PlayerTestViewController.swift */,
+				5FB64C272031977B004A09F8 /* APLCompositionDebugView.h */,
+				5FB64C282031977B004A09F8 /* APLCompositionDebugView.m */,
 			);
 			path = Debug;
 			sourceTree = "<group>";
@@ -340,13 +357,25 @@
 			path = VideoCatTests;
 			sourceTree = "<group>";
 		};
-		5F39496E20DE12700096A61F /* Debug */ = {
+		5F353BE420FCE5AF00DABF5E /* Filter */ = {
 			isa = PBXGroup;
 			children = (
-				5FB64C272031977B004A09F8 /* APLCompositionDebugView.h */,
-				5FB64C282031977B004A09F8 /* APLCompositionDebugView.m */,
+				5F353BE520FCE5B500DABF5E /* Resource */,
+				5F353BE220F8EC6100DABF5E /* FilterItemProvider.swift */,
+				5F353BE620FCE8D400DABF5E /* LUTDataConverter.swift */,
 			);
-			path = Debug;
+			path = Filter;
+			sourceTree = "<group>";
+		};
+		5F353BE520FCE5B500DABF5E /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				5FB72CDC20FE525A00532CA7 /* lut_bmdfilm.png */,
+				5F353C3D20FE447800DABF5E /* lut_1977.png */,
+				5F353C3C20FE447800DABF5E /* lut_aden.png */,
+				5F353BE820FCEBD300DABF5E /* original_lut.png */,
+			);
+			path = Resource;
 			sourceTree = "<group>";
 		};
 		5F3A1CA51F528FD5001895DB = {
@@ -408,7 +437,6 @@
 				5F39496C20DC7F0F0096A61F /* TimeRangeExtension.swift */,
 				5F6429FA20DFA6FF00080942 /* Log.swift */,
 				5F2874D120EDAEC800E51F85 /* TimingFunction.swift */,
-				5F353BE020F6E4CD00DABF5E /* UIViewController+Topmost.swift */,
 			);
 			path = Uitl;
 			sourceTree = "<group>";
@@ -424,9 +452,10 @@
 		5F6429FC20E0015700080942 /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
+				5F353BE420FCE5AF00DABF5E /* Filter */,
 				5F6429FD20E0016700080942 /* TimeRangeStore.swift */,
 				5F2A987D1FA4738F0032B5DF /* TimelineViewModel.swift */,
-				5F353BDE20F6E2CF00DABF5E /* PassingThroughEditItem.swift */,
+				5F353BDE20F6E2CF00DABF5E /* PassingThroughEditItemProvider.swift */,
 			);
 			path = Timeline;
 			sourceTree = "<group>";
@@ -585,9 +614,13 @@
 				5F3A1CBC1F528FD5001895DB /* LaunchScreen.storyboard in Resources */,
 				5F01B0271F7BFC140049CD3A /* Moon River.mp3 in Resources */,
 				5F3A1CB91F528FD5001895DB /* Assets.xcassets in Resources */,
+				5F353C3E20FE447800DABF5E /* lut_aden.png in Resources */,
 				5FF8D33F2032B0D900240EE4 /* black_empty.mp4 in Resources */,
+				5FB72CDD20FE525A00532CA7 /* lut_bmdfilm.png in Resources */,
+				5F353C3F20FE447800DABF5E /* lut_1977.png in Resources */,
 				5F3A1CB71F528FD5001895DB /* Main.storyboard in Resources */,
 				5FF465C41FAA0FFA006EDD61 /* Demo.storyboard in Resources */,
+				5F353BE920FCEBD300DABF5E /* original_lut.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -675,7 +708,7 @@
 				5F5037A220482BBB00C5270B /* VideoTransition.swift in Sources */,
 				5F2874CC20E7CAD600E51F85 /* AudioProcessingChain.swift in Sources */,
 				5F01B0151F794AD40049CD3A /* VIPlayer.swift in Sources */,
-				5F353BDF20F6E2CF00DABF5E /* PassingThroughEditItem.swift in Sources */,
+				5F353BDF20F6E2CF00DABF5E /* PassingThroughEditItemProvider.swift in Sources */,
 				5FF8D3412032CEFF00240EE4 /* CompositionGenerator.swift in Sources */,
 				5FB64C292031977C004A09F8 /* APLCompositionDebugView.m in Sources */,
 				5F01AFFD1F741E0E0049CD3A /* Timeline.swift in Sources */,
@@ -694,6 +727,7 @@
 				5F01B00A1F77A2460049CD3A /* AssetsViewModel.swift in Sources */,
 				5F01B00E1F77EDD30049CD3A /* TrackVideoAssetResource.swift in Sources */,
 				5F0E3D341FAA09720055904C /* PlayerTestViewController.swift in Sources */,
+				5F353BE320F8EC6100DABF5E /* FilterItemProvider.swift in Sources */,
 				5F01AFFF1F7794370049CD3A /* AssetsViewController.swift in Sources */,
 				5F6429FE20E0016700080942 /* TimeRangeStore.swift in Sources */,
 				5F81A7F71F8D06B300D65DAA /* VideoTimelineView.swift in Sources */,
@@ -705,6 +739,7 @@
 				5F39496D20DC7F0F0096A61F /* TimeRangeExtension.swift in Sources */,
 				5F6099C01F7E576E00EA44A0 /* EnlargeImageView.swift in Sources */,
 				5F9DBECD202752E900E8BFC4 /* AVPlayerSeeker.swift in Sources */,
+				5F353BE720FCE8D400DABF5E /* LUTDataConverter.swift in Sources */,
 				5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */,
 				5FA8F81C1FEF912200602295 /* DisplayTriggerMachine.swift in Sources */,
 				5FA8F81E1FEFCE4200602295 /* VideoRangeContentView.swift in Sources */,
@@ -717,6 +752,7 @@
 				5F81A7F91F8D092800D65DAA /* TimeRangeProviderExtensions.swift in Sources */,
 				5F2874D020EB07C500E51F85 /* AudioTransition.swift in Sources */,
 				5F29D2351F73F41900D41F50 /* TrackConfiguration.swift in Sources */,
+				5FB72CDB20FE4F1700532CA7 /* AVPlayerExtensition.swift in Sources */,
 				5FE088421FB846D200EA7963 /* VideoRangeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

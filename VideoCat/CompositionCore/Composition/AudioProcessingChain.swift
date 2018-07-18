@@ -6,7 +6,7 @@
 //  Copyright © 2018 Vito. All rights reserved.
 //
 
-import Foundation
+import AVFoundation
 
 protocol AudioProcessingNode: class {
     func process(timeRange: CMTimeRange, bufferListInOut: UnsafeMutablePointer<AudioBufferList>)

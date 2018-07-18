@@ -1,5 +1,5 @@
 //
-//  PassingThroughEditItem.swift
+//  PassingThroughEditItemProvider.swift
 //  VideoCat
 //
 //  Created by Vito on 2018/7/12.
@@ -10,7 +10,7 @@ import Foundation
 import Photos
 import MBProgressHUD
 
-class PassingThroughEditItem {
+class PassingThroughEditItemProvider: ItemsProvider {
     var items: [EditItem] = []
     let context = editContext
     
@@ -26,16 +26,28 @@ class PassingThroughEditItem {
                 assetViewController.delegate = self
                 UIViewController.topMost?.present(assetsNavigationController, animated: true, completion: nil)
             }
-            
         }
         items.append(addItem)
+        
+        let filterInfo = EditInfo()
+        filterInfo.cellIdentifier = BasicEditItemCell.reuseIdentifier
+        filterInfo.title = "filter"
+        let filterItem = EditItem(info: filterInfo) { [weak self] in
+            guard let strongSelf = self else { return }
+            let toolView = EditToolView(frame: .zero)
+            toolView.backHandler = { [weak toolView] in
+                guard let toolView = toolView else { return }
+                toolView.dismiss(animated: true)
+            }
+            toolView.itemsProvider = FilterItemProvider()
+            strongSelf.context?.editToolView.present(toolView, animated: true)
+        }
+        items.append(filterItem)
     }
     
 }
 
-extension PassingThroughEditItem: ItemsProvider {}
-
-extension PassingThroughEditItem: AssetsViewControllerDelegate {
+extension PassingThroughEditItemProvider: AssetsViewControllerDelegate {
     func assetsViewControllerDidCancel(_ viewController: AssetsViewController) {
         viewController.dismiss(animated: true, completion: nil)
     }

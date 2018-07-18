@@ -15,13 +15,19 @@ protocol ItemsProvider: class {
 
 class EditToolView: UIView {
     private var collectionView: UICollectionView!
-    private var backButton: UIButton!
+    private(set) var backButton: UIButton!
+    private var backButtonWidth: NSLayoutConstraint!
+    
+    var backHandler: (() -> ())?
+    
+    // MARK: - Data
     var itemsProvider: ItemsProvider! {
         didSet {
             collectionView.reloadData()
         }
     }
     
+    // MARK: - Life cycle
     override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
@@ -33,11 +39,14 @@ class EditToolView: UIView {
     }
     
     private func commonInit() {
+        backgroundColor = UIColor.init(white: 0.2, alpha: 1)
+        
         backButton = UIButton(type: .custom)
         addSubview(backButton)
         backButton.setTitle("<", for: .normal)
         backButton.backgroundColor = UIColor.darkGray
         backButton.setTitleColor(UIColor.white, for: .normal)
+        backButton.addTarget(self, action: #selector(backAction(sender:)), for: .touchUpInside)
         
         let flowLayout = UICollectionViewFlowLayout.init()
         flowLayout.minimumInteritemSpacing = 1
@@ -52,7 +61,7 @@ class EditToolView: UIView {
         backButton.left(to: self)
         backButton.top(to: self)
         backButton.bottom(to: self)
-        backButton.width(40)
+        backButtonWidth = backButton.width(40)
         
         collectionView.leftToRight(of: backButton)
         collectionView.top(to: self)
@@ -61,6 +70,110 @@ class EditToolView: UIView {
         
         collectionView.register(BasicEditItemCell.self, forCellWithReuseIdentifier: BasicEditItemCell.reuseIdentifier)
     }
+    
+    @objc fileprivate func backAction(sender: UIButton) {
+        backHandler?()
+    }
+    
+    // MARK: - Logic method
+    
+    func hideBackButton() {
+        backButtonWidth.constant = 0
+    }
+    
+    func showBackButton() {
+        backButtonWidth.constant = 40
+    }
+    
+    
+    // MARK: - Container
+    var presentedEditToolView: EditToolView? {
+        return superview as? EditToolView
+    }
+    var presentingEditToolView: EditToolView? {
+        didSet {
+            if presentedEditToolView == self {
+                assert(false, "Can't present self")
+            }
+        }
+    }
+    weak var parentToolView: EditToolView?
+    var childToolViews: [EditToolView] = []
+    
+    func present(_ toolView: EditToolView, animated: Bool, completion: (()-> Void)? = nil) {
+        if self.presentingEditToolView != nil {
+            Log.warning("Already presented tool view")
+            assert(false, "Already presented tool view")
+            return
+        }
+        addSubview(toolView)
+        toolView.frame = bounds
+        self.presentingEditToolView = toolView
+        if animated {
+            toolView.alpha = 0.0
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
+                toolView.alpha = 1.0
+            }) { (finished) in
+                completion?()
+            }
+        }
+    }
+    
+    func dismiss(animated: Bool, completion: (()-> Void)? = nil) {
+        if animated {
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
+                self.alpha = 0.0
+            }) { (finished) in
+                if let superview = self.superview as? EditToolView {
+                    superview.presentingEditToolView = nil
+                }
+                self.removeFromSuperview()
+                completion?()
+            }
+        } else {
+            if let superview = superview as? EditToolView {
+                superview.presentingEditToolView = nil
+            }
+            removeFromSuperview()
+        }
+    }
+    
+    func push(_ toolView: EditToolView, animated: Bool, completion: (()-> Void)? = nil) {
+        addSubview(toolView)
+        toolView.frame = bounds
+        childToolViews.append(toolView)
+        toolView.parentToolView = self
+        if animated {
+            toolView.alpha = 0.0
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
+                toolView.alpha = 1.0
+            }) { (finished) in
+                completion?()
+            }
+        }
+    }
+    
+    func pop(animated: Bool, completion: (()-> Void)? = nil) {
+        func removeAction() {
+            if let parentToolView = self.parentToolView {
+                if let index = parentToolView.childToolViews.index(where: { $0 == self }) {
+                    self.parentToolView?.childToolViews.remove(at: index)
+                }
+            }
+            self.removeFromSuperview()
+            completion?()
+        }
+        if animated {
+            UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseInOut, animations: {
+                self.alpha = 0.0
+            }) { (finished) in
+                removeAction()
+            }
+        } else {
+            removeAction()
+        }
+    }
+    
     
 }
 

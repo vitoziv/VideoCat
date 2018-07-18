@@ -6,7 +6,7 @@
 //  Copyright © 2017 Vito. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import AVFoundation
 
 class TimelineManager {
@@ -129,6 +129,7 @@ extension TimelineViewModel {
 extension TimelineViewModel: PassingThroughVideoCompositionProvider {
     public func applyEffect(to sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage {
         var image = sourceImage
+        
         let backgroundColorItems = backgroundColors.getItems(at: time)
         if let item = backgroundColorItems.last {
             let backgroundColor = CIColor(color: item.1)

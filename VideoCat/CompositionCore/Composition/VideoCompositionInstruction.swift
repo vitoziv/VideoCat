@@ -7,6 +7,7 @@
 //
 
 import AVFoundation
+import CoreImage
 
 open class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionProtocol {
     

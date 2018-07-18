@@ -6,7 +6,8 @@
 //  Copyright © 2018 Vito. All rights reserved.
 //
 
-import Foundation
+import CoreImage
+import CoreMedia
 
 public protocol VideoTransition: class {
     var identifier: String { get }

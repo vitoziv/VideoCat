@@ -7,6 +7,7 @@
 //
 
 import AVFoundation
+import CoreImage
 
 public class TrackConfiguration {
     
@@ -31,6 +32,7 @@ public class VideoConfiguration {
         case aspectFill
     }
     var baseContentMode: BaseContentMode = .aspectFit
+    var filterProcessor: ((CIImage) -> CIImage)?
 }
 
 public class AudioConfiguration {

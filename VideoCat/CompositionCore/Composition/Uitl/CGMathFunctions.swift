@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreGraphics
 
 extension CGRect {
     func aspectFit(in rect: CGRect) -> CGRect {

@@ -6,7 +6,8 @@
 //  Copyright © 2018 Vito. All rights reserved.
 //
 
-import Foundation
+import CoreImage
+import AVFoundation
 
 public protocol CompositionTrackProvider {
     var timeRange: CMTimeRange { get }
