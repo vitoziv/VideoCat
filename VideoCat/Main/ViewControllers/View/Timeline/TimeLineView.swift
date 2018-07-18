@@ -19,15 +19,8 @@ class TimeLineView: UIView {
     private(set) var scrollContentHeightConstraint: NSLayoutConstraint!
     var widthPerSecond: CGFloat = 60
     
-    private(set) var rangeViews: [VideoRangeView] = [] {
-        didSet {
-            var duration: CGFloat = 0
-            rangeViews.forEach { (view) in
-                duration = duration + view.frame.size.width / widthPerSecond
-            }
-            totalTimeLabel.text = "\(duration)"
-        }
-    }
+    private(set) var rangeViews: [VideoRangeView] = []
+    
     var rangeViewsIndex: Int {
         var index = 0
         let center = centerLineView.center
@@ -203,6 +196,9 @@ class TimeLineView: UIView {
                 rightVideoRangeView.leftConstraint = leftConstraint
             }
         }
+        
+        contentView.layoutIfNeeded()
+        timeDidChanged()
     }
     
     func adjustCollectionViewOffset(time: CMTime) {
@@ -229,6 +225,14 @@ class TimeLineView: UIView {
     fileprivate func displayRangeViewsIfNeed() {
         let showingRangeViews = showingRangeView()
         showingRangeViews.forEach({ $0.videoContentView.updateThumbIfNeed() })
+    }
+    
+    fileprivate func timeDidChanged() {
+        var duration: CGFloat = 0
+        rangeViews.forEach { (view) in
+            duration = duration + view.frame.size.width / widthPerSecond
+        }
+        totalTimeLabel.text = String.init(format: "%.1f", duration)
     }
     
     // MARK: offset
@@ -298,6 +302,9 @@ extension TimeLineView: VideoRangeViewDelegate {
         var contentOffset = scrollView.contentOffset
         contentOffset.x -= offset
         scrollView.setContentOffset(contentOffset, animated: false)
+        
+        
+        timeDidChanged()
     }
     
     func videoRangeViewDidEndUpdateLeftOffset(_ view: VideoRangeView) {
@@ -318,6 +325,8 @@ extension TimeLineView: VideoRangeViewDelegate {
             inset.right = scrollView.frame.width
             scrollView.contentInset = inset
         }
+        
+        timeDidChanged()
     }
     
     func videoRangeViewDidEndUpdateRightOffset(_ view: VideoRangeView) {
