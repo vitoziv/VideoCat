@@ -48,7 +48,7 @@ class VideoTimelineView: UIView {
         collectionView.bottomAnchor.constraint(equalTo: bottomAnchor).isActive = true
     }
     
-    func configure(with url: URL) {
+    func configure(with url: URL, completion: (() -> Void)? = nil) {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             layout.itemSize = viewModel.imageSize
             collectionView.collectionViewLayout = layout
@@ -58,6 +58,7 @@ class VideoTimelineView: UIView {
         viewModel.prepareAsset { [weak self] in
             guard let strongSelf = self else { return }
             strongSelf.collectionView.reloadData()
+            completion?()
         }
     }
 
@@ -90,6 +91,7 @@ private class VideoTimeLineCell: UICollectionViewCell {
     }
     
     var imageView: UIImageView!
+    private var blackLine: UIView!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -104,14 +106,24 @@ private class VideoTimeLineCell: UICollectionViewCell {
     private func commonInit() {
         imageView = UIImageView()
         contentView.addSubview(imageView)
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
+        
+        blackLine = UIView()
+        contentView.addSubview(blackLine)
+        blackLine.backgroundColor = UIColor.black
         
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.leftAnchor.constraint(equalTo: contentView.leftAnchor).isActive = true
         imageView.rightAnchor.constraint(equalTo: contentView.rightAnchor).isActive = true
         imageView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
         imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+        
+        blackLine.translatesAutoresizingMaskIntoConstraints = false
+        blackLine.rightAnchor.constraint(equalTo: contentView.rightAnchor).isActive = true
+        blackLine.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+        blackLine.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+        blackLine.widthAnchor.constraint(equalToConstant: 1).isActive = true
     }
     
 }
@@ -140,7 +152,16 @@ class VideoTimelineViewModel {
         let asset = AVAsset(url: url)
         self.asset = asset
         imageGenerator = AVAssetImageGenerator(asset: asset)
-        imageGenerator?.maximumSize = CGSize(width: imageSize.width * 2, height: imageSize.height * 2)
+        
+        imageGenerator?.maximumSize = {
+            if let track = asset.tracks(withMediaType: .video).first {
+                if track.naturalSize.width / imageSize.width > track.naturalSize.height / imageSize.height {
+                    return CGSize(width: 0, height: imageSize.height * 2)
+                }
+                return CGSize(width: imageSize.width * 2, height: 0)
+            }
+            return CGSize(width: imageSize.width * 2, height: imageSize.height * 2)
+        }()
         imageGenerator?.apertureMode = AVAssetImageGeneratorApertureMode.productionAperture
         imageGenerator?.appliesPreferredTrackTransform = true
     }

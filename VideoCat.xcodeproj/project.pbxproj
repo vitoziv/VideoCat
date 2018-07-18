@@ -65,6 +65,9 @@
 		5FB64C292031977C004A09F8 /* APLCompositionDebugView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5FB64C282031977B004A09F8 /* APLCompositionDebugView.m */; };
 		5FB72CDB20FE4F1700532CA7 /* AVPlayerExtensition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CDA20FE4F1700532CA7 /* AVPlayerExtensition.swift */; };
 		5FB72CDD20FE525A00532CA7 /* lut_bmdfilm.png in Resources */ = {isa = PBXBuildFile; fileRef = 5FB72CDC20FE525A00532CA7 /* lut_bmdfilm.png */; };
+		5FB72CE220FEC5EC00532CA7 /* ExportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CE120FEC5EC00532CA7 /* ExportViewController.swift */; };
+		5FB72CE420FEC90E00532CA7 /* Marvel Studios.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5FB72CE320FEC90E00532CA7 /* Marvel Studios.mp4 */; };
+		5FB72CE720FECBB300532CA7 /* DemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CE620FECBB300532CA7 /* DemoViewController.swift */; };
 		5FE0883B1FB0AD9B00EA7963 /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0883A1FB0AD9B00EA7963 /* VideoView.swift */; };
 		5FE0883D1FB1EA1A00EA7963 /* UIStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0883C1FB1EA1A00EA7963 /* UIStyle.swift */; };
 		5FE088421FB846D200EA7963 /* VideoRangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE088411FB846D200EA7963 /* VideoRangeView.swift */; };
@@ -152,6 +155,9 @@
 		5FB64C282031977B004A09F8 /* APLCompositionDebugView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APLCompositionDebugView.m; sourceTree = "<group>"; };
 		5FB72CDA20FE4F1700532CA7 /* AVPlayerExtensition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerExtensition.swift; sourceTree = "<group>"; };
 		5FB72CDC20FE525A00532CA7 /* lut_bmdfilm.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lut_bmdfilm.png; sourceTree = "<group>"; };
+		5FB72CE120FEC5EC00532CA7 /* ExportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportViewController.swift; sourceTree = "<group>"; };
+		5FB72CE320FEC90E00532CA7 /* Marvel Studios.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Marvel Studios.mp4"; sourceTree = "<group>"; };
+		5FB72CE620FECBB300532CA7 /* DemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoViewController.swift; sourceTree = "<group>"; };
 		5FE0883A1FB0AD9B00EA7963 /* VideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
 		5FE0883C1FB1EA1A00EA7963 /* UIStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStyle.swift; sourceTree = "<group>"; };
 		5FE088411FB846D200EA7963 /* VideoRangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRangeView.swift; sourceTree = "<group>"; };
@@ -236,11 +242,12 @@
 		5F01B0011F7794740049CD3A /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				5FB72CE520FECB7600532CA7 /* Demo */,
 				5F01B0081F77A2220049CD3A /* ViewModel */,
 				5F01B0021F779B990049CD3A /* View */,
 				5F3A1CB31F528FD5001895DB /* PanelViewController.swift.swift */,
 				5F01AFFE1F7794370049CD3A /* AssetsViewController.swift */,
-				5F01B00F1F79447B0049CD3A /* PrepareVideoViewController.swift */,
+				5FB72CE120FEC5EC00532CA7 /* ExportViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -312,7 +319,6 @@
 		5F0E3D321FAA09530055904C /* Debug */ = {
 			isa = PBXGroup;
 			children = (
-				5F0E3D331FAA09720055904C /* PlayerTestViewController.swift */,
 				5FB64C272031977B004A09F8 /* APLCompositionDebugView.h */,
 				5FB64C282031977B004A09F8 /* APLCompositionDebugView.m */,
 			);
@@ -340,6 +346,7 @@
 		5F29D22C1F73E96800D41F50 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
+				5FB72CE320FEC90E00532CA7 /* Marvel Studios.mp4 */,
 				5F01B0261F7BFC0F0049CD3A /* Moon River.mp3 */,
 				5F3A1CB81F528FD5001895DB /* Assets.xcassets */,
 			);
@@ -477,6 +484,16 @@
 			path = VideoTimeline;
 			sourceTree = "<group>";
 		};
+		5FB72CE520FECB7600532CA7 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				5F01B00F1F79447B0049CD3A /* PrepareVideoViewController.swift */,
+				5F0E3D331FAA09720055904C /* PlayerTestViewController.swift */,
+				5FB72CE620FECBB300532CA7 /* DemoViewController.swift */,
+			);
+			path = Demo;
+			sourceTree = "<group>";
+		};
 		5FCB20DA1FF296A800862F56 /* PlayerView */ = {
 			isa = PBXGroup;
 			children = (
@@ -611,6 +628,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5FB72CE420FEC90E00532CA7 /* Marvel Studios.mp4 in Resources */,
 				5F3A1CBC1F528FD5001895DB /* LaunchScreen.storyboard in Resources */,
 				5F01B0271F7BFC140049CD3A /* Moon River.mp3 in Resources */,
 				5F3A1CB91F528FD5001895DB /* Assets.xcassets in Resources */,
@@ -714,6 +732,7 @@
 				5F01AFFD1F741E0E0049CD3A /* Timeline.swift in Sources */,
 				5F49915020A30C64005C61C3 /* AudioProcessingTapHolder.swift in Sources */,
 				5F39497020DE12960096A61F /* CompositionProvider.swift in Sources */,
+				5FB72CE220FEC5EC00532CA7 /* ExportViewController.swift in Sources */,
 				5F29D2391F740D9300D41F50 /* TrackVideoResource.swift in Sources */,
 				5FE088441FB9D75900EA7963 /* TimeLineView.swift in Sources */,
 				5F977C351F8B4CF90029156E /* AudioSampleOperation.swift in Sources */,
@@ -738,6 +757,7 @@
 				5F01B00C1F77CF420049CD3A /* MBProgressExtension.swift in Sources */,
 				5F39496D20DC7F0F0096A61F /* TimeRangeExtension.swift in Sources */,
 				5F6099C01F7E576E00EA44A0 /* EnlargeImageView.swift in Sources */,
+				5FB72CE720FECBB300532CA7 /* DemoViewController.swift in Sources */,
 				5F9DBECD202752E900E8BFC4 /* AVPlayerSeeker.swift in Sources */,
 				5F353BE720FCE8D400DABF5E /* LUTDataConverter.swift in Sources */,
 				5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */,

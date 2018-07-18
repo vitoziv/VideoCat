@@ -39,6 +39,9 @@ class PanelViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        navigationController?.navigationBar.tintColor = UIColor.white
+        
         let inset = UIScreen.main.bounds.width / 2 - 24
         timeLineView.scrollView.contentInset = UIEdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
         bindAction()
@@ -56,10 +59,16 @@ class PanelViewController: UIViewController {
         timeLineView.resignVideoRangeView()
     }
     
-    @IBAction func debugAction(_ sender: UIBarButtonItem) {
-        let storyboard = UIStoryboard(name: "Demo", bundle: nil)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "PlayerTestViewController")
+    @IBAction func doneAction(_ sender: UIBarButtonItem) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "ExportViewController")
         navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    @IBAction func demoAction(_ sender: UIBarButtonItem) {
+        let storyboard = UIStoryboard(name: "Demo", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "DemoNavigationController")
+        present(viewController, animated: true, completion: nil)
     }
     
     // MARK: - Helper
