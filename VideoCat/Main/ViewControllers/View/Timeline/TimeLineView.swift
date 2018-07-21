@@ -8,16 +8,17 @@
 
 import UIKit
 import AVFoundation
+import RxCocoa
 
 class TimeLineView: UIView {
 
     private(set) var scrollView: UIScrollView!
     private(set) var contentView: UIView!
+    fileprivate(set) var videoListContentView: UIView!
     private(set) var centerLineView: UIView!
     private(set) var totalTimeLabel: UILabel!
     
     private(set) var scrollContentHeightConstraint: NSLayoutConstraint!
-    var widthPerSecond: CGFloat = 60
     
     private(set) var rangeViews: [VideoRangeView] = []
     
@@ -34,8 +35,8 @@ class TimeLineView: UIView {
         
         return index
     }
-    
     var videoRangeViewEarWidth: CGFloat = 24
+    var widthPerSecond: CGFloat = 60
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -57,6 +58,9 @@ class TimeLineView: UIView {
         
         contentView = UIView()
         scrollView.addSubview(contentView)
+        
+        videoListContentView = UIView()
+        contentView.addSubview(videoListContentView)
         
         centerLineView = UIView()
         addSubview(centerLineView)
@@ -81,6 +85,12 @@ class TimeLineView: UIView {
         scrollContentHeightConstraint = contentView.heightAnchor.constraint(equalToConstant: 60)
         scrollContentHeightConstraint.isActive = true
         
+        videoListContentView.translatesAutoresizingMaskIntoConstraints = false
+        videoListContentView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
+        videoListContentView.leftAnchor.constraint(equalTo: contentView.leftAnchor).isActive = true
+        videoListContentView.rightAnchor.constraint(equalTo: contentView.rightAnchor).isActive = true
+        videoListContentView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+        
         centerLineView.translatesAutoresizingMaskIntoConstraints = false
         centerLineView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         centerLineView.topAnchor.constraint(equalTo: topAnchor).isActive = true
@@ -99,6 +109,12 @@ class TimeLineView: UIView {
         addGestureRecognizer(tapGesture)
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let inset = bounds.width * 0.5 - videoRangeViewEarWidth
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
+    }
+    
     // MARK: - Actions
     
     @objc private func tapContentAction(_ recognizer: UITapGestureRecognizer) {
@@ -109,10 +125,6 @@ class TimeLineView: UIView {
                 rangeViews.filter({ $0 != view && $0.isEditActive }).forEach({ $0.isEditActive = false })
             }
         }
-    }
-    
-    func resignVideoRangeView() {
-        rangeViews.filter({ $0.isEditActive }).forEach({ $0.isEditActive = false })
     }
     
     @objc private func tapLineViewAction(_ recognizer: UITapGestureRecognizer) {
@@ -132,25 +144,30 @@ class TimeLineView: UIView {
     
     // MARK: - Data
     
-    func append(asset: AVAsset, at index: Int = 0) {
+    func resignVideoRangeView() {
+        rangeViews.filter({ $0.isEditActive }).forEach({ $0.isEditActive = false })
+    }
+    
+    func appendVideoRangeView(configuration: (VideoRangeView) -> Void, at index: Int = Int.max) {
         // 添加到当前时间点，最接近的地方。
         let videoRangeView = VideoRangeView()
-        videoRangeView.videoContentView.widthPerSecond = widthPerSecond
+        configuration(videoRangeView)
+        videoRangeView.contentView.widthPerSecond = widthPerSecond
         videoRangeView.contentInset = UIEdgeInsetsMake(2, videoRangeViewEarWidth, 2, videoRangeViewEarWidth)
         videoRangeView.delegate = self
+        videoRangeView.isEditActive = false
         let tapContentGesture = UITapGestureRecognizer(target: self, action: #selector(tapContentAction(_:)))
         videoRangeView.addGestureRecognizer(tapContentGesture)
-        contentView.insertSubview(videoRangeView, at: 0)
-        videoRangeView.configure(asset: asset)
+        videoListContentView.insertSubview(videoRangeView, at: 0)
         
         videoRangeView.translatesAutoresizingMaskIntoConstraints = false
-        videoRangeView.topAnchor.constraint(equalTo: contentView.topAnchor).isActive = true
-        videoRangeView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor).isActive = true
+        videoRangeView.topAnchor.constraint(equalTo: videoListContentView.topAnchor).isActive = true
+        videoRangeView.bottomAnchor.constraint(equalTo: videoListContentView.bottomAnchor).isActive = true
         if rangeViews.count == 0 {
             rangeViews.append(videoRangeView)
-            videoRangeView.leftConstraint = videoRangeView.leftAnchor.constraint(equalTo: contentView.leftAnchor)
+            videoRangeView.leftConstraint = videoRangeView.leftAnchor.constraint(equalTo: videoListContentView.leftAnchor)
             videoRangeView.leftConstraint?.isActive = true
-            videoRangeView.rightConstraint = videoRangeView.rightAnchor.constraint(equalTo: contentView.rightAnchor)
+            videoRangeView.rightConstraint = videoRangeView.rightAnchor.constraint(equalTo: videoListContentView.rightAnchor)
             videoRangeView.rightConstraint?.isActive = true
         } else {
             if index >= rangeViews.count {
@@ -164,7 +181,7 @@ class TimeLineView: UIView {
                 leftConstraint.isActive = true
                 videoRangeView.leftConstraint = leftConstraint
                 
-                videoRangeView.rightConstraint = videoRangeView.rightAnchor.constraint(equalTo: contentView.rightAnchor)
+                videoRangeView.rightConstraint = videoRangeView.rightAnchor.constraint(equalTo: videoListContentView.rightAnchor)
                 videoRangeView.rightConstraint?.isActive = true
             } else if index == 0 {
                 rangeViews.insert(videoRangeView, at: index)
@@ -177,7 +194,7 @@ class TimeLineView: UIView {
                 leftConstraint.isActive = true
                 rightVideoRangeView.leftConstraint = leftConstraint
                 
-                videoRangeView.leftConstraint = videoRangeView.leftAnchor.constraint(equalTo: contentView.leftAnchor)
+                videoRangeView.leftConstraint = videoRangeView.leftAnchor.constraint(equalTo: videoListContentView.leftAnchor)
                 videoRangeView.leftConstraint?.isActive = true
             } else {
                 rangeViews.insert(videoRangeView, at: index)
@@ -196,9 +213,13 @@ class TimeLineView: UIView {
                 rightVideoRangeView.leftConstraint = leftConstraint
             }
         }
-        
-        contentView.layoutIfNeeded()
-        timeDidChanged()
+    }
+    
+    func removeAllRangeViews() {
+        rangeViews.forEach { (view) in
+            view.removeFromSuperview()
+        }
+        rangeViews.removeAll()
     }
     
     func adjustCollectionViewOffset(time: CMTime) {
@@ -224,7 +245,9 @@ class TimeLineView: UIView {
     
     fileprivate func displayRangeViewsIfNeed() {
         let showingRangeViews = showingRangeView()
-        showingRangeViews.forEach({ $0.videoContentView.updateThumbIfNeed() })
+        showingRangeViews.forEach({
+            $0.contentView.updateDataIfNeed()
+        })
     }
     
     fileprivate func timeDidChanged() {
@@ -244,7 +267,7 @@ class TimeLineView: UIView {
         var duration = time
         var index = 0
         for (i, rangeView) in rangeViews.enumerated() {
-            let contentDuration = rangeView.videoContentView.endTime - rangeView.videoContentView.startTime
+            let contentDuration = rangeView.contentView.endTime - rangeView.contentView.startTime
             if duration <= contentDuration {
                 index = i
                 break
@@ -262,7 +285,7 @@ class TimeLineView: UIView {
         let duration = CMTime.init(seconds: Double(offsetX / widthPerSecond), preferredTimescale: 600)
         var index = 0
         for (i, rangeView) in rangeViews.enumerated() {
-            let width = rangeView.videoContentView.contentWidth
+            let width = rangeView.contentView.contentWidth
             if offsetX <= width {
                 index = i
                 break
@@ -278,18 +301,23 @@ class TimeLineView: UIView {
 
 extension TimeLineView: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let showingRangeViews = rangeViews.filter { (view) -> Bool in
-            let rect = view.superview!.convert(view.frame, to: scrollView)
-            let intersects = scrollView.bounds.intersects(rect)
-            return intersects
-        }
-        showingRangeViews.forEach({ $0.videoContentView.updateThumbIfNeed() })
+        displayRangeViewsIfNeed()
     }
+    
+    
 }
 
 // MARK: - VideoRangeViewDelegate
 
 extension TimeLineView: VideoRangeViewDelegate {
+    func videoRangeViewBeginUpdateLeft(_ view: VideoRangeView) {
+        // TODO: 替换当前显示的 player，要能做到预览当前选中片段的完整视频
+    }
+    
+    func videoRangeViewBeginUpdateRight(_ view: VideoRangeView) {
+        // TODO: 替换当前显示的 player，要能做到预览当前选中片段的完整视频
+    }
+    
     func videoRangeView(_ view: VideoRangeView, updateLeftOffset offset: CGFloat, auto: Bool) {
         if auto {
             return

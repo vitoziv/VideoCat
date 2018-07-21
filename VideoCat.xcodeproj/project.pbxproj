@@ -68,9 +68,16 @@
 		5FB72CE220FEC5EC00532CA7 /* ExportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CE120FEC5EC00532CA7 /* ExportViewController.swift */; };
 		5FB72CE420FEC90E00532CA7 /* Marvel Studios.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5FB72CE320FEC90E00532CA7 /* Marvel Studios.mp4 */; };
 		5FB72CE720FECBB300532CA7 /* DemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CE620FECBB300532CA7 /* DemoViewController.swift */; };
+		5FB72CEA2100168900532CA7 /* VideoRangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CE82100168900532CA7 /* VideoRangeView.swift */; };
+		5FB72CEB2100168900532CA7 /* TimeLineRangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CE92100168900532CA7 /* TimeLineRangeView.swift */; };
+		5FB72CED210016C000532CA7 /* RangeContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CEC210016C000532CA7 /* RangeContentView.swift */; };
+		5FB72CEF210018A400532CA7 /* ImageGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CEE210018A400532CA7 /* ImageGenerator.swift */; };
+		5FB72CF121001A0900532CA7 /* CMTimeExtensition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CF021001A0900532CA7 /* CMTimeExtensition.swift */; };
+		5FB72CF321001BB400532CA7 /* ImageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CF221001BB400532CA7 /* ImageFactory.swift */; };
+		5FB72CF52100219300532CA7 /* ImagePool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CF42100219300532CA7 /* ImagePool.swift */; };
+		5FB72CF72100266A00532CA7 /* UIColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FB72CF62100266A00532CA7 /* UIColorExtension.swift */; };
 		5FE0883B1FB0AD9B00EA7963 /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0883A1FB0AD9B00EA7963 /* VideoView.swift */; };
 		5FE0883D1FB1EA1A00EA7963 /* UIStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE0883C1FB1EA1A00EA7963 /* UIStyle.swift */; };
-		5FE088421FB846D200EA7963 /* VideoRangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE088411FB846D200EA7963 /* VideoRangeView.swift */; };
 		5FE088441FB9D75900EA7963 /* TimeLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FE088431FB9D75900EA7963 /* TimeLineView.swift */; };
 		5FF465C41FAA0FFA006EDD61 /* Demo.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5FF465C31FAA0FFA006EDD61 /* Demo.storyboard */; };
 		5FF8D33F2032B0D900240EE4 /* black_empty.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 5FF8D33E2032B0D900240EE4 /* black_empty.mp4 */; };
@@ -158,9 +165,16 @@
 		5FB72CE120FEC5EC00532CA7 /* ExportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportViewController.swift; sourceTree = "<group>"; };
 		5FB72CE320FEC90E00532CA7 /* Marvel Studios.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Marvel Studios.mp4"; sourceTree = "<group>"; };
 		5FB72CE620FECBB300532CA7 /* DemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoViewController.swift; sourceTree = "<group>"; };
+		5FB72CE82100168900532CA7 /* VideoRangeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoRangeView.swift; sourceTree = "<group>"; };
+		5FB72CE92100168900532CA7 /* TimeLineRangeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimeLineRangeView.swift; sourceTree = "<group>"; };
+		5FB72CEC210016C000532CA7 /* RangeContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RangeContentView.swift; sourceTree = "<group>"; };
+		5FB72CEE210018A400532CA7 /* ImageGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGenerator.swift; sourceTree = "<group>"; };
+		5FB72CF021001A0900532CA7 /* CMTimeExtensition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CMTimeExtensition.swift; sourceTree = "<group>"; };
+		5FB72CF221001BB400532CA7 /* ImageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFactory.swift; sourceTree = "<group>"; };
+		5FB72CF42100219300532CA7 /* ImagePool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePool.swift; sourceTree = "<group>"; };
+		5FB72CF62100266A00532CA7 /* UIColorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColorExtension.swift; sourceTree = "<group>"; };
 		5FE0883A1FB0AD9B00EA7963 /* VideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
 		5FE0883C1FB1EA1A00EA7963 /* UIStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStyle.swift; sourceTree = "<group>"; };
-		5FE088411FB846D200EA7963 /* VideoRangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoRangeView.swift; sourceTree = "<group>"; };
 		5FE088431FB9D75900EA7963 /* TimeLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeLineView.swift; sourceTree = "<group>"; };
 		5FF465C31FAA0FFA006EDD61 /* Demo.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Demo.storyboard; sourceTree = "<group>"; };
 		5FF8D33E2032B0D900240EE4 /* black_empty.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = black_empty.mp4; sourceTree = "<group>"; };
@@ -272,6 +286,10 @@
 				5FE0883C1FB1EA1A00EA7963 /* UIStyle.swift */,
 				5F353BE020F6E4CD00DABF5E /* UIViewController+Topmost.swift */,
 				5FB72CDA20FE4F1700532CA7 /* AVPlayerExtensition.swift */,
+				5FB72CEE210018A400532CA7 /* ImageGenerator.swift */,
+				5FB72CF221001BB400532CA7 /* ImageFactory.swift */,
+				5FB72CF42100219300532CA7 /* ImagePool.swift */,
+				5FB72CF62100266A00532CA7 /* UIColorExtension.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -444,6 +462,7 @@
 				5F39496C20DC7F0F0096A61F /* TimeRangeExtension.swift */,
 				5F6429FA20DFA6FF00080942 /* Log.swift */,
 				5F2874D120EDAEC800E51F85 /* TimingFunction.swift */,
+				5FB72CF021001A0900532CA7 /* CMTimeExtensition.swift */,
 			);
 			path = Uitl;
 			sourceTree = "<group>";
@@ -506,8 +525,10 @@
 			isa = PBXGroup;
 			children = (
 				5FA8F81B1FEF912200602295 /* DisplayTriggerMachine.swift */,
+				5FB72CE92100168900532CA7 /* TimeLineRangeView.swift */,
+				5FB72CE82100168900532CA7 /* VideoRangeView.swift */,
 				5FA8F81D1FEFCE4200602295 /* VideoRangeContentView.swift */,
-				5FE088411FB846D200EA7963 /* VideoRangeView.swift */,
+				5FB72CEC210016C000532CA7 /* RangeContentView.swift */,
 				5FE088431FB9D75900EA7963 /* TimeLineView.swift */,
 			);
 			path = Timeline;
@@ -721,6 +742,7 @@
 				5FE0883D1FB1EA1A00EA7963 /* UIStyle.swift in Sources */,
 				5F9DBED1202EA6C800E8BFC4 /* VideoCompositionInstruction.swift in Sources */,
 				5F2874CE20E7CC2B00E51F85 /* AudioMixer.swift in Sources */,
+				5FB72CF121001A0900532CA7 /* CMTimeExtensition.swift in Sources */,
 				5F353BE120F6E4CD00DABF5E /* UIViewController+Topmost.swift in Sources */,
 				5F6429FB20DFA6FF00080942 /* Log.swift in Sources */,
 				5F5037A220482BBB00C5270B /* VideoTransition.swift in Sources */,
@@ -728,18 +750,22 @@
 				5F01B0151F794AD40049CD3A /* VIPlayer.swift in Sources */,
 				5F353BDF20F6E2CF00DABF5E /* PassingThroughEditItemProvider.swift in Sources */,
 				5FF8D3412032CEFF00240EE4 /* CompositionGenerator.swift in Sources */,
+				5FB72CED210016C000532CA7 /* RangeContentView.swift in Sources */,
 				5FB64C292031977C004A09F8 /* APLCompositionDebugView.m in Sources */,
 				5F01AFFD1F741E0E0049CD3A /* Timeline.swift in Sources */,
 				5F49915020A30C64005C61C3 /* AudioProcessingTapHolder.swift in Sources */,
+				5FB72CEB2100168900532CA7 /* TimeLineRangeView.swift in Sources */,
 				5F39497020DE12960096A61F /* CompositionProvider.swift in Sources */,
 				5FB72CE220FEC5EC00532CA7 /* ExportViewController.swift in Sources */,
 				5F29D2391F740D9300D41F50 /* TrackVideoResource.swift in Sources */,
 				5FE088441FB9D75900EA7963 /* TimeLineView.swift in Sources */,
 				5F977C351F8B4CF90029156E /* AudioSampleOperation.swift in Sources */,
+				5FB72CF52100219300532CA7 /* ImagePool.swift in Sources */,
 				5F28752820F0BA0E00E51F85 /* EditToolView.swift in Sources */,
 				5F01B0041F779BEF0049CD3A /* AssetCell.swift in Sources */,
 				5F01B0351F7D334D0049CD3A /* WaveformScrollView.swift in Sources */,
 				5F01B0131F7949080049CD3A /* VIPlayerView.swift in Sources */,
+				5FB72CF321001BB400532CA7 /* ImageFactory.swift in Sources */,
 				5F6099B51F7DFD9800EA44A0 /* WaveformView.swift in Sources */,
 				5FE0883B1FB0AD9B00EA7963 /* VideoView.swift in Sources */,
 				5F353BDD20F5948900DABF5E /* EditItem.swift in Sources */,
@@ -755,12 +781,15 @@
 				5FF8D3432046AFBF00240EE4 /* CGMathFunctions.swift in Sources */,
 				5F2A987E1FA4738F0032B5DF /* TimelineViewModel.swift in Sources */,
 				5F01B00C1F77CF420049CD3A /* MBProgressExtension.swift in Sources */,
+				5FB72CEA2100168900532CA7 /* VideoRangeView.swift in Sources */,
 				5F39496D20DC7F0F0096A61F /* TimeRangeExtension.swift in Sources */,
 				5F6099C01F7E576E00EA44A0 /* EnlargeImageView.swift in Sources */,
 				5FB72CE720FECBB300532CA7 /* DemoViewController.swift in Sources */,
 				5F9DBECD202752E900E8BFC4 /* AVPlayerSeeker.swift in Sources */,
 				5F353BE720FCE8D400DABF5E /* LUTDataConverter.swift in Sources */,
+				5FB72CEF210018A400532CA7 /* ImageGenerator.swift in Sources */,
 				5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */,
+				5FB72CF72100266A00532CA7 /* UIColorExtension.swift in Sources */,
 				5FA8F81C1FEF912200602295 /* DisplayTriggerMachine.swift in Sources */,
 				5FA8F81E1FEFCE4200602295 /* VideoRangeContentView.swift in Sources */,
 				5F9DBECF2029F41300E8BFC4 /* VideoCompositor.swift in Sources */,
@@ -773,7 +802,6 @@
 				5F2874D020EB07C500E51F85 /* AudioTransition.swift in Sources */,
 				5F29D2351F73F41900D41F50 /* TrackConfiguration.swift in Sources */,
 				5FB72CDB20FE4F1700532CA7 /* AVPlayerExtensition.swift in Sources */,
-				5FE088421FB846D200EA7963 /* VideoRangeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

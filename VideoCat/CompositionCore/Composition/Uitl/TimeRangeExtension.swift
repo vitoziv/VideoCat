@@ -92,8 +92,11 @@ extension CMTimeRange {
     
 }
 
-extension CMTimeRange: CustomDebugStringConvertible {
+extension CMTimeRange: CustomStringConvertible, CustomDebugStringConvertible {
+    public var description: String {
+        return "{\(self.start.value)/\(self.start.timescale),\(self.duration.value)/\(self.duration.timescale)}"
+    }
     public var debugDescription: String {
-        return "start: \(start.seconds), end: \(end.seconds)"
+        return "{start:\(self.start), duration:\(self.duration)}"
     }
 }

@@ -9,47 +9,28 @@
 import UIKit
 import AVFoundation
 
-class VideoRangeContentView: UIView {
+class VideoRangeContentView: RangeContentView {
     
-    var asset: AVAsset? {
+    var loadImageQueue: DispatchQueue?
+    var workitems: [Int: DispatchWorkItem] = [:]
+    var imageGenerator: AVAssetImageGenerator? {
         didSet {
-            updateThumbIfNeed()
-            startTime = kCMTimeZero
-            endTime = kCMTimeZero
-        }
-    }
-    /// Asset's selected timerange
-    var startTime: CMTime = kCMTimeZero {
-        didSet {
-            timeLabel.text = String(format: "(%.1f, %.1f)", startTime.seconds, endTime.seconds - startTime.seconds)
-            
-            // bounds offset, let images show on the right place
-            let xOffset = CGFloat(startTime.seconds) * widthPerSecond
-            var offsetBounds = bounds
-            offsetBounds.origin.x = xOffset
-            bounds = offsetBounds
-            
-            timeLabel.transform = CGAffineTransform(translationX: xOffset, y: 0)
-        }
-    }
-    var endTime: CMTime = kCMTimeZero{
-        didSet {
-            timeLabel.text = String(format: "(%.1f, %.1f)", startTime.seconds, endTime.seconds - startTime.seconds)
+            updateDataIfNeed()
         }
     }
     
-    var widthPerSecond: CGFloat = 10
-    /// Preload left and right image thumb, if preloadCount is 2, then will preload 2 left image thumbs and 2 right image thumbs
-    var preloadCount: Int = 2
-    
-    var contentWidth: CGFloat {
-        let duration = endTime.seconds - startTime.seconds
-        return CGFloat(duration) * widthPerSecond
-    }
-    
-    private(set) var timeLabel: UILabel!
     private var imageViews: [Int: AssetThumbImageView] = [:]
     private var reuseableImageViews: [AssetThumbImageView] = []
+    
+    override var maxDuration: CMTime {
+        get {
+            guard let asset = imageGenerator?.asset else {
+                return kCMTimeIndefinite
+            }
+            return asset.duration
+        }
+        set {}
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -61,81 +42,46 @@ class VideoRangeContentView: UIView {
         commonInit()
     }
     
+    deinit {
+        imageGenerator?.cancelAllCGImageGeneration()
+    }
+    
     private func commonInit() {
-        clipsToBounds = true
-        
-        timeLabel = UILabel()
-        timeLabel.backgroundColor = UIColor(white: 0, alpha: 0.3)
-        timeLabel.font = UIFont.systemFont(ofSize: 11)
-        timeLabel.textColor = UIColor.white
-        addSubview(timeLabel)
-        
-        timeLabel.translatesAutoresizingMaskIntoConstraints = false
-        timeLabel.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        timeLabel.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        updateThumbIfNeed()
+        timeDidChange()
+        updateDataIfNeed()
     }
     
-    func updateThumbIfNeed() {
-        guard imageSize.height > 0 else {
+    override func reloadData() {
+        super.reloadData()
+        let indexRange = visiableRange()
+        guard indexRange.count > 0 else {
             return
         }
-        guard let asset = asset else {
-            imageViews.forEach({ (key, value) in
-                value.image = nil
-                value.removeFromSuperview()
-                reuseableImageViews.append(value)
-            })
-            imageViews.removeAll()
-            return
-        }
-        guard let window = window else {
-            return
-        }
-        let rectInWindow = convert(bounds, to: window)
-        
-        let availableRectInWindow = window.bounds.intersection(rectInWindow)
-        guard !availableRectInWindow.isNull else {
-            return
-        }
-        
-        let availableRect = convert(availableRectInWindow, from: window)
-        
-        let startOffset = availableRect.origin.x
-        var startIndexOfImage = Int(startOffset / imageSize.width)
-        var endIndexOfImage = Int(ceil((availableRect.width + startOffset) / imageSize.width))
-        
-        if preloadCount > 0 {
-            startIndexOfImage = max(0, startIndexOfImage - preloadCount)
-            let maxIndex = Int(ceil(CGFloat(asset.duration.seconds) * widthPerSecond / imageSize.width))
-            endIndexOfImage = min(maxIndex, endIndexOfImage + preloadCount)
-        }
-        
-        let indexRange = startIndexOfImage..<endIndexOfImage
         removeImageViewsOutOf(range: indexRange)
         indexRange.forEach { (index) in
             loadImageView(for: index)
         }
     }
     
-    func expand(contentWidth: CGFloat, left: Bool) {
-        let seconds = contentWidth / widthPerSecond
-        if left {
-            var startSeconds = max(0, startTime.seconds - Double(seconds))
-            startSeconds = min(startSeconds, endTime.seconds)
-            startTime = CMTime(seconds: startSeconds, preferredTimescale: 600)
-        } else {
-            guard let asset = asset else {
-                return
-            }
-            let maxDuration: Double = asset.duration.seconds
-            let endSeconds = max(min(endTime.seconds + Double(seconds), maxDuration), startTime.seconds)
-            endTime = CMTime(seconds: endSeconds, preferredTimescale: 600)
+    override func updateDataIfNeed() {
+        super.updateDataIfNeed()
+        let indexRange = visiableRange()
+        guard indexRange.count > 0 else {
+            return
         }
+        removeImageViewsOutOf(range: indexRange)
+        indexRange.forEach { (index) in
+            loadImageView(for: index)
+        }
+    }
+    
+    override func endExpand() {
+        super.endExpand()
+        updateDataIfNeed()
     }
     
     // MARK: - DataSource
@@ -150,6 +96,7 @@ class VideoRangeContentView: UIView {
         }
         outIndex.forEach { (index) in
             if let imageView = imageViews.removeValue(forKey: index) {
+                imageView.tag = 0
                 imageView.image = nil
                 imageView.removeFromSuperview()
                 reuseableImageViews.append(imageView)
@@ -158,38 +105,71 @@ class VideoRangeContentView: UIView {
     }
     
     private func loadImageView(for index: Int) {
-        guard let asset = asset else {
-            return
-        }
-        if let imageView = imageViews[index] {
-            updateLayoutIfNeed(imageView: imageView, at: index)
+        guard let imageGenerator = imageGenerator else {
             return
         }
         
         let imageView: AssetThumbImageView = {
-            if let imageView = reuseableImageViews.first {
-                reuseableImageViews.removeFirst()
-                imageView.tag = index
-                imageView.prepareForReuse()
+            if let imageView = imageViews[index] {
                 return imageView
             }
-            let imageView = AssetThumbImageView()
-            imageView.tag = index
-            imageView.clipsToBounds = true
-            imageView.contentMode = .scaleAspectFill
+            
+            let imageView = createImageView(at: index)
+            imageViews[index] = imageView
             return imageView
         }()
-        imageViews[index] = imageView
         
+        let preIndex = imageView.tag
+        imageView.tag = index
         // Layout
         layout(imageView: imageView, at: index)
         
-        // Image generetor
         let secondsPerImage = Double(imageSize.width / widthPerSecond)
-        let seconds = secondsPerImage * Double(index)
-        let time = CMTime(seconds: seconds, preferredTimescale: asset.duration.timescale)
-        imageView.configure(asset: asset, at: time)
-        imageView.configureDebugIndexLabel(index: index)
+        let start = secondsPerImage * Double(index)
+        let end = min(secondsPerImage * Double(index + 1), imageGenerator.asset.duration.seconds)
+        let time = CMTime(seconds: (start + end) * 0.5, preferredTimescale: imageGenerator.asset.duration.timescale)
+        if let generator = imageGenerator as? ImageGenerator, let image = generator.getCacheImage(at: time) {
+            if preIndex != index {
+                imageView.image = UIImage(cgImage: image)
+            }
+            return
+        }
+        imageView.image = ImagePool.current.defaultPlaceholderImage(size: CGSize(width: 200, height: 200))
+        if !canLoadImageAsync {
+            return
+        }
+        if workitems[index] != nil {
+            return
+        }
+        // Image generetor
+        let workitem = DispatchWorkItem(block: { [weak imageView, weak self] in
+            defer { self?.workitems.removeValue(forKey: index) }
+            guard let imageView = imageView else { return }
+            var cancel = true
+            DispatchQueue.main.sync {
+                cancel = imageView.tag != index
+            }
+            guard !cancel else { return }
+            imageView.configure(imageGenerator: imageGenerator, at: time)
+        })
+        loadImageQueue?.async(execute: workitem)
+        workitems[index] = workitem
+//        imageView.configureDebugIndexLabel(index: index)
+    }
+    
+    private func createImageView(at index: Int) -> AssetThumbImageView {
+        if let imageView = reuseableImageViews.first {
+            reuseableImageViews.removeFirst()
+            imageView.tag = -1
+            imageView.image = nil
+            return imageView
+        }
+        let imageView = AssetThumbImageView(frame: CGRect.zero)
+        imageView.tag = -1
+        imageView.image = ImagePool.current.defaultPlaceholderImage(size: CGSize(width: 200, height: 200))
+        imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        return imageView
     }
     
     private func layout(imageView: AssetThumbImageView, at index: Int) {
@@ -215,14 +195,55 @@ class VideoRangeContentView: UIView {
             imageView.widthAnchor.constraint(equalToConstant: imageSize.width).isActive = true
             imageView.heightAnchor.constraint(equalToConstant: imageSize.height).isActive = true
         }
-        
     }
     
-    private func updateLayoutIfNeed(imageView: AssetThumbImageView, at index: Int) {
-        if imageView.tag == index {
-            return
+    // MARK: - Helper
+    
+    private func visiableRange() -> CountableRange<Int> {
+        guard imageSize.height > 0 else {
+            return 0..<0
         }
-        layout(imageView: imageView, at: index)
+        guard let asset = imageGenerator?.asset else {
+            imageViews.forEach({ (key, value) in
+                value.tag = 0
+                value.image = nil
+                value.removeFromSuperview()
+                reuseableImageViews.append(value)
+            })
+            imageViews.removeAll()
+            return 0..<0
+        }
+        guard let window = UIApplication.shared.keyWindow else {
+            return 0..<0
+        }
+        let rectInWindow = convert(bounds, to: window)
+        
+        let availableRectInWindow = window.bounds.intersection(rectInWindow)
+        guard !availableRectInWindow.isNull else {
+            return 0..<0
+        }
+        
+        let availableRect = convert(availableRectInWindow, from: window)
+        
+        let startOffset = availableRect.origin.x
+        var startIndexOfImage = Int(startOffset / imageSize.width)
+        var endIndexOfImage = Int(ceil((availableRect.width + startOffset) / imageSize.width))
+        
+        if preloadCount > 0 {
+            startIndexOfImage = startIndexOfImage - preloadCount
+            if !supportUnlimitTime {
+                startIndexOfImage = max(0, startIndexOfImage)
+            }
+            endIndexOfImage = endIndexOfImage + preloadCount
+            if !supportUnlimitTime {
+                let maxIndex = Int(ceil(CGFloat(asset.duration.seconds) * widthPerSecond / imageSize.width))
+                endIndexOfImage = min(maxIndex, endIndexOfImage)
+            }
+        }
+        startIndexOfImage = min(startIndexOfImage, endIndexOfImage)
+        
+        let indexRange = startIndexOfImage..<endIndexOfImage
+        return indexRange
     }
     
 }
@@ -231,45 +252,15 @@ class AssetThumbImageView: UIImageView {
     
     var imageGenerator: AVAssetImageGenerator?
     
-    func prepareForReuse() {
-        imageGenerator?.cancelAllCGImageGeneration()
-    }
-    
-    func configure(asset: AVAsset, at time: CMTime) {
-        if let imageGenerator = imageGenerator, imageGenerator.asset == asset {
-            // Same image generator don't recreate
-        } else {
-            imageGenerator = AVAssetImageGenerator(asset: asset)
-            imageGenerator?.appliesPreferredTrackTransform = true
+    func configure(imageGenerator: AVAssetImageGenerator, at time: CMTime) {
+        do {
+            let cgimage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+            DispatchQueue.main.async {
+                self.image = UIImage(cgImage: cgimage)
+            }
+        } catch let e {
+            Log.error("Image generator copyCGImage error: \(e.localizedDescription)")
         }
-        
-        let imageSize = bounds.size
-        let imageWidth = imageSize.width * UIScreen.main.scale
-        let imageHeight = imageSize.height * UIScreen.main.scale
-        if var naturalSize = asset.tracks.first?.naturalSize {
-            if let transform = asset.tracks.first?.preferredTransform {
-                naturalSize = CGRect(origin: CGPoint.zero, size: naturalSize).applying(transform).size
-            }
-            let widthRatio = imageWidth / naturalSize.width
-            let heightRatio = imageHeight / naturalSize.height
-            if widthRatio > heightRatio {
-                imageGenerator?.maximumSize = CGSize(width: imageWidth, height: 0)
-            } else {
-                imageGenerator?.maximumSize = CGSize(width: 0, height: imageHeight)
-            }
-        } else {
-            imageGenerator?.maximumSize = CGSize(width: 0, height: imageHeight)
-        }
-        imageGenerator?.generateCGImagesAsynchronously(forTimes: [NSValue(time: time)], completionHandler: { [weak self] (time, image, actualTime, result, error) in
-            guard let strongSelf = self else { return }
-            if result == .succeeded, let image = image {
-                DispatchQueue.main.async {
-                    strongSelf.image = UIImage(cgImage: image)
-                }
-            } else if let error = error {
-                print("Image generator copyCGImage error: \(error.localizedDescription)")
-            }
-        })
     }
     
     var debugIndexLabel: UILabel?
