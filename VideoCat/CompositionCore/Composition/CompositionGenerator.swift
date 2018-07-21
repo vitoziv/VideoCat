@@ -12,6 +12,7 @@ class CompositionGenerator {
     
     // MARK: - Public
     var timeline: Timeline
+    var renderSize: CGSize?
     
     init(timeline: Timeline) {
         self.timeline = timeline
@@ -95,10 +96,6 @@ class CompositionGenerator {
     }
     
     fileprivate func buildVideoComposition(with composition: AVComposition) -> AVMutableVideoComposition? {
-        let videoComposition = AVMutableVideoComposition()
-        videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
-        videoComposition.renderSize = timeline.renderSize
-        
         let videoTracks = composition.tracks(withMediaType: .video)
         
         var layerInstructions: [VideoCompositionLayerInstruction] = []
@@ -128,8 +125,19 @@ class CompositionGenerator {
             return instruction
         })
         
+        let videoComposition = AVMutableVideoComposition()
+        videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
+        videoComposition.renderSize = {
+            if let renderSize = renderSize {
+                return renderSize
+            }
+            let size = videoTracks.reduce(CGSize.zero, { (size, track) -> CGSize in
+                return CGSize(width: max(track.naturalSize.width, size.width),
+                              height: max(track.naturalSize.height, size.height))
+            })
+            return size
+        }()
         videoComposition.instructions = instructions
-        
         videoComposition.customVideoCompositorClass = VideoCompositor.self
         
         return videoComposition

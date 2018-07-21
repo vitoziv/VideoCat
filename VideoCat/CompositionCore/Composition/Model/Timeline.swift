@@ -11,7 +11,6 @@ import AVFoundation
 public class Timeline {
 
     // MARK: - Global effect
-    public var renderSize = CGSize.zero
     public var passingThroughVideoCompositionProvider: PassingThroughVideoCompositionProvider?
     
     // MARK: - Main content, support transition.
