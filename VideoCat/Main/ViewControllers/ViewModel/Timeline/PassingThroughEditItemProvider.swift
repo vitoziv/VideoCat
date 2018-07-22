@@ -57,7 +57,7 @@ extension PassingThroughEditItemProvider: AssetsViewControllerDelegate {
         
         let resource = TrackVideoAssetResource(asset: asset)
         MBProgressHUD.showLoading()
-        resource.loadMedia { [weak self] (status) in
+        resource.prepare { [weak self] (status, error) in
             guard let context = self?.context else {return}
             if status == .avaliable {
                 MBProgressHUD.dismiss()
@@ -70,7 +70,6 @@ extension PassingThroughEditItemProvider: AssetsViewControllerDelegate {
                 trackItem.videoTransition = transition
                 let audioTransition = FadeInOutAudioTransition(duration: transition.duration)
                 trackItem.audioTransition = audioTransition
-                trackItem.resource.timeRange = CMTimeRangeMake(kCMTimeZero, resource.trackAsset!.duration)
                 let audioTapHolder = AudioProcessingTapHolder()
                 trackItem.configuration.audioConfiguration.audioTapHolder = audioTapHolder
                 context.viewModel.insertTrackItem(trackItem, at: index)

@@ -7,59 +7,67 @@
 //
 
 import AVFoundation
+import UIKit
 
 class TrackVideoResource: TrackResource {
     
-    var assetURL: URL
+    var assetURL: URL?
+    var asset: AVAsset?
     
-    init(asset: AVURLAsset) {
-        assetURL = asset.url
-        super.init(with: nil)
-        trackAsset = asset
-        let duration = CMTimeMake(Int64(asset.duration.seconds * 600), 600)
-        timeRange = CMTimeRangeMake(kCMTimeZero, duration)
+    init(assetURL: URL) {
+        super.init()
+        self.assetURL = assetURL
+        asset = AVURLAsset(url: assetURL)
+        if let asset = asset {
+            let duration = CMTimeMake(Int64(asset.duration.seconds * 600), 600)
+            selectedTimeRange = CMTimeRangeMake(kCMTimeZero, duration)
+        }
+    }
+    
+    required public init() {
+        super.init()
     }
     
     // MARK: - Load
-    
-    override func loadMedia(completion: @escaping (Status) -> Void) {
-        if trackAsset == nil {
-            trackAsset = AVAsset(url: assetURL)
-        }
-        if let asset = trackAsset {
+    override func prepare(completion: @escaping (ResourceStatus, Error?) -> Void) {
+        if let asset = asset {
             asset.loadValuesAsynchronously(forKeys: ["tracks", "duration"], completionHandler: { [weak self] in
                 guard let strongSelf = self else { return }
                 if asset.tracks.count > 0 {
                     strongSelf.status = .avaliable
                 }
-                completion(strongSelf.status)
+                completion(strongSelf.status, strongSelf.statusError)
             })
         } else {
-            completion(status)
+            completion(status, statusError)
         }
     }
     
-    // MARK: - Encoder
-    override func encodeToJSON() -> [String: Any] {
-        var json = super.encodeToJSON()
-        json[TrackVideoResource.AssetURLKey] = assetURL.absoluteString.replacingOccurrences(of: NSHomeDirectory(), with: TrackVideoResource.URLPlaceholderString)
-        return json
+    // MARK: - Content provider
+    
+    open override func numberOfTracks(for mediaType: AVMediaType) -> Int {
+        if let asset = asset {
+            return asset.tracks(withMediaType: mediaType).count
+        }
+        return 0
     }
     
-    static let URLPlaceholderString = "<NSHomeDirectory>"
-    static let AssetURLKey = "AssetURLKey"
-    required init(with json: [String: Any]?) {
-        assetURL = URL(fileURLWithPath: "")
-        super.init(with: json)
+    open override func track(at index: Int, mediaType: AVMediaType) -> AVAssetTrack? {
+        guard let asset = asset else {
+            return nil
+        }
+        let tracks = asset.tracks(withMediaType: mediaType)
+        return tracks[index]
+    }
+    
+    // MARK: - NSCopying
+    
+    override func copy(with zone: NSZone? = nil) -> Any {
+        let resource = super.copy(with: zone) as! TrackVideoResource
+        resource.assetURL = assetURL
+        resource.asset = asset
         
-        guard let json = json else { return }
-        guard let urlString = json[TrackVideoResource.AssetURLKey] as? String else {
-            return
-        }
-        let convertStr = urlString.replacingOccurrences(of: TrackVideoResource.URLPlaceholderString, with: NSHomeDirectory())
-        guard let url = URL(string: convertStr) else {
-            return
-        }
-        assetURL = url
+        return resource
     }
+    
 }

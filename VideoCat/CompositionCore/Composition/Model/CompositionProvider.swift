@@ -12,8 +12,8 @@ import AVFoundation
 public protocol CompositionTrackProvider {
     var timeRange: CMTimeRange { get }
     
-    func numberOfTracks(for mediaType: AVMediaType) -> Int 
-    func configure(compositionTrack: AVMutableCompositionTrack, index: Int)
+    func numberOfTracks(for mediaType: AVMediaType) -> Int
+    func compositionTrack(for composition: AVMutableComposition, at index: Int, mediaType: AVMediaType, preferredTrackID: Int32) -> AVCompositionTrack?
 }
 
 public protocol AudioMixProvider {

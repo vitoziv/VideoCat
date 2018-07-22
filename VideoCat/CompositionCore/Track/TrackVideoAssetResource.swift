@@ -10,24 +10,29 @@ import Photos
 
 class TrackVideoAssetResource: TrackResource {
     
-    var identifier: String
+    var identifier: String = ""
     var asset: PHAsset?
+    fileprivate var avasset: AVAsset?
     
     init(asset: PHAsset) {
+        super.init()
         identifier = asset.localIdentifier
-        super.init(with: nil)
         self.asset = asset
         let duration = CMTimeMake(Int64(asset.duration * 600), 600)
-        timeRange = CMTimeRangeMake(kCMTimeZero, duration)
+        selectedTimeRange = CMTimeRangeMake(kCMTimeZero, duration)
+    }
+    
+    required public init() {
+        super.init()
     }
     
     // MARK: - Load
-    override func loadMedia(completion: @escaping (TrackResource.Status) -> Void) {
-        if let asset = trackAsset {
+    override func prepare(completion: @escaping (ResourceStatus, Error?) -> Void) {
+        if let asset = self.avasset {
             asset.loadValuesAsynchronously(forKeys: ["tracks", "duration"], completionHandler: { [weak self] in
                 guard let strongSelf = self else { return }
                 defer {
-                    completion(strongSelf.status)
+                    completion(strongSelf.status, strongSelf.statusError)
                 }
                 
                 var error: NSError?
@@ -51,7 +56,7 @@ class TrackVideoAssetResource: TrackResource {
         }
         
         guard let asset = asset else {
-            completion(status)
+            completion(status, nil)
             return
         }
         let options = PHVideoRequestOptions()
@@ -61,36 +66,25 @@ class TrackVideoAssetResource: TrackResource {
         PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { [weak self] (asset, audioMix, info) in
             guard let strongSelf = self else { return }
             if let asset = asset {
-                strongSelf.trackAsset = asset
+                strongSelf.avasset = asset
                 strongSelf.status = .avaliable
             } else {
                 strongSelf.status = .unavaliable
             }
-            DispatchQueue.main.async {            
-                completion(strongSelf.status)
+            DispatchQueue.main.async {
+                completion(strongSelf.status, nil)
             }
         }
     }
     
-    // MARK: - Encoder
-    override func encodeToJSON() -> [String: Any] {
-        var json = super.encodeToJSON()
-        json[TrackVideoAssetResource.IdentifierKey] = identifier
-        return json
-    }
+    // MARK: - NSCopying
     
-    static let IdentifierKey = "IdentifierKey"
-    required init(with json: [String : Any]?) {
-        identifier = ""
-        super.init(with: json)
+    override func copy(with zone: NSZone? = nil) -> Any {
+        let resource = super.copy(with: zone) as! TrackVideoAssetResource
+        resource.asset = asset
+        resource.avasset = avasset
+        resource.identifier = identifier
         
-        guard let json = json else {
-            return
-        }
-        
-        if let id = json[TrackVideoAssetResource.IdentifierKey] as? String {
-            identifier = id
-        }
+        return resource
     }
-    
 }

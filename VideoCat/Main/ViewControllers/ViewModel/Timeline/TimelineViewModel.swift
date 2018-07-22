@@ -21,9 +21,6 @@ class TimelineViewModel {
     
     init() {
         let timeline = TimelineManager.current.timeline
-        let width = UIScreen.main.bounds.width * UIScreen.main.scale
-        let height: CGFloat = round(width * 0.5625)
-        timeline.renderSize = CGSize(width: width, height: height)
         timeline.passingThroughVideoCompositionProvider = self
     }
     
@@ -47,19 +44,23 @@ class TimelineViewModel {
         var startTime = kCMTimeZero
         for i in (0..<index) {
             let trackItem = trackItems[i]
-            startTime = CMTimeAdd(startTime, trackItem.resource.timeRange.duration)
+            startTime = CMTimeAdd(startTime, trackItem.resource.selectedTimeRange.duration)
         }
         if index >= trackItems.count {
             return CMTimeRangeMake(startTime, kCMTimeZero)
         }
         let trackItem = trackItems[index]
-        return trackItem.resource.timeRange
+        return trackItem.resource.selectedTimeRange
     }
     
     fileprivate func reloadPlayerItem() {
         let timeline = TimelineManager.current.timeline
         reloadTimeline(timeline)
         let compositionGenerator = CompositionGenerator(timeline: timeline)
+        
+        let width = UIScreen.main.bounds.width * UIScreen.main.scale
+        let height: CGFloat = round(width * 0.5625)
+        compositionGenerator.renderSize = CGSize(width: width, height: height)
         let playerItem = compositionGenerator.buildPlayerItem()
         self.playerItem = playerItem
     }

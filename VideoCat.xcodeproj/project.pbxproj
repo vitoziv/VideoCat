@@ -28,7 +28,7 @@
 		5F28752820F0BA0E00E51F85 /* EditToolView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F28752720F0BA0E00E51F85 /* EditToolView.swift */; };
 		5F29D2331F73F25B00D41F50 /* TrackItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2321F73F25B00D41F50 /* TrackItem.swift */; };
 		5F29D2351F73F41900D41F50 /* TrackConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */; };
-		5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2361F73FEE200D41F50 /* TrackResource.swift */; };
+		5F29D2371F73FEE200D41F50 /* Resource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2361F73FEE200D41F50 /* Resource.swift */; };
 		5F29D2391F740D9300D41F50 /* TrackVideoResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2381F740D9300D41F50 /* TrackVideoResource.swift */; };
 		5F29D2411F74146700D41F50 /* VideoCatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F29D2401F74146700D41F50 /* VideoCatTests.swift */; };
 		5F2A987E1FA4738F0032B5DF /* TimelineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F2A987D1FA4738F0032B5DF /* TimelineViewModel.swift */; };
@@ -121,7 +121,7 @@
 		5F28752720F0BA0E00E51F85 /* EditToolView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditToolView.swift; sourceTree = "<group>"; };
 		5F29D2321F73F25B00D41F50 /* TrackItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackItem.swift; sourceTree = "<group>"; };
 		5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackConfiguration.swift; sourceTree = "<group>"; };
-		5F29D2361F73FEE200D41F50 /* TrackResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackResource.swift; sourceTree = "<group>"; };
+		5F29D2361F73FEE200D41F50 /* Resource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resource.swift; sourceTree = "<group>"; };
 		5F29D2381F740D9300D41F50 /* TrackVideoResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackVideoResource.swift; sourceTree = "<group>"; };
 		5F29D23E1F74146700D41F50 /* VideoCatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VideoCatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F29D2401F74146700D41F50 /* VideoCatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCatTests.swift; sourceTree = "<group>"; };
@@ -218,7 +218,7 @@
 			children = (
 				5F29D2321F73F25B00D41F50 /* TrackItem.swift */,
 				5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */,
-				5F29D2361F73FEE200D41F50 /* TrackResource.swift */,
+				5F29D2361F73FEE200D41F50 /* Resource.swift */,
 				5F29D2381F740D9300D41F50 /* TrackVideoResource.swift */,
 				5F01B00D1F77EDD30049CD3A /* TrackVideoAssetResource.swift */,
 			);
@@ -788,7 +788,7 @@
 				5F9DBECD202752E900E8BFC4 /* AVPlayerSeeker.swift in Sources */,
 				5F353BE720FCE8D400DABF5E /* LUTDataConverter.swift in Sources */,
 				5FB72CEF210018A400532CA7 /* ImageGenerator.swift in Sources */,
-				5F29D2371F73FEE200D41F50 /* TrackResource.swift in Sources */,
+				5F29D2371F73FEE200D41F50 /* Resource.swift in Sources */,
 				5FB72CF72100266A00532CA7 /* UIColorExtension.swift in Sources */,
 				5FA8F81C1FEF912200602295 /* DisplayTriggerMachine.swift in Sources */,
 				5FA8F81E1FEFCE4200602295 /* VideoRangeContentView.swift in Sources */,

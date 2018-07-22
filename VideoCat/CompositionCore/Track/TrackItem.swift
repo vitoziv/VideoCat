@@ -12,13 +12,13 @@ import CoreImage
 public class TrackItem {
     
     public var identifier: String
-    public var resource: TrackResource
+    public var resource: Resource
     public var configuration: TrackConfiguration
     
     public var videoTransition: VideoTransition?
     public var audioTransition: AudioTransition?
     
-    init(resource: TrackResource) {
+    init(resource: Resource) {
         identifier = ProcessInfo.processInfo.globallyUniqueString
         self.resource = resource
         configuration = TrackConfiguration()
@@ -28,7 +28,7 @@ public class TrackItem {
 
 public extension TrackItem {
     func reloadTimelineDuration() {
-        let duration = resource.timeRange.duration
+        let duration = resource.selectedTimeRange.duration
         var timeRange = configuration.timelineTimeRange
         timeRange.duration = duration
         configuration.timelineTimeRange = timeRange
@@ -42,33 +42,50 @@ extension TrackItem: CompositionTrackProvider {
     }
     
     public func numberOfTracks(for mediaType: AVMediaType) -> Int {
-        if let asset = resource.trackAsset {
-            return asset.tracks(withMediaType: mediaType).count
+        if let resource = resource as? TrackResource {
+            return resource.numberOfTracks(for: mediaType)
+        } else if resource.isMember(of: ImageResource.self) {
+            if mediaType == .video {
+                return 1
+            }
         }
+        
         return 0
     }
     
-    public func configure(compositionTrack: AVMutableCompositionTrack, index: Int) {
-        if let asset = resource.trackAsset {
-            func insertTrackToCompositionTrack(_ track: AVAssetTrack) {
-                do {
-                    try compositionTrack.insertTimeRange(resource.timeRange, of: track, at: timeRange.start)
-                } catch {
-                    Log.error(error.localizedDescription)
+    private static let emptyAsset: AVAsset = {
+        let url = Bundle.main.url(forResource: "black_empty", withExtension: "mp4")!
+        let asset = AVAsset(url: url)
+        return asset
+    }()
+    
+    public func compositionTrack(for composition: AVMutableComposition, at index: Int, mediaType: AVMediaType, preferredTrackID: Int32) -> AVCompositionTrack? {
+        let videoTrack: AVAssetTrack? = {
+            if let resource = resource as? TrackResource {
+                return resource.track(at: index, mediaType: mediaType)
+            } else if resource.isMember(of: ImageResource.self) {
+                if mediaType == .video {
+                    return TrackItem.emptyAsset.tracks(withMediaType: mediaType).first
                 }
             }
+            return nil
+        }()
+        guard let track = videoTrack else {
+            return nil
+        }
+        
+        let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: preferredTrackID)
+        if let compositionTrack = compositionTrack {
             if compositionTrack.mediaType == .video {
-                if let track = asset.tracks(withMediaType: .video).first {
-                    compositionTrack.preferredTransform = track.preferredTransform
-                    insertTrackToCompositionTrack(track)
-                }
-            } else if compositionTrack.mediaType == .audio {
-                let tracks = asset.tracks(withMediaType: .audio)
-                if tracks.count > index {
-                    insertTrackToCompositionTrack(tracks[index])
-                }
+                compositionTrack.preferredTransform = track.preferredTransform
+            }
+            do {
+                try compositionTrack.insertTimeRange(resource.selectedTimeRange, of: track, at: timeRange.start)
+            } catch {
+                Log.error(error.localizedDescription)
             }
         }
+        return compositionTrack
     }
     
 }
@@ -76,12 +93,15 @@ extension TrackItem: CompositionTrackProvider {
 extension TrackItem: VideoCompositionProvider {
     
     public func applyEffect(to sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage {
-        var finalImage = sourceImage
-        guard let track = resource.trackAsset?.tracks(withMediaType: .video).first else {
-            return finalImage
-        }
+        var finalImage: CIImage = {
+            if let resource = resource as? ImageResource,
+                let resourceImage = resource.image(at: time, renderSize: renderSize) {
+                return resourceImage
+            }
+            return sourceImage
+        }()
         
-        finalImage = finalImage.flipYCoordinate().transformed(by: track.preferredTransform).flipYCoordinate()
+        finalImage = finalImage.flipYCoordinate().flipYCoordinate()
         
         var transform = CGAffineTransform.identity
         switch configuration.videoConfiguration.baseContentMode {
