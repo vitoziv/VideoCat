@@ -140,3 +140,4 @@ extension TimelineViewModel: PassingThroughVideoCompositionProvider {
         return image
     }
 }
+

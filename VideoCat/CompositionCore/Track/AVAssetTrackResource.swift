@@ -1,5 +1,5 @@
 //
-//  TrackVideoResource.swift
+//  AVAssetTrackResource.swift
 //  VideoCat
 //
 //  Created by Vito on 21/09/2017.
@@ -9,7 +9,7 @@
 import AVFoundation
 import UIKit
 
-class TrackVideoResource: TrackResource {
+class AVAssetTrackResource: TrackResource {
     
     var assetURL: URL?
     var asset: AVAsset?
@@ -63,7 +63,7 @@ class TrackVideoResource: TrackResource {
     // MARK: - NSCopying
     
     override func copy(with zone: NSZone? = nil) -> Any {
-        let resource = super.copy(with: zone) as! TrackVideoResource
+        let resource = super.copy(with: zone) as! AVAssetTrackResource
         resource.assetURL = assetURL
         resource.asset = asset
         

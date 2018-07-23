@@ -1,5 +1,5 @@
 //
-//  TimingFunction.swift
+//  TimingFunctionFactory.swift
 //  VideoCat
 //
 //  Created by Vito on 2018/7/5.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class TimingFunction {
+public class TimingFunctionFactory {
     // Modeled after the line y = x
     static func LinearInterpolation(p: Float) -> Float {
         return p

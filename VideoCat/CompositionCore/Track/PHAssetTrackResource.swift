@@ -1,5 +1,5 @@
 //
-//  TrackVideoAssetResource.swift
+//  PHAssetTrackResource.swift
 //  VideoCat
 //
 //  Created by Vito on 24/09/2017.
@@ -8,7 +8,7 @@
 
 import Photos
 
-class TrackVideoAssetResource: TrackResource {
+class PHAssetTrackResource: TrackResource {
     
     var identifier: String = ""
     var asset: PHAsset?
@@ -32,6 +32,7 @@ class TrackVideoAssetResource: TrackResource {
             asset.loadValuesAsynchronously(forKeys: ["tracks", "duration"], completionHandler: { [weak self] in
                 guard let strongSelf = self else { return }
                 defer {
+                    strongSelf.duration = asset.duration
                     completion(strongSelf.status, strongSelf.statusError)
                 }
                 
@@ -66,6 +67,7 @@ class TrackVideoAssetResource: TrackResource {
         PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { [weak self] (asset, audioMix, info) in
             guard let strongSelf = self else { return }
             if let asset = asset {
+                strongSelf.duration = asset.duration
                 strongSelf.avasset = asset
                 strongSelf.status = .avaliable
             } else {
@@ -77,10 +79,27 @@ class TrackVideoAssetResource: TrackResource {
         }
     }
     
+    // MARK: - Content provider
+    
+    open override func numberOfTracks(for mediaType: AVMediaType) -> Int {
+        if let asset = avasset {
+            return asset.tracks(withMediaType: mediaType).count
+        }
+        return 0
+    }
+    
+    open override func track(at index: Int, mediaType: AVMediaType) -> AVAssetTrack? {
+        guard let asset = avasset else {
+            return nil
+        }
+        let tracks = asset.tracks(withMediaType: mediaType)
+        return tracks[index]
+    }
+    
     // MARK: - NSCopying
     
     override func copy(with zone: NSZone? = nil) -> Any {
-        let resource = super.copy(with: zone) as! TrackVideoAssetResource
+        let resource = super.copy(with: zone) as! PHAssetTrackResource
         resource.asset = asset
         resource.avasset = avasset
         resource.identifier = identifier

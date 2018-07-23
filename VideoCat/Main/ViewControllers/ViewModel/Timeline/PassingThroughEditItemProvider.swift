@@ -55,13 +55,13 @@ extension PassingThroughEditItemProvider: AssetsViewControllerDelegate {
     func assetsViewController(_ viewController: AssetsViewController, didPicked asset: PHAsset) {
         viewController.dismiss(animated: true, completion: nil)
         
-        let resource = TrackVideoAssetResource(asset: asset)
+        let resource = PHAssetTrackResource(asset: asset)
         MBProgressHUD.showLoading()
         resource.prepare { [weak self] (status, error) in
             guard let context = self?.context else {return}
             if status == .avaliable {
                 MBProgressHUD.dismiss()
-                
+                resource.selectedTimeRange = CMTimeRange.init(start: kCMTimeZero, duration: resource.duration)
                 let index = context.timelineView.nextRangeViewIndex
                 
                 let trackItem = TrackItem(resource: resource)
@@ -74,36 +74,7 @@ extension PassingThroughEditItemProvider: AssetsViewControllerDelegate {
                 trackItem.configuration.audioConfiguration.audioTapHolder = audioTapHolder
                 context.viewModel.insertTrackItem(trackItem, at: index)
                 context.videoView.player.replaceCurrentItem(context.viewModel.playerItem)
-                
-                context.timelineView.appendVideoRangeView(configuration: { (rangeView) in
-                    
-                    // TODO: 1.完善 resource。 2.支持单个 trackItem 创建 image generator
-                    
-//                    let contentView = VideoRangeContentView()
-//                    if resource.type == .photo {
-//                        contentView.supportUnlimitTime = true
-//                    }
-//                    let timeRange = trackItem.configuration.timelineTimeRange
-//                    let imageGenerator = clip.clipFullRangeImageGenerator(size: CGSize(width: 60, height: 60))
-//                    contentView.loadImageQueue = loadImageQueue
-//                    contentView.imageGenerator = imageGenerator
-//                    contentView.startTime = timeRange.start
-//                    contentView.endTime = timeRange.end
-//                    
-//                    if index > 0 {
-//                        let previousClip = clips[index - 1]
-//                        if let transitionDuration = previousClip.videoTransition?.duration {
-//                            contentView.leftInsetDuration = transitionDuration / 2
-//                        }
-//                    }
-//                    if let transitionDuration = trackItem.videoTransition?.duration {
-//                        contentView.rightInsetDuration = transitionDuration / 2
-//                    }
-//                    
-//                    rangeView.loadContentView(contentView)
-//                    
-//                    rangeView.reloadUI()
-                }, at: index)
+                context.timelineView.reload(with: context.viewModel.trackItems)
             } else {
                 MBProgressHUD.showError(title: NSLocalizedString("Can't use this video", comment: ""))
             }

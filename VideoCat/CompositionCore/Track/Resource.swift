@@ -65,10 +65,10 @@ open class TrackResource: Resource {
     // MARK: - Content provider
     
     open func numberOfTracks(for mediaType: AVMediaType) -> Int {
-        return 0
+        fatalError("Should implemented by subclass")
     }
     open func track(at index: Int, mediaType: AVMediaType) -> AVAssetTrack? {
-        return nil
+        fatalError("Should implemented by subclass")
     }
     
     // MARK: - NSCopying

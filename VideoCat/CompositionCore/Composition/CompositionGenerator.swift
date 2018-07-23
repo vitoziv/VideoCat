@@ -128,8 +128,9 @@ class CompositionGenerator {
                 return renderSize
             }
             let size = videoTracks.reduce(CGSize.zero, { (size, track) -> CGSize in
-                return CGSize(width: max(track.naturalSize.width, size.width),
-                              height: max(track.naturalSize.height, size.height))
+                let trackSize = track.naturalSize.applying(track.preferredTransform)
+                return CGSize(width: max(trackSize.width, size.width),
+                              height: max(trackSize.height, size.height))
             })
             return size
         }()

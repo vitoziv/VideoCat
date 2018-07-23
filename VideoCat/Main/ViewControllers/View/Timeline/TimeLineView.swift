@@ -9,6 +9,7 @@
 import UIKit
 import AVFoundation
 import RxCocoa
+import RxSwift
 
 class TimeLineView: UIView {
 
@@ -21,6 +22,14 @@ class TimeLineView: UIView {
     private(set) var scrollContentHeightConstraint: NSLayoutConstraint!
     
     private(set) var rangeViews: [VideoRangeView] = []
+    private(set) var trackItems: [TrackItem] = []
+    
+    // Player
+    fileprivate(set) var player: AVPlayer?
+    fileprivate var timeObserver: Any?
+    fileprivate var playerDisposeBag: DisposeBag?
+    fileprivate var timelinePlayerItem: AVPlayerItem?
+    fileprivate var currentClipPlayerItem: AVPlayerItem?
     
     var rangeViewsIndex: Int {
         var index = 0
@@ -37,6 +46,18 @@ class TimeLineView: UIView {
     }
     var videoRangeViewEarWidth: CGFloat = 24
     var widthPerSecond: CGFloat = 60
+    
+    @objc dynamic var isScrolling: Bool = false
+    var isFocusMode: Bool = false {
+        didSet {
+            if !isFocusMode {
+                resignVideoRangeView()
+            }
+        }
+    }
+    var activeNextClipHandler: (() -> Bool)?
+    /// 是否禁用 scrollView 中同步 player 的 seek 操作
+    var disableAutoSeekPlayer: Bool = false
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -144,6 +165,50 @@ class TimeLineView: UIView {
     
     // MARK: - Data
     
+    private let loadImageQueue: DispatchQueue = DispatchQueue(label: "com.videocat.loadimage")
+    func reload(with trackItems: [TrackItem]) {
+        self.trackItems = trackItems
+        removeAllRangeViews()
+        for (index, trackItem) in trackItems.enumerated() {
+            appendVideoRangeView(configuration: { (rangeView) in
+                let contentView = VideoRangeContentView()
+                if trackItem.resource.isMember(of: ImageResource.self) {
+                    contentView.supportUnlimitTime = true
+                }
+                let timeRange = trackItem.configuration.timelineTimeRange
+                let imageGenerator = trackItem.generateFullRangeImageGenerator(size: CGSize(width: 60, height: 60))
+                contentView.loadImageQueue = loadImageQueue
+                contentView.imageGenerator = imageGenerator
+                contentView.startTime = timeRange.start
+                contentView.endTime = timeRange.end
+                
+                if index > 0 {
+                    let previousClip = trackItems[index - 1]
+                    if let transitionDuration = previousClip.videoTransition?.duration {
+                        contentView.leftInsetDuration = transitionDuration / 2
+                    }
+                }
+                if let transitionDuration = trackItem.videoTransition?.duration {
+                    contentView.rightInsetDuration = transitionDuration / 2
+                }
+                
+                rangeView.loadContentView(contentView)
+                
+                rangeView.reloadUI()
+            })
+        }
+        
+        rangeViews.enumerated().forEach { (offset, view) in
+            view.leftPaddingViewConstraint.constant = 2
+            view.rightPaddingViewConstraint.constant = 2
+            if offset == 0 {
+                view.leftPaddingViewConstraint.constant = 0
+            } else if offset == rangeViews.count - 1 {
+                view.rightPaddingViewConstraint.constant = 0
+            }
+        }
+    }
+    
     func resignVideoRangeView() {
         rangeViews.filter({ $0.isEditActive }).forEach({ $0.isEditActive = false })
     }
@@ -222,33 +287,6 @@ class TimeLineView: UIView {
         rangeViews.removeAll()
     }
     
-    func adjustCollectionViewOffset(time: CMTime) {
-        if !time.isValid { return }
-        let time = max(time, kCMTimeZero)
-        let offsetX = getOffsetX(at: time).0
-        if !offsetX.isNaN {
-            scrollView.delegate = nil
-            scrollView.contentOffset = CGPoint(x: offsetX, y: 0)
-            displayRangeViewsIfNeed()
-            scrollView.delegate = self
-        }
-    }
-    
-    func showingRangeView() -> [VideoRangeView] {
-        let showingRangeViews = rangeViews.filter { (view) -> Bool in
-            let rect = view.superview!.convert(view.frame, to: scrollView)
-            let intersects = scrollView.bounds.intersects(rect)
-            return intersects
-        }
-        return showingRangeViews
-    }
-    
-    fileprivate func displayRangeViewsIfNeed() {
-        let showingRangeViews = showingRangeView()
-        showingRangeViews.forEach({
-            $0.contentView.updateDataIfNeed()
-        })
-    }
     
     fileprivate func timeDidChanged() {
         var duration: CGFloat = 0
@@ -256,6 +294,119 @@ class TimeLineView: UIView {
             duration = duration + view.frame.size.width / widthPerSecond
         }
         totalTimeLabel.text = String.init(format: "%.1f", duration)
+    }
+    
+    
+}
+
+// MARK: - player
+extension TimeLineView {
+    
+    func bindPlayer(_ player: AVPlayer?) {
+        removePlayerObserable()
+        self.player = player
+        addPlayerObserable()
+    }
+    
+    fileprivate func removePlayerObserable() {
+        guard let player = player else { return }
+        if let timeObserver = timeObserver {
+            player.removeTimeObserver(timeObserver)
+            self.timeObserver = nil
+        }
+        playerDisposeBag = nil
+    }
+    
+    fileprivate func addPlayerObserable() {
+        guard let player = player else { return }
+        if playerDisposeBag == nil {
+            playerDisposeBag = DisposeBag()
+        }
+        
+        _ = player.rx.observe(Float.self, "rate").subscribe(onNext: { [weak self] (rate) in
+            guard let s = self else { return }
+            if rate == 0 {
+                s.displayRangeViewsIfNeed()
+            } else {
+                if s.shouldCancelLoadThumb() {
+                    s.cancelLoadThumb()
+                }
+            }
+        }).disposed(by: playerDisposeBag!)
+        timeObserver = player.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 60), queue: DispatchQueue.main, using: { [weak self] (time) in
+            guard let s = self else { return }
+            s.playerTimeChanged()
+        })
+        
+        playerTimeChanged()
+    }
+    
+    func cancelLoadThumb() {
+        rangeViews.forEach { (rangeView) in
+            if let v = rangeView.contentView as? VideoRangeContentView {
+                v.workitems.forEach({ (key, workitem) in
+                    workitem.cancel()
+                })
+                v.workitems.removeAll()
+            }
+        }
+    }
+    
+    func playerTimeChanged() {
+        if isScrolling { return }
+        if currentClipPlayerItem != nil { return }
+        guard let player = player else { return }
+        adjustCollectionViewOffset(time: player.fl_currentTime())
+    }
+    
+    func adjustCollectionViewOffset(time: CMTime) {
+        if !time.isValid { return }
+        let time = max(time, kCMTimeZero)
+//        playButton.setTitle(time.seconds.timeString, for: .normal)
+        let offsetX = getOffsetX(at: time).0
+        if !offsetX.isNaN {
+            scrollView.delegate = nil
+            scrollView.contentOffset = CGPoint(x: offsetX, y: 0)
+            displayRangeViewsIfNeed()
+            activeCurrentVideoRangeView(time: time)
+            scrollView.delegate = self
+        }
+    }
+    
+    fileprivate func activeCurrentVideoRangeView(time: CMTime) {
+        if isFocusMode {
+            if let view = rangeView(at: time) {
+                if !view.isEditActive {
+                    resignVideoRangeView()
+                    if let handler = activeNextClipHandler {
+                        if handler() {
+                            view.superview?.bringSubview(toFront: view)
+                            view.isEditActive = true
+                        }
+                    } else {
+                        view.superview?.bringSubview(toFront: view)
+                        view.isEditActive = true
+                    }
+                }
+            }
+        }
+    }
+    
+    fileprivate func displayRangeViewsIfNeed() {
+        let showingRangeViews = showingRangeView()
+        var canLoadImageAsync = (player?.rate ?? 0) == 0
+        if !shouldCancelLoadThumb(showingRangeViews) {
+            canLoadImageAsync = true
+        }
+        showingRangeViews.forEach({
+            $0.contentView.canLoadImageAsync = canLoadImageAsync
+            $0.contentView.updateDataIfNeed()
+        })
+    }
+    
+    // 是否可以加载缩略图(超出5个就不加载
+    fileprivate func shouldCancelLoadThumb(_ rangeViews: [VideoRangeView] = []) -> Bool {
+        return ((rangeViews.count == 0) ? showingRangeView() : rangeViews).count > 7
     }
     
     // MARK: offset
@@ -282,7 +433,7 @@ class TimeLineView: UIView {
     
     func getTime(at offsetX: CGFloat) -> (CMTime, Int) {
         var offsetX = offsetX + scrollView.contentInset.left
-        let duration = CMTime.init(seconds: Double(offsetX / widthPerSecond), preferredTimescale: 600)
+        let duration = CMTime(seconds: Float(offsetX / widthPerSecond))
         var index = 0
         for (i, rangeView) in rangeViews.enumerated() {
             let width = rangeView.contentView.contentWidth
@@ -299,23 +450,59 @@ class TimeLineView: UIView {
     
 }
 
-extension TimeLineView: UIScrollViewDelegate {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        displayRangeViewsIfNeed()
-    }
-    
-    
-}
-
 // MARK: - VideoRangeViewDelegate
 
 extension TimeLineView: VideoRangeViewDelegate {
+    
+    fileprivate func replacePlayerItemToCurrentClipItem(view: VideoRangeView) {
+        guard let index = rangeViews.index(of: view) else {
+            return
+        }
+        if !view.contentView.supportUnlimitTime {
+            let clip = trackItems[index]
+            currentClipPlayerItem = clip.generateFullRangePlayerItem(size: CGSize.init(width: 960, height: 960))
+            if let player = player {
+                timelinePlayerItem = player.currentItem
+                removePlayerObserable()
+                player.replaceCurrentItem(with: currentClipPlayerItem)
+                addPlayerObserable()
+            }
+        }
+    }
+    
+    fileprivate func updateCurrentClipPlayerItem(time: CMTime, view: VideoRangeView) {
+        if !view.contentView.supportUnlimitTime {
+            player?.fl_seekSmoothly(to: time)
+        }
+        
+        let center = view.convert(view.leftEar.center, to: self)
+        centerLineView.center = CGPoint(x: center.x + view.leftEar.bounds.width * 0.5, y: center.y)
+    }
+    
+    fileprivate func restoreTimePlayerItem(view: VideoRangeView) {
+        if !view.contentView.supportUnlimitTime {
+            player?.replaceCurrentItem(with: timelinePlayerItem)
+            currentClipPlayerItem = nil
+            timelinePlayerItem = nil
+        }
+        
+        centerLineView.center = CGPoint(x: bounds.width * 0.5, y: bounds.height * 0.5)
+    }
+    
     func videoRangeViewBeginUpdateLeft(_ view: VideoRangeView) {
         // TODO: 替换当前显示的 player，要能做到预览当前选中片段的完整视频
+        scrollView.delegate = nil
+//        delegate?.clipTimelineBeginClip(self)
+//        VideoEditManager.shared.beginClipVideo()
+        replacePlayerItemToCurrentClipItem(view: view)
     }
     
     func videoRangeViewBeginUpdateRight(_ view: VideoRangeView) {
         // TODO: 替换当前显示的 player，要能做到预览当前选中片段的完整视频
+        scrollView.delegate = nil
+//        delegate?.clipTimelineBeginClip(self)
+//        VideoEditManager.shared.beginClipVideo()
+        replacePlayerItemToCurrentClipItem(view: view)
     }
     
     func videoRangeView(_ view: VideoRangeView, updateLeftOffset offset: CGFloat, auto: Bool) {
@@ -372,7 +559,7 @@ extension TimeLineView {
     
     var nextRangeViewIndex: Int {
         var index = 0
-        let center = centerLineView.center
+        let center = CGPoint(x: bounds.width * 0.5, y: bounds.height * 0.5)
         for (i, view) in rangeViews.enumerated() {
             let rect = view.superview!.convert(view.frame, to: centerLineView.superview!)
             if rect.contains(center) {
@@ -390,4 +577,82 @@ extension TimeLineView {
         return index
     }
     
+    func showingRangeView() -> [VideoRangeView] {
+        let showingRangeViews = rangeViews.filter { (view) -> Bool in
+            let rect = view.superview!.convert(view.frame, to: scrollView)
+            let intersects = scrollView.bounds.intersects(rect)
+            return intersects
+        }
+        return showingRangeViews
+    }
+    
+    func rangeView(at time: CMTime) -> VideoRangeView? {
+        var duration = kCMTimeZero
+        for view in rangeViews {
+            duration = duration + view.contentView.endTime - view.contentView.startTime - view.contentView.rightInsetDuration - view.contentView.leftInsetDuration
+            if duration > time {
+                return view
+            }
+        }
+        return nil
+    }
+    
+}
+
+// MARK: UIScrollViewDelegate
+extension TimeLineView: UIScrollViewDelegate {
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        isScrolling = true
+        if let player = player, player.rate != 0 {
+            player.rate = 0
+        }
+//        actionDelegate?.clipTimelineStartDragScrollView(self)
+    }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        // Update video range view
+        displayRangeViewsIfNeed()
+        
+        // Update player
+        if disableAutoSeekPlayer { return }
+        guard let player = player, let currentItem = player.currentItem else { return }
+        if currentItem.duration == kCMTimeZero { return }
+        if player.rate != 0 { return }
+        if player.status != .readyToPlay { return }
+        let duration = adjustTime(getTime(at: scrollView.contentOffset.x).0)
+        player.fl_seekSmoothly(to: duration)
+        
+        activeCurrentVideoRangeView(time: duration)
+    }
+    
+    // 设备 iPhone 7 往上
+    // asset 的末尾段
+    // CustomVideoCompositor sourceFrame 取出的 frame 不再发生变化
+    // 下面的方法是如果是 clip 末尾，则时间做下偏移
+    fileprivate func adjustTime(_ time: CMTime) -> CMTime {
+        var res = time
+        for clip in trackItems {
+            let endTime = clip.timeRange.end
+            if abs((time - endTime).seconds) < 0.1 {
+                if clip.resource.duration.seconds <= 0.1 {
+                    break
+                }
+                if time > endTime {
+                    res = endTime + CMTime(seconds: 0.1)
+                } else {
+                    res = endTime - CMTime(seconds: 0.1)
+                }
+                break
+            }
+        }
+        return res
+    }
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            isScrolling = false
+        }
+    }
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        isScrolling = false
+    }
 }

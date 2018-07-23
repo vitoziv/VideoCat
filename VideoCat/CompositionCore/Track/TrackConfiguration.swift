@@ -9,38 +9,79 @@
 import AVFoundation
 import CoreImage
 
-public class TrackConfiguration {
+public class TrackConfiguration: NSObject, NSCopying {
     
     // MARK: - Timing
     
     /// Track's final time range, it will be calculated using track's time, speed, transition and so on
-    var timelineTimeRange: CMTimeRange = kCMTimeRangeZero
+    public var timelineTimeRange: CMTimeRange = kCMTimeRangeZero
     
     // MARK: - Media
-    var videoConfiguration: VideoConfiguration = .createDefaultConfiguration()
-    var audioConfiguration: AudioConfiguration = .createDefaultConfiguration()
+    public var videoConfiguration: VideoConfiguration = .createDefaultConfiguration()
+    public var audioConfiguration: AudioConfiguration = .createDefaultConfiguration()
+    
+    public required override init() {
+        super.init()
+    }
+    
+    // MARK: - NSCopying
+    
+    public func copy(with zone: NSZone? = nil) -> Any {
+        let configuration = type(of: self).init()
+        configuration.timelineTimeRange = timelineTimeRange
+        configuration.videoConfiguration = videoConfiguration.copy() as! VideoConfiguration
+        configuration.audioConfiguration = audioConfiguration.copy() as! AudioConfiguration
+        return configuration
+    }
 }
 
-public class VideoConfiguration {
+public class VideoConfiguration: NSObject, NSCopying {
     
-    static func createDefaultConfiguration() -> VideoConfiguration {
+    public static func createDefaultConfiguration() -> VideoConfiguration {
         return VideoConfiguration()
     }
     
-    enum BaseContentMode {
+    public enum BaseContentMode {
         case aspectFit
         case aspectFill
     }
-    var baseContentMode: BaseContentMode = .aspectFit
-    var filterProcessor: ((CIImage) -> CIImage)?
+    public var baseContentMode: BaseContentMode = .aspectFit
+    public var filterProcessor: ((CIImage) -> CIImage)?
+    
+    public required override init() {
+        super.init()
+    }
+    
+    // MARK: - NSCopying
+    
+    public func copy(with zone: NSZone? = nil) -> Any {
+        let configuration = type(of: self).init()
+        configuration.baseContentMode = baseContentMode
+        configuration.filterProcessor = filterProcessor
+        return configuration
+    }
 }
 
-public class AudioConfiguration {
+public class AudioConfiguration: NSObject, NSCopying {
     
-    static func createDefaultConfiguration() -> AudioConfiguration {
+    public static func createDefaultConfiguration() -> AudioConfiguration {
         return AudioConfiguration()
     }
 
-    var volume: Float = 1.0;
-    var audioTapHolder: AudioProcessingTapHolder?
+    public var volume: Float = 1.0;
+    public var audioTapHolder: AudioProcessingTapHolder?
+    
+    public required override init() {
+        super.init()
+    }
+    
+    // MARK: - NSCopying
+    
+    public func copy(with zone: NSZone? = nil) -> Any {
+        let configuration = type(of: self).init()
+        configuration.volume = volume
+        configuration.audioTapHolder = audioTapHolder?.copy() as? AudioProcessingTapHolder
+        return configuration
+    }
+    
 }

@@ -8,12 +8,13 @@
 
 import AVFoundation
 
-class AudioProcessingTapHolder {
+public class AudioProcessingTapHolder: NSObject, NSCopying {
     
     fileprivate(set) var tap: MTAudioProcessingTap?
     var audioProcessingChain = AudioProcessingChain()
     
-    init() {        
+    public required override init() {
+        super.init()
         var callbacks = MTAudioProcessingTapCallbacks(
             version: kMTAudioProcessingTapCallbacksVersion_0,
             clientInfo: UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()),
@@ -66,5 +67,12 @@ class AudioProcessingTapHolder {
         }
         tapHolder.audioProcessingChain.process(timeRange: timeRange, bufferListInOut: bufferListInOut)
     }
+    
+    // MARK: - NSCopying
+    
+    public func copy(with zone: NSZone? = nil) -> Any {
+        let holder = type(of: self).init()
+        holder.audioProcessingChain = audioProcessingChain.copy() as! AudioProcessingChain
+        return holder
+    }
 }
-

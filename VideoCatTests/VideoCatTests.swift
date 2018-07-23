@@ -36,7 +36,7 @@ class VideoCatTests: XCTestCase {
         }
         
         guard resource is TrackVideoResource else {
-            XCTAssert(false, "Should be a TrackVideoResource type")
+            XCTAssert(false, "Should be a AVAssetTrackResource type")
             return
         }
         

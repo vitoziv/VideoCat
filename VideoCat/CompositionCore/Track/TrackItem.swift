@@ -9,7 +9,7 @@
 import AVFoundation
 import CoreImage
 
-public class TrackItem {
+public class TrackItem: NSObject, NSCopying {
     
     public var identifier: String
     public var resource: Resource
@@ -18,12 +18,23 @@ public class TrackItem {
     public var videoTransition: VideoTransition?
     public var audioTransition: AudioTransition?
     
-    init(resource: Resource) {
+    public required init(resource: Resource) {
         identifier = ProcessInfo.processInfo.globallyUniqueString
         self.resource = resource
         configuration = TrackConfiguration()
+        super.init()
     }
     
+    // MARK: - NSCopying
+    
+    public func copy(with zone: NSZone? = nil) -> Any {
+        let item = type(of: self).init(resource: resource.copy() as! Resource)
+        item.identifier = identifier
+        item.configuration = configuration.copy() as! TrackConfiguration
+        item.videoTransition = videoTransition
+        item.audioTransition = audioTransition
+        return item
+    }
 }
 
 public extension TrackItem {
@@ -82,7 +93,7 @@ extension TrackItem: CompositionTrackProvider {
             do {
                 try compositionTrack.insertTimeRange(resource.selectedTimeRange, of: track, at: timeRange.start)
             } catch {
-                Log.error(error.localizedDescription)
+                Log.error(#function + error.localizedDescription)
             }
         }
         return compositionTrack
@@ -142,11 +153,32 @@ extension TrackItem: TransitionableAudioProvider {
     
 }
 
-
 private extension CIImage {
     func flipYCoordinate() -> CIImage {
         let flipYTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: extent.origin.y * 2 + extent.height)
         return transformed(by: flipYTransform)
+    }
+}
+
+extension TrackItem {
+    func generateFullRangeImageGenerator(size: CGSize = .zero) -> AVAssetImageGenerator? {
+        let item = self.copy() as! TrackItem
+        let imageGenerator = AVAssetImageGenerator.createFullRangeGenerator(from: item)
+        imageGenerator?.updateAspectFitSize(size)
+        return imageGenerator
+    }
+    
+    func generateFullRangePlayerItem(size: CGSize = .zero) -> AVPlayerItem? {
+        let item = self.copy() as! TrackItem
+        item.resource.selectedTimeRange = CMTimeRange.init(start: kCMTimeZero, duration: item.resource.duration)
+        
+        let timeline = Timeline()
+        timeline.videoChannel = [item]
+        timeline.audioChannel = [item]
+        let generator = CompositionGenerator(timeline: timeline)
+        generator.renderSize = size
+        let playerItem = generator.buildPlayerItem()
+        return playerItem
     }
 }
 
