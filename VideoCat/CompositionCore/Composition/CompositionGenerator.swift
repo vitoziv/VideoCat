@@ -62,7 +62,7 @@ class CompositionGenerator {
         timeline.audioChannel.forEach { (provider) in
             for index in 0..<provider.numberOfTracks(for: .audio) {
                 let trackID: Int32 = generateNextTrackID()
-                if let compositionTrack = provider.compositionTrack(for: composition, at: index, mediaType:.video, preferredTrackID: trackID) {
+                if let compositionTrack = provider.compositionTrack(for: composition, at: index, mediaType:.audio, preferredTrackID: trackID) {
                     self.mainAudioTrackInfo[compositionTrack] = provider
                     audioTransitionInfo[compositionTrack] = (previousAudioTransition, provider.audioTransition)
                 }
@@ -82,7 +82,7 @@ class CompositionGenerator {
         timeline.audios.forEach { (provider) in
             for index in 0..<provider.numberOfTracks(for: .audio) {
                 let trackID: Int32 = generateNextTrackID()
-                if let compositionTrack = provider.compositionTrack(for: composition, at: index, mediaType:.video, preferredTrackID: trackID) {
+                if let compositionTrack = provider.compositionTrack(for: composition, at: index, mediaType:.audio, preferredTrackID: trackID) {
                     self.audioTrackInfo[compositionTrack] = provider
                 }
             }

@@ -506,6 +506,8 @@ extension TimeLineView: VideoRangeViewDelegate {
     }
     
     func videoRangeView(_ view: VideoRangeView, updateLeftOffset offset: CGFloat, auto: Bool) {
+//        delegate?.clipTimelineDidChange(self)
+        updateCurrentClipPlayerItem(time: view.contentView.startTime, view: view)
         if auto {
             return
         }
@@ -517,20 +519,27 @@ extension TimeLineView: VideoRangeViewDelegate {
         var contentOffset = scrollView.contentOffset
         contentOffset.x -= offset
         scrollView.setContentOffset(contentOffset, animated: false)
-        
-        
-        timeDidChanged()
     }
     
     func videoRangeViewDidEndUpdateLeftOffset(_ view: VideoRangeView) {
+        removePlayerObserable()
+        restoreTimePlayerItem(view: view)
+        scrollView.delegate = self
         var inset = scrollView.contentInset
         inset.left = inset.right
         UIView.animate(withDuration: 0.3) {
             self.scrollView.contentInset = inset
         }
+        view.contentView.endExpand()
+        endUpdate(view: view, isLeft: true)
+        addPlayerObserable()
     }
     
     func videoRangeView(_ view: VideoRangeView, updateRightOffset offset: CGFloat, auto: Bool) {
+//        delegate?.clipTimelineDidChange(self)
+        updateCurrentClipPlayerItem(time: view.contentView.endTime, view: view)
+        let center = view.convert(view.rightEar.center, to: self)
+        centerLineView.center = CGPoint(x: center.x - view.rightEar.frame.size.width * 0.5, y: center.y)
         if auto {
             var contentOffset = scrollView.contentOffset
             contentOffset.x += offset
@@ -540,16 +549,36 @@ extension TimeLineView: VideoRangeViewDelegate {
             inset.right = scrollView.frame.width
             scrollView.contentInset = inset
         }
-        
-        timeDidChanged()
     }
     
     func videoRangeViewDidEndUpdateRightOffset(_ view: VideoRangeView) {
+        removePlayerObserable()
+        restoreTimePlayerItem(view: view)
+        scrollView.delegate = self
         var inset = scrollView.contentInset
         inset.right = inset.left
         UIView.animate(withDuration: 0.3) {
             self.scrollView.contentInset = inset
         }
+        endUpdate(view: view, isLeft: false)
+        addPlayerObserable()
+    }
+    
+    private func endUpdate(view: VideoRangeView, isLeft: Bool) {
+        if let index = rangeViews.index(of: view) {
+            let clip = trackItems[index]
+            let timeRange = CMTimeRangeFromTimeToTime(view.contentView.startTime, view.contentView.endTime)
+            if clip.timeRange.start != timeRange.start || clip.timeRange.duration != timeRange.duration {
+                clip.resource.selectedTimeRange = timeRange
+                if let context = editContext {
+                    context.viewModel.reloadTimelineTimeRange()
+                    context.viewModel.reloadPlayerItem()
+                    context.videoView.player.replaceCurrentItem(context.viewModel.playerItem)
+                    reload(with: context.viewModel.trackItems)
+                }
+            }
+        }
+//        delegate?.clipTimelineEndClip(self)
     }
 }
 

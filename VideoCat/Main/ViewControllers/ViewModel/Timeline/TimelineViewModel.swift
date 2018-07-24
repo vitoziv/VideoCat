@@ -55,7 +55,7 @@ class TimelineViewModel {
         return trackItem.resource.selectedTimeRange
     }
     
-    fileprivate func reloadPlayerItem() {
+    func reloadPlayerItem() {
         let timeline = TimelineManager.current.timeline
         reloadTimeline(timeline)
         let compositionGenerator = CompositionGenerator(timeline: timeline)
