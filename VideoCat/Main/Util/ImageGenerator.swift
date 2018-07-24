@@ -69,6 +69,19 @@ class ImageGenerator: AVAssetImageGenerator {
     
 }
 
+extension ImageGenerator {
+    static func createFrom(_ imageGenerator: AVAssetImageGenerator) -> ImageGenerator {
+        let generator = ImageGenerator(asset: imageGenerator.asset)
+        generator.appliesPreferredTrackTransform = imageGenerator.appliesPreferredTrackTransform
+        generator.maximumSize = imageGenerator.maximumSize
+        generator.apertureMode = imageGenerator.apertureMode
+        generator.videoComposition = imageGenerator.videoComposition
+        generator.requestedTimeToleranceBefore = imageGenerator.requestedTimeToleranceBefore
+        generator.requestedTimeToleranceAfter = imageGenerator.requestedTimeToleranceAfter
+        return generator
+    }
+}
+
 class LastUseCache<K: Hashable, V> {
     private var keys: [K] = []
     private var cache: [K: V] = [:]

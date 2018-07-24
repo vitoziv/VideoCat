@@ -56,8 +56,6 @@ class TimeLineView: UIView {
         }
     }
     var activeNextClipHandler: (() -> Bool)?
-    /// 是否禁用 scrollView 中同步 player 的 seek 操作
-    var disableAutoSeekPlayer: Bool = false
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -176,9 +174,10 @@ class TimeLineView: UIView {
                     contentView.supportUnlimitTime = true
                 }
                 let timeRange = trackItem.configuration.timelineTimeRange
-                let imageGenerator = trackItem.generateFullRangeImageGenerator(size: CGSize(width: 60, height: 60))
                 contentView.loadImageQueue = loadImageQueue
-                contentView.imageGenerator = imageGenerator
+                if let imageGenerator = trackItem.generateFullRangeImageGenerator(size: CGSize(width: 60, height: 60)) {                
+                    contentView.imageGenerator = ImageGenerator.createFrom(imageGenerator)
+                }
                 contentView.startTime = timeRange.start
                 contentView.endTime = timeRange.end
                 
@@ -188,8 +187,10 @@ class TimeLineView: UIView {
                         contentView.leftInsetDuration = transitionDuration / 2
                     }
                 }
-                if let transitionDuration = trackItem.videoTransition?.duration {
-                    contentView.rightInsetDuration = transitionDuration / 2
+                if index < trackItems.count - 1 {
+                    if let transitionDuration = trackItem.videoTransition?.duration {
+                        contentView.rightInsetDuration = transitionDuration / 2
+                    }
                 }
                 
                 rangeView.loadContentView(contentView)
@@ -333,7 +334,7 @@ extension TimeLineView {
                 }
             }
         }).disposed(by: playerDisposeBag!)
-        timeObserver = player.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 60), queue: DispatchQueue.main, using: { [weak self] (time) in
+        timeObserver = player.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 30), queue: DispatchQueue.main, using: { [weak self] (time) in
             guard let s = self else { return }
             s.playerTimeChanged()
         })
@@ -362,7 +363,6 @@ extension TimeLineView {
     func adjustCollectionViewOffset(time: CMTime) {
         if !time.isValid { return }
         let time = max(time, kCMTimeZero)
-//        playButton.setTitle(time.seconds.timeString, for: .normal)
         let offsetX = getOffsetX(at: time).0
         if !offsetX.isNaN {
             scrollView.delegate = nil
@@ -614,7 +614,6 @@ extension TimeLineView: UIScrollViewDelegate {
         displayRangeViewsIfNeed()
         
         // Update player
-        if disableAutoSeekPlayer { return }
         guard let player = player, let currentItem = player.currentItem else { return }
         if currentItem.duration == kCMTimeZero { return }
         if player.rate != 0 { return }

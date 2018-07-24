@@ -143,10 +143,11 @@ open class VideoCompositionInstruction: NSObject, AVVideoCompositionInstructionP
 
 open class VideoCompositionLayerInstruction {
     
-    var trackID: Int32
-    var videoCompositionProvider: VideoCompositionProvider
-    var timeRange: CMTimeRange = kCMTimeRangeZero
-    var transition: VideoTransition?
+    public var trackID: Int32
+    public var videoCompositionProvider: VideoCompositionProvider
+    public var timeRange: CMTimeRange = kCMTimeRangeZero
+    public var transition: VideoTransition?
+    public var prefferdTransform: CGAffineTransform?
     
     public init(trackID: Int32, videoCompositionProvider: VideoCompositionProvider) {
         self.trackID = trackID
@@ -154,7 +155,12 @@ open class VideoCompositionLayerInstruction {
     }
     
     open func apply(sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage {
+        var sourceImage = sourceImage
+        if let prefferdTransform = prefferdTransform {
+            sourceImage = sourceImage.transformed(by: prefferdTransform)
+        }
         let finalImage = videoCompositionProvider.applyEffect(to: sourceImage, at: time, renderSize: renderSize)
+        
         return finalImage
     }
     

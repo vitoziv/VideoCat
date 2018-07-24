@@ -98,12 +98,14 @@ class CompositionGenerator {
         videoTracks.forEach { (track) in
             if let provider = mainVideoTrackInfo[track] {
                 let layerInstruction = VideoCompositionLayerInstruction.init(trackID: track.trackID, videoCompositionProvider: provider)
+                layerInstruction.prefferdTransform = track.preferredTransform
                 layerInstruction.timeRange = provider.timeRange
                 layerInstruction.transition = provider.videoTransition
                 layerInstructions.append(layerInstruction)
             } else if let provider = overlayTrackInfo[track] {
                 // Other video overlay
                 let layerInstruction = VideoCompositionLayerInstruction.init(trackID: track.trackID, videoCompositionProvider: provider)
+                layerInstruction.prefferdTransform = track.preferredTransform
                 layerInstruction.timeRange = provider.timeRange
                 layerInstructions.append(layerInstruction)
             }
@@ -129,8 +131,8 @@ class CompositionGenerator {
             }
             let size = videoTracks.reduce(CGSize.zero, { (size, track) -> CGSize in
                 let trackSize = track.naturalSize.applying(track.preferredTransform)
-                return CGSize(width: max(trackSize.width, size.width),
-                              height: max(trackSize.height, size.height))
+                return CGSize(width: max(abs(trackSize.width), size.width),
+                              height: max(abs(trackSize.height), size.height))
             })
             return size
         }()
