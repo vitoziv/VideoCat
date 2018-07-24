@@ -112,8 +112,6 @@ extension TrackItem: VideoCompositionProvider {
             return sourceImage
         }()
         
-        finalImage = finalImage.flipYCoordinate().flipYCoordinate()
-        
         var transform = CGAffineTransform.identity
         switch configuration.videoConfiguration.baseContentMode {
         case .aspectFit:

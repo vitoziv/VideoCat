@@ -22,6 +22,8 @@ class TimelineViewModel {
     init() {
         let timeline = TimelineManager.current.timeline
         timeline.passingThroughVideoCompositionProvider = self
+        let timeRange = CMTimeRange(start: CMTime.init(value: 2, 1), duration: CMTime.init(value: 2, 1))
+        backgroundColors.setItem(UIColor.init(red: 0.6, green: 0.34, blue: 0.43, alpha: 1.0), timeRange: timeRange)
     }
     
     private(set) var playerItem = AVPlayerItem(asset: AVComposition.init())

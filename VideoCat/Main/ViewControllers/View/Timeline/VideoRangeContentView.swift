@@ -123,6 +123,7 @@ class VideoRangeContentView: RangeContentView {
         imageView.tag = index
         // Layout
         layout(imageView: imageView, at: index)
+        imageView.configureDebugIndexLabel(index: index)
         
         let secondsPerImage = Double(imageSize.width / widthPerSecond)
         let start = secondsPerImage * Double(index)
@@ -154,7 +155,6 @@ class VideoRangeContentView: RangeContentView {
         })
         loadImageQueue?.async(execute: workitem)
         workitems[index] = workitem
-        imageView.configureDebugIndexLabel(index: index)
     }
     
     private func createImageView(at index: Int) -> AssetThumbImageView {

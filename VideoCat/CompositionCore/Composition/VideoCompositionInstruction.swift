@@ -157,7 +157,7 @@ open class VideoCompositionLayerInstruction {
     open func apply(sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage {
         var sourceImage = sourceImage
         if let prefferdTransform = prefferdTransform {
-            sourceImage = sourceImage.transformed(by: prefferdTransform)
+            sourceImage = sourceImage.flipYCoordinate().transformed(by: prefferdTransform).flipYCoordinate()
         }
         let finalImage = videoCompositionProvider.applyEffect(to: sourceImage, at: time, renderSize: renderSize)
         
