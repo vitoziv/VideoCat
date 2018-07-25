@@ -16,9 +16,9 @@ class AnimatablePHAssetImageResource: PHAssetImageResource {
             return nil
         }
         let fillTransform = CGAffineTransform.transform(by: image.extent, aspectFillRect: CGRect(origin: .zero, size: renderSize))
-        let offset = (time.seconds / selectedTimeRange.duration.seconds) * 30
-        let offsetTransform = CGAffineTransform(translationX: CGFloat(offset), y: CGFloat(offset / 2))
-        let scaleTransform = CGAffineTransform(scaleX: 2, y: 2)
+        let offset = (time.seconds / selectedTimeRange.duration.seconds) * 20
+        let offsetTransform = CGAffineTransform(translationX: CGFloat(offset - 20), y: CGFloat(offset - 5))
+        let scaleTransform = CGAffineTransform(scaleX: 1.2, y: 1.2)
         return image.transformed(by: fillTransform.concatenating(offsetTransform).concatenating(scaleTransform))
     }
 }
