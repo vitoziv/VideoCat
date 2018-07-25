@@ -52,7 +52,7 @@ extension CMTimeRange {
             return timeRanges
         }
         
-        guard minTimeRange.start.seconds <= maxTimeRange.start.seconds && minTimeRange.duration.seconds != maxTimeRange.duration.seconds else {
+        if minTimeRange == maxTimeRange {
             return [instersectionTimeRange]
         }
         
