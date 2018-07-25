@@ -46,38 +46,34 @@ public extension TrackItem {
     }
 }
 
-extension TrackItem: CompositionTrackProvider {
-    
+extension TrackItem: CompositionTimeRangeProvider {
     public var timeRange: CMTimeRange {
-        return configuration.timelineTimeRange
+        get {
+            return configuration.timelineTimeRange
+        }
+        set {
+            configuration.timelineTimeRange = newValue
+        }
     }
-    
-    public func numberOfTracks(for mediaType: AVMediaType) -> Int {
+}
+
+extension TrackItem: VideoCompositionTrackProvider {
+    public func numberOfVideoTracks() -> Int {
         if let resource = resource as? TrackResource {
-            return resource.numberOfTracks(for: mediaType)
+            return resource.numberOfTracks(for: .video)
         } else if resource.isKind(of: ImageResource.self) {
-            if mediaType == .video {
-                return 1
-            }
+            return 1
         }
         
         return 0
     }
     
-    private static let emptyAsset: AVAsset = {
-        let url = Bundle.main.url(forResource: "black_empty", withExtension: "mp4")!
-        let asset = AVAsset(url: url)
-        return asset
-    }()
-    
-    public func compositionTrack(for composition: AVMutableComposition, at index: Int, mediaType: AVMediaType, preferredTrackID: Int32) -> AVCompositionTrack? {
+    public func videoCompositionTrack(for composition: AVMutableComposition, at index: Int, preferredTrackID: Int32) -> AVCompositionTrack? {
         let videoTrack: AVAssetTrack? = {
             if let resource = resource as? TrackResource {
-                return resource.track(at: index, mediaType: mediaType)
+                return resource.track(at: index, mediaType: .video)
             } else if resource.isKind(of: ImageResource.self) {
-                if mediaType == .video {
-                    return TrackItem.emptyAsset.tracks(withMediaType: mediaType).first
-                }
+                return TrackItem.emptyAsset.tracks(withMediaType: .video).first
             }
             return nil
         }()
@@ -87,9 +83,7 @@ extension TrackItem: CompositionTrackProvider {
         
         let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: preferredTrackID)
         if let compositionTrack = compositionTrack {
-            if compositionTrack.mediaType == .video {
-                compositionTrack.preferredTransform = track.preferredTransform
-            }
+            compositionTrack.preferredTransform = track.preferredTransform
             do {
                 if resource.isKind(of: ImageResource.self) {
                     let emptyDuration = CMTime(value: 1, 30)
@@ -105,6 +99,46 @@ extension TrackItem: CompositionTrackProvider {
         }
         return compositionTrack
     }
+    
+    private static let emptyAsset: AVAsset = {
+        let url = Bundle.main.url(forResource: "black_empty", withExtension: "mp4")!
+        let asset = AVAsset(url: url)
+        return asset
+    }()
+    
+}
+
+extension TrackItem: AudioCompositionTrackProvider {
+    public func numberOfAudioTracks() -> Int {
+        if let resource = resource as? TrackResource {
+            return resource.numberOfTracks(for: .audio)
+        }
+        
+        return 0
+    }
+    
+    public func audioCompositionTrack(for composition: AVMutableComposition, at index: Int, preferredTrackID: Int32) -> AVCompositionTrack? {
+        let audioTrack: AVAssetTrack? = {
+            if let resource = resource as? TrackResource {
+                return resource.track(at: index, mediaType: .audio)
+            }
+            return nil
+        }()
+        guard let track = audioTrack else {
+            return nil
+        }
+        
+        let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: preferredTrackID)
+        if let compositionTrack = compositionTrack {
+            do {
+                try compositionTrack.insertTimeRange(resource.selectedTimeRange, of: track, at: timeRange.start)
+            } catch {
+                Log.error(#function + error.localizedDescription)
+            }
+        }
+        return compositionTrack
+    }
+    
     
 }
 

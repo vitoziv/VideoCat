@@ -9,11 +9,18 @@
 import CoreImage
 import AVFoundation
 
-public protocol CompositionTrackProvider {
-    var timeRange: CMTimeRange { get }
-    
-    func numberOfTracks(for mediaType: AVMediaType) -> Int
-    func compositionTrack(for composition: AVMutableComposition, at index: Int, mediaType: AVMediaType, preferredTrackID: Int32) -> AVCompositionTrack?
+public protocol CompositionTimeRangeProvider {
+    var timeRange: CMTimeRange { get set }
+}
+
+public protocol VideoCompositionTrackProvider: CompositionTimeRangeProvider {
+    func numberOfVideoTracks() -> Int
+    func videoCompositionTrack(for composition: AVMutableComposition, at index: Int, preferredTrackID: Int32) -> AVCompositionTrack?
+}
+
+public protocol AudioCompositionTrackProvider: CompositionTimeRangeProvider {
+    func numberOfAudioTracks() -> Int
+    func audioCompositionTrack(for composition: AVMutableComposition, at index: Int, preferredTrackID: Int32) -> AVCompositionTrack?
 }
 
 public protocol AudioMixProvider {
@@ -33,8 +40,8 @@ public protocol PassingThroughVideoCompositionProvider: class {
     func applyEffect(to sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage
 }
 
-public protocol VideoProvider: CompositionTrackProvider, VideoCompositionProvider {}
-public protocol AudioProvider: CompositionTrackProvider, AudioMixProvider { }
+public protocol VideoProvider: VideoCompositionTrackProvider, VideoCompositionProvider {}
+public protocol AudioProvider: AudioCompositionTrackProvider, AudioMixProvider { }
 
 public protocol TransitionableVideoProvider: VideoProvider {
     var videoTransition: VideoTransition? { get }

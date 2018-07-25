@@ -50,39 +50,47 @@ class CompositionGenerator {
         
         let composition = AVMutableComposition(urlAssetInitializationOptions: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
         timeline.videoChannel.forEach({ (provider) in
-            for index in 0..<provider.numberOfTracks(for: .video) {
+            for index in 0..<provider.numberOfVideoTracks() {
                 let trackID: Int32 = generateNextTrackID()
-                if let compositionTrack = provider.compositionTrack(for: composition, at: index, mediaType:.video, preferredTrackID: trackID) {
+                if let compositionTrack = provider.videoCompositionTrack(for: composition, at: index, preferredTrackID: trackID) {
                     self.mainVideoTrackInfo[compositionTrack] = provider
                 }
             }
         })
         
         var previousAudioTransition: AudioTransition?
-        timeline.audioChannel.forEach { (provider) in
-            for index in 0..<provider.numberOfTracks(for: .audio) {
+        timeline.audioChannel.enumerated().forEach { (offset, provider) in
+            for index in 0..<provider.numberOfAudioTracks() {
                 let trackID: Int32 = generateNextTrackID()
-                if let compositionTrack = provider.compositionTrack(for: composition, at: index, mediaType:.audio, preferredTrackID: trackID) {
+                if let compositionTrack = provider.audioCompositionTrack(for: composition, at: index, preferredTrackID: trackID) {
                     self.mainAudioTrackInfo[compositionTrack] = provider
-                    audioTransitionInfo[compositionTrack] = (previousAudioTransition, provider.audioTransition)
+                    if offset == 0 {
+                        if timeline.audioChannel.count > 1 {
+                            audioTransitionInfo[compositionTrack] = (nil, provider.audioTransition)
+                        }
+                    } else if offset == timeline.audioChannel.count - 1 {
+                        audioTransitionInfo[compositionTrack] = (previousAudioTransition, nil)
+                    } else {
+                        audioTransitionInfo[compositionTrack] = (previousAudioTransition, provider.audioTransition)
+                    }
                 }
             }
             previousAudioTransition = provider.audioTransition
         }
         
         timeline.overlays.forEach { (provider) in
-            for index in 0..<provider.numberOfTracks(for: .video) {
+            for index in 0..<provider.numberOfVideoTracks() {
                 let trackID: Int32 = generateNextTrackID()
-                if let compositionTrack = provider.compositionTrack(for: composition, at: index, mediaType:.video, preferredTrackID: trackID) {
+                if let compositionTrack = provider.videoCompositionTrack(for: composition, at: index, preferredTrackID: trackID) {
                     self.overlayTrackInfo[compositionTrack] = provider
                 }
             }
         }
         
         timeline.audios.forEach { (provider) in
-            for index in 0..<provider.numberOfTracks(for: .audio) {
+            for index in 0..<provider.numberOfAudioTracks() {
                 let trackID: Int32 = generateNextTrackID()
-                if let compositionTrack = provider.compositionTrack(for: composition, at: index, mediaType:.audio, preferredTrackID: trackID) {
+                if let compositionTrack = provider.audioCompositionTrack(for: composition, at: index, preferredTrackID: trackID) {
                     self.audioTrackInfo[compositionTrack] = provider
                 }
             }
@@ -152,12 +160,12 @@ class CompositionGenerator {
                 provider.configure(audioMixParameters: inputParameter)
                 let transitions = audioTransitionInfo[track]
                 if let transition = transitions?.0 {
-                    if let targetTimeRange = track.segments.first?.timeMapping.target {
+                    if let targetTimeRange = track.segments.first(where: { !$0.isEmpty })?.timeMapping.target {
                         transition.applyNextAudioMixInputParameters(inputParameter, timeRange: targetTimeRange)
                     }
                 }
                 if let transition = transitions?.1 {
-                    if let targetTimeRange = track.segments.first?.timeMapping.target {
+                    if let targetTimeRange = track.segments.first(where: { !$0.isEmpty })?.timeMapping.target {
                         transition.applyPreviousAudioMixInputParameters(inputParameter, timeRange: targetTimeRange)
                     }
                 }
@@ -169,6 +177,7 @@ class CompositionGenerator {
                 audioParameters.append(inputParameter)
             }
         }
+        
         if audioParameters.count == 0 {
             return nil
         }

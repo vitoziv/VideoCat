@@ -86,48 +86,11 @@ extension TimelineViewModel {
     
     func reloadTimelineTimeRange() {
         reloadTimelineDuration()
-        reloadTimelineStartTime()
+        Timeline.reloadVideoStartTime(providers: trackItems)
     }
     
     private func reloadTimelineDuration() {
         trackItems.forEach({ $0.reloadTimelineDuration() })
-    }
-    
-    private func reloadTimelineStartTime() {
-        var trackTime = kCMTimeZero
-        var previousTransitionDuration = kCMTimeZero
-        let trackItems = self.trackItems
-        for index in 0..<trackItems.count {
-            let trackItem = trackItems[index]
-            
-            // Precedence: the previous transition has priority. If clip doesn't have enough time to have begin transition and end transition, then begin transition will be considered first.
-            var transitionDuration: CMTime = {
-                if let duration = trackItem.videoTransition?.duration {
-                    return duration
-                }
-                return kCMTimeZero
-            }()
-            let trackDuration = trackItem.configuration.timelineTimeRange.duration
-            if trackDuration < transitionDuration {
-                transitionDuration = kCMTimeZero
-            } else {
-                if index < trackItems.count - 1 {
-                    let nextTrackItem = trackItems[index + 1]
-                    if nextTrackItem.configuration.timelineTimeRange.duration < transitionDuration {
-                        transitionDuration = kCMTimeZero
-                    }
-                } else {
-                    transitionDuration = kCMTimeZero
-                }
-            }
-            
-            trackTime = trackTime - previousTransitionDuration
-            
-            trackItem.configuration.timelineTimeRange.start = trackTime
-            
-            previousTransitionDuration = transitionDuration
-            trackTime = trackTime + trackDuration
-        }
     }
 }
 

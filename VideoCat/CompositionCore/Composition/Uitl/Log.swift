@@ -30,6 +30,7 @@ class Log {
     static func info(_ string: String) {
         #if DEBUG
         if output.contains(.info) {
+            print("<INFO>: %@", string)
             os_log("<INFO>: %@", log: infoLog, type: .info, string)
         }
         #endif
@@ -39,6 +40,7 @@ class Log {
     static func debug(_ string: String) {
         #if DEBUG
         if output.contains(.debug) {
+            print("<DEBUG>: %@", string)
             os_log("<DEBUG>: %@", log: debugLog, type: .debug, string)
         }
         #endif
@@ -47,6 +49,7 @@ class Log {
     static let warningLog = OSLog(subsystem: subsystem, category: "WARNING")
     static func warning(_ string: String) {
         if output.contains(.warning) {
+            print("<WARNING>: %@", string)
             os_log("<WARNING>: %@", log: warningLog, type: .fault, string)
         }
     }
@@ -54,6 +57,7 @@ class Log {
     static let errorLog = OSLog(subsystem: subsystem, category: "ERROR")
     static func error(_ string: String) {
         if output.contains(.error) {
+            print("<ERROR>: %@", string)
             os_log("<ERROR>: %@", log: errorLog, type: .error, string)
         }
     }
