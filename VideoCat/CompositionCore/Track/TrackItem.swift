@@ -55,7 +55,7 @@ extension TrackItem: CompositionTrackProvider {
     public func numberOfTracks(for mediaType: AVMediaType) -> Int {
         if let resource = resource as? TrackResource {
             return resource.numberOfTracks(for: mediaType)
-        } else if resource.isMember(of: ImageResource.self) {
+        } else if resource.isKind(of: ImageResource.self) {
             if mediaType == .video {
                 return 1
             }
@@ -74,7 +74,7 @@ extension TrackItem: CompositionTrackProvider {
         let videoTrack: AVAssetTrack? = {
             if let resource = resource as? TrackResource {
                 return resource.track(at: index, mediaType: mediaType)
-            } else if resource.isMember(of: ImageResource.self) {
+            } else if resource.isKind(of: ImageResource.self) {
                 if mediaType == .video {
                     return TrackItem.emptyAsset.tracks(withMediaType: mediaType).first
                 }
@@ -91,7 +91,14 @@ extension TrackItem: CompositionTrackProvider {
                 compositionTrack.preferredTransform = track.preferredTransform
             }
             do {
-                try compositionTrack.insertTimeRange(resource.selectedTimeRange, of: track, at: timeRange.start)
+                if resource.isKind(of: ImageResource.self) {
+                    let emptyDuration = CMTime(value: 1, 30)
+                    let range = CMTimeRangeMake(kCMTimeZero, emptyDuration)
+                    try compositionTrack.insertTimeRange(range, of: track, at: timeRange.start)
+                    compositionTrack.scaleTimeRange(CMTimeRangeMake(timeRange.start, emptyDuration), toDuration: resource.selectedTimeRange.duration)
+                } else {
+                    try compositionTrack.insertTimeRange(resource.selectedTimeRange, of: track, at: timeRange.start)
+                }
             } catch {
                 Log.error(#function + error.localizedDescription)
             }
@@ -105,9 +112,11 @@ extension TrackItem: VideoCompositionProvider {
     
     public func applyEffect(to sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage {
         var finalImage: CIImage = {
-            if let resource = resource as? ImageResource,
-                let resourceImage = resource.image(at: time, renderSize: renderSize) {
-                return resourceImage
+            if let resource = resource as? ImageResource {
+                let relativeTime = time - timeRange.start
+                if let resourceImage = resource.image(at: relativeTime, renderSize: renderSize) {
+                    return resourceImage
+                }
             }
             return sourceImage
         }()
@@ -120,6 +129,8 @@ extension TrackItem: VideoCompositionProvider {
         case .aspectFill:
             let fillTransform = CGAffineTransform.transform(by: finalImage.extent, aspectFillRect: CGRect(origin: .zero, size: renderSize))
             transform = transform.concatenating(fillTransform)
+        case .custom:
+            break
         }
         finalImage = finalImage.transformed(by: transform)
         
@@ -161,7 +172,7 @@ private extension CIImage {
 extension TrackItem {
     func generateFullRangeImageGenerator(size: CGSize = .zero) -> AVAssetImageGenerator? {
         let item = self.copy() as! TrackItem
-        let imageGenerator = AVAssetImageGenerator.createFullRangeGenerator(from: item)
+        let imageGenerator = AVAssetImageGenerator.createFullRangeGenerator(from: item, renderSize: size)
         imageGenerator?.updateAspectFitSize(size)
         return imageGenerator
     }

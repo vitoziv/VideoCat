@@ -69,6 +69,9 @@ class PHAssetTrackResource: TrackResource {
             if let asset = asset {
                 strongSelf.duration = asset.duration
                 strongSelf.avasset = asset
+                if let track = asset.tracks(withMediaType: .video).first {
+                    strongSelf.size = track.naturalSize.applying(track.preferredTransform)
+                }
                 strongSelf.status = .avaliable
             } else {
                 strongSelf.status = .unavaliable

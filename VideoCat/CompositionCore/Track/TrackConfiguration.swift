@@ -44,6 +44,7 @@ public class VideoConfiguration: NSObject, NSCopying {
     public enum BaseContentMode {
         case aspectFit
         case aspectFill
+        case custom
     }
     public var baseContentMode: BaseContentMode = .aspectFit
     public var filterProcessor: ((CIImage) -> CIImage)?

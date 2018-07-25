@@ -34,6 +34,9 @@ class AVAssetTrackResource: TrackResource {
             asset.loadValuesAsynchronously(forKeys: ["tracks", "duration"], completionHandler: { [weak self] in
                 guard let strongSelf = self else { return }
                 if asset.tracks.count > 0 {
+                    if let track = asset.tracks(withMediaType: .video).first {
+                        strongSelf.size = track.naturalSize.applying(track.preferredTransform)
+                    }
                     strongSelf.status = .avaliable
                 }
                 completion(strongSelf.status, strongSelf.statusError)

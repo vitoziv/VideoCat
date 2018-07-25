@@ -57,6 +57,8 @@
 		5F81A7F71F8D06B300D65DAA /* VideoTimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F81A7F61F8D06B300D65DAA /* VideoTimelineView.swift */; };
 		5F81A7F91F8D092800D65DAA /* TimeRangeProviderExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F81A7F81F8D092800D65DAA /* TimeRangeProviderExtensions.swift */; };
 		5F901CC0210564280003BA4B /* ImageGeneratorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F901CBF210564280003BA4B /* ImageGeneratorExtension.swift */; };
+		5F901CC2210780130003BA4B /* PHAssetImageResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F901CC1210780130003BA4B /* PHAssetImageResource.swift */; };
+		5F901CC721080C280003BA4B /* AnimatablePHAssetImageResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F901CC621080C280003BA4B /* AnimatablePHAssetImageResource.swift */; };
 		5F977C351F8B4CF90029156E /* AudioSampleOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F977C341F8B4CF90029156E /* AudioSampleOperation.swift */; };
 		5F9DBECD202752E900E8BFC4 /* AVPlayerSeeker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9DBECC202752E900E8BFC4 /* AVPlayerSeeker.swift */; };
 		5F9DBECF2029F41300E8BFC4 /* VideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9DBECE2029F41300E8BFC4 /* VideoCompositor.swift */; };
@@ -154,6 +156,8 @@
 		5F81A7F61F8D06B300D65DAA /* VideoTimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoTimelineView.swift; sourceTree = "<group>"; };
 		5F81A7F81F8D092800D65DAA /* TimeRangeProviderExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangeProviderExtensions.swift; sourceTree = "<group>"; };
 		5F901CBF210564280003BA4B /* ImageGeneratorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGeneratorExtension.swift; sourceTree = "<group>"; };
+		5F901CC1210780130003BA4B /* PHAssetImageResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHAssetImageResource.swift; sourceTree = "<group>"; };
+		5F901CC621080C280003BA4B /* AnimatablePHAssetImageResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatablePHAssetImageResource.swift; sourceTree = "<group>"; };
 		5F977C341F8B4CF90029156E /* AudioSampleOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSampleOperation.swift; sourceTree = "<group>"; };
 		5F9DBECC202752E900E8BFC4 /* AVPlayerSeeker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerSeeker.swift; sourceTree = "<group>"; };
 		5F9DBECE2029F41300E8BFC4 /* VideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCompositor.swift; sourceTree = "<group>"; };
@@ -221,6 +225,7 @@
 				5F29D2321F73F25B00D41F50 /* TrackItem.swift */,
 				5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */,
 				5F29D2361F73FEE200D41F50 /* Resource.swift */,
+				5F901CC1210780130003BA4B /* PHAssetImageResource.swift */,
 				5F29D2381F740D9300D41F50 /* AVAssetTrackResource.swift */,
 				5F01B00D1F77EDD30049CD3A /* PHAssetTrackResource.swift */,
 				5F901CBF210564280003BA4B /* ImageGeneratorExtension.swift */,
@@ -481,6 +486,7 @@
 		5F6429FC20E0015700080942 /* Timeline */ = {
 			isa = PBXGroup;
 			children = (
+				5F901CC321080BD40003BA4B /* Resource */,
 				5F353BE420FCE5AF00DABF5E /* Filter */,
 				5F6429FD20E0016700080942 /* TimeRangeStore.swift */,
 				5F2A987D1FA4738F0032B5DF /* TimelineViewModel.swift */,
@@ -504,6 +510,14 @@
 				5F81A7F61F8D06B300D65DAA /* VideoTimelineView.swift */,
 			);
 			path = VideoTimeline;
+			sourceTree = "<group>";
+		};
+		5F901CC321080BD40003BA4B /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				5F901CC621080C280003BA4B /* AnimatablePHAssetImageResource.swift */,
+			);
+			path = Resource;
 			sourceTree = "<group>";
 		};
 		5FB72CE520FECB7600532CA7 /* Demo */ = {
@@ -761,6 +775,7 @@
 				5FB72CEB2100168900532CA7 /* TimeLineRangeView.swift in Sources */,
 				5F39497020DE12960096A61F /* CompositionProvider.swift in Sources */,
 				5FB72CE220FEC5EC00532CA7 /* ExportViewController.swift in Sources */,
+				5F901CC2210780130003BA4B /* PHAssetImageResource.swift in Sources */,
 				5F29D2391F740D9300D41F50 /* AVAssetTrackResource.swift in Sources */,
 				5FE088441FB9D75900EA7963 /* TimeLineView.swift in Sources */,
 				5F977C351F8B4CF90029156E /* AudioSampleOperation.swift in Sources */,
@@ -771,6 +786,7 @@
 				5F01B0131F7949080049CD3A /* VIPlayerView.swift in Sources */,
 				5FB72CF321001BB400532CA7 /* ImageFactory.swift in Sources */,
 				5F6099B51F7DFD9800EA44A0 /* WaveformView.swift in Sources */,
+				5F901CC721080C280003BA4B /* AnimatablePHAssetImageResource.swift in Sources */,
 				5FE0883B1FB0AD9B00EA7963 /* VideoView.swift in Sources */,
 				5F353BDD20F5948900DABF5E /* EditItem.swift in Sources */,
 				5F01B00A1F77A2460049CD3A /* AssetsViewModel.swift in Sources */,
@@ -999,6 +1015,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = ZZX7396L9W;
 				INFOPLIST_FILE = "$(SRCROOT)/SupportFiles/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vito.VideoCat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1014,6 +1031,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = ZZX7396L9W;
 				INFOPLIST_FILE = "$(SRCROOT)/SupportFiles/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.vito.VideoCat;
 				PRODUCT_NAME = "$(TARGET_NAME)";

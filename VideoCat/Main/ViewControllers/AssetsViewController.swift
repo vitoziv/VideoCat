@@ -19,7 +19,7 @@ protocol AssetsViewControllerDelegate: class {
 class AssetsViewController: UICollectionViewController {
 
     weak var delegate: AssetsViewControllerDelegate?
-    fileprivate var viewModel = AssetsViewModel()
+    fileprivate(set) var viewModel = AssetsViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()

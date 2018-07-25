@@ -175,7 +175,7 @@ class TimeLineView: UIView {
                 }
                 let timeRange = trackItem.configuration.timelineTimeRange
                 contentView.loadImageQueue = loadImageQueue
-                if let imageGenerator = trackItem.generateFullRangeImageGenerator(size: CGSize(width: 60, height: 60)) {                
+                if let renderSize = editContext?.viewModel.renderSize, let imageGenerator = trackItem.generateFullRangeImageGenerator(size: renderSize) {
                     contentView.imageGenerator = ImageGenerator.createFrom(imageGenerator)
                 }
                 contentView.startTime = timeRange.start

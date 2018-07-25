@@ -11,6 +11,7 @@ import Photos
 
 class AssetsViewModel {
     var assets: PHFetchResult<PHAsset> = PHFetchResult()
+    var type: PHAssetMediaType = .video
     
     func requestLibraryPermission(completion: @escaping (PHAuthorizationStatus) -> Void) {
         let status = PHPhotoLibrary.authorizationStatus()
@@ -28,6 +29,6 @@ class AssetsViewModel {
     func loadAssets() {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(keyPath: \PHAsset.creationDate, ascending: false)]
-        assets = PHAsset.fetchAssets(with: .video, options: options)
+        assets = PHAsset.fetchAssets(with: type, options: options)
     }
 }

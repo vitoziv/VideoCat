@@ -18,6 +18,11 @@ class TimelineViewModel {
     var trackItems: [TrackItem] = []
     
     var backgroundColors = TimeRangeStore<UIColor>()
+    var renderSize: CGSize = {
+        let width = UIScreen.main.bounds.width * UIScreen.main.scale
+        let height: CGFloat = round(width * 0.5625)
+        return CGSize.init(width: width, height: height)
+    }()
     
     init() {
         let timeline = TimelineManager.current.timeline
@@ -59,10 +64,7 @@ class TimelineViewModel {
         let timeline = TimelineManager.current.timeline
         reloadTimeline(timeline)
         let compositionGenerator = CompositionGenerator(timeline: timeline)
-        
-        let width = UIScreen.main.bounds.width * UIScreen.main.scale
-        let height: CGFloat = round(width * 0.5625)
-        compositionGenerator.renderSize = CGSize(width: width, height: height)
+        compositionGenerator.renderSize = renderSize
         let playerItem = compositionGenerator.buildPlayerItem()
         self.playerItem = playerItem
     }

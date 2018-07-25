@@ -9,14 +9,25 @@
 import AVFoundation
 import CoreImage
 
+
+public enum ResourceStatus: Int {
+    case unavaliable
+    case avaliable
+}
+
 open class Resource: NSObject, NSCopying {
 
     required override public init() {
     }
     
-    /// MARK: - Resource's time range
+    /// Max duration of this resource
     open var duration: CMTime = kCMTimeZero
+    
+    /// Selected time range, indicate how many resources will be inserted to AVCompositionTrack
     open var selectedTimeRange: CMTimeRange = kCMTimeRangeZero
+    
+    /// Natural frame size of this resource
+    open var size: CGSize = .zero
     
     // MARK: - NSCopying
     open func copy(with zone: NSZone? = nil) -> Any {
@@ -32,7 +43,7 @@ open class ImageResource: Resource {
     
     public var image: CIImage? = nil
     
-    func image(at time: CMTime, renderSize: CGSize) -> CIImage? {
+    open func image(at time: CMTime, renderSize: CGSize) -> CIImage? {
         return image
     }
     
@@ -46,11 +57,6 @@ open class ImageResource: Resource {
 
 open class TrackResource: Resource {
     
-    public enum ResourceStatus: Int {
-        case unavaliable
-        case avaliable
-    }
-
     // MARK: - Load Media before use resource
     
     public var status: ResourceStatus = .unavaliable

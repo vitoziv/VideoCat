@@ -11,18 +11,19 @@ import UIKit
 
 extension AVAssetImageGenerator {
     
-    static func create(from items: [TrackItem]) -> AVAssetImageGenerator? {
+    static func create(from items: [TrackItem], renderSize: CGSize) -> AVAssetImageGenerator? {
         let timeline = Timeline()
         timeline.videoChannel = items
         let generator = CompositionGenerator(timeline: timeline)
+        generator.renderSize = renderSize
         let imageGenerator = generator.buildImageGenerator()
         
         return imageGenerator
     }
     
-    static func createFullRangeGenerator(from item: TrackItem) -> AVAssetImageGenerator? {
+    static func createFullRangeGenerator(from item: TrackItem, renderSize: CGSize) -> AVAssetImageGenerator? {
         item.resource.selectedTimeRange = CMTimeRange.init(start: kCMTimeZero, duration: item.resource.duration)
-        return create(from: [item])
+        return create(from: [item], renderSize: renderSize)
     }
     
     static func create(fromAsset asset: AVAsset) -> AVAssetImageGenerator {
