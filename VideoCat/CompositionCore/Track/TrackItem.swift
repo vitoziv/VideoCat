@@ -174,11 +174,6 @@ extension TrackItem: VideoCompositionProvider {
         return finalImage
     }
     
-    
-    public func configureAnimationLayer(in layer: CALayer) {
-        // TODO: Support animation tool layer
-    }
-
 }
 
 extension TrackItem: AudioProvider {

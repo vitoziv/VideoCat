@@ -29,10 +29,14 @@ public protocol AudioMixProvider {
 
 public protocol VideoCompositionProvider {
     
-    /// 应有图像效果
+    /// Apply effect to sourceImage
+    ///
+    /// - Parameters:
+    ///   - sourceImage: sourceImage is the original image from resource
+    ///   - time: time in timeline
+    ///   - renderSize: the video canvas size
+    /// - Returns: result image after apply effect
     func applyEffect(to sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage
-    /// 可以往 AnimationTool 的 Layer 上添加效果，如添加动画 layer
-    func configureAnimationLayer(in layer: CALayer)
     
 }
 
