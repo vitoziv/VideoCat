@@ -460,7 +460,7 @@ extension TimeLineView: VideoRangeViewDelegate {
         }
         if !view.contentView.supportUnlimitTime {
             let clip = trackItems[index]
-            currentClipPlayerItem = clip.generateFullRangePlayerItem(size: CGSize.init(width: 960, height: 960))
+            currentClipPlayerItem = clip.generateFullRangePlayerItem(size: editContext!.viewModel.renderSize)
             if let player = player {
                 timelinePlayerItem = player.currentItem
                 removePlayerObserable()
