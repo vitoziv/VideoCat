@@ -259,7 +259,7 @@ class AssetThumbImageView: UIImageView {
                 self.image = UIImage(cgImage: cgimage)
             }
         } catch let e {
-            Log.error("Image generator copyCGImage error: \(e.localizedDescription)")
+            Log.error("Image generator copyCGImage at time: \(time.debugDescription) error: \(e.localizedDescription)")
         }
     }
     

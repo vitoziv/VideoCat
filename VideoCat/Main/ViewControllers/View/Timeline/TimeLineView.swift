@@ -173,7 +173,7 @@ class TimeLineView: UIView {
                 if trackItem.resource.isMember(of: ImageResource.self) {
                     contentView.supportUnlimitTime = true
                 }
-                let timeRange = trackItem.configuration.timelineTimeRange
+                let timeRange = trackItem.resource.selectedTimeRange
                 contentView.loadImageQueue = loadImageQueue
                 if let renderSize = editContext?.viewModel.renderSize, let imageGenerator = trackItem.generateFullRangeImageGenerator(size: renderSize) {
                     contentView.imageGenerator = ImageGenerator.createFrom(imageGenerator)
@@ -569,6 +569,7 @@ extension TimeLineView: VideoRangeViewDelegate {
             let clip = trackItems[index]
             let timeRange = CMTimeRangeFromTimeToTime(view.contentView.startTime, view.contentView.endTime)
             if clip.timeRange.start != timeRange.start || clip.timeRange.duration != timeRange.duration {
+                
                 clip.resource.selectedTimeRange = timeRange
                 if let context = editContext {
                     context.viewModel.reloadTimelineTimeRange()

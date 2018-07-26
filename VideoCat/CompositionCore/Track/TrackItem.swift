@@ -214,7 +214,7 @@ extension TrackItem {
     func generateFullRangePlayerItem(size: CGSize = .zero) -> AVPlayerItem? {
         let item = self.copy() as! TrackItem
         item.resource.selectedTimeRange = CMTimeRange.init(start: kCMTimeZero, duration: item.resource.duration)
-        
+        item.timeRange = CMTimeRange.init(start: kCMTimeZero, duration: item.resource.duration)
         let timeline = Timeline()
         timeline.videoChannel = [item]
         timeline.audioChannel = [item]
