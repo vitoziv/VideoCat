@@ -10,6 +10,7 @@ import AVFoundation
 import CoreImage
 import Photos
 
+/// Load image from PHAsset as video frame
 open class PHAssetImageResource: ImageResource {
     
     var asset: PHAsset?
@@ -28,15 +29,13 @@ open class PHAssetImageResource: ImageResource {
         return image
     }
 
-    public var status: ResourceStatus = .unavaliable
-    public var statusError: Error?
-    
-    open func prepare(progressHandler:((Double) -> Void)? = nil, completion: @escaping (ResourceStatus, Error?) -> Void) {
+    @discardableResult
+    open override func prepare(progressHandler:((Double) -> Void)? = nil, completion: @escaping (ResourceStatus, Error?) -> Void)  -> ResourceTask? {
         status = .unavaliable
         statusError = NSError.init(domain: "com.resource.status", code: 0, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("Empty resource", comment: "")])
         guard let asset = asset else {
             completion(status, statusError)
-            return
+            return nil
         }
         
         let progressHandler: PHAssetImageProgressHandler = { (progress, error, stop, info) in
@@ -56,7 +55,7 @@ open class PHAssetImageResource: ImageResource {
         imageRequestOptions.deliveryMode = .highQualityFormat
         imageRequestOptions.isNetworkAccessAllowed = true
         imageRequestOptions.progressHandler = progressHandler
-        PHImageManager.default().requestImage(for: asset, targetSize: CGSize(width: 720, height: 720), contentMode: .aspectFit, options: imageRequestOptions) { [weak self] (image, info) in
+        let requestID = PHImageManager.default().requestImage(for: asset, targetSize: CGSize(width: 720, height: 720), contentMode: .aspectFit, options: imageRequestOptions) { [weak self] (image, info) in
             guard let strongSelf = self else { return }
             if let error = info?[PHImageErrorKey] as? NSError {
                 strongSelf.statusError = error
@@ -73,6 +72,10 @@ open class PHAssetImageResource: ImageResource {
                 completion(strongSelf.status, strongSelf.statusError)
             }
         }
+        
+        return ResourceTask.init(cancel: {
+            PHImageManager.default().cancelImageRequest(requestID)
+        })
     }
     
 }

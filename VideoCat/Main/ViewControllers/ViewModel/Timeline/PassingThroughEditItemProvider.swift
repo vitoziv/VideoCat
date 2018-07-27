@@ -76,7 +76,7 @@ extension PassingThroughEditItemProvider: AssetsViewControllerDelegate {
     func assetsViewController(_ viewController: AssetsViewController, didPicked asset: PHAsset) {
         viewController.dismiss(animated: true, completion: nil)
         if viewController.viewModel.type == .video {
-            let resource = PHAssetTrackResource(asset: asset)
+            let resource = PHAssetTrackResource(phasset: asset)
             MBProgressHUD.showLoading()
             resource.prepare { [weak self] (status, error) in
                 if status == .avaliable {

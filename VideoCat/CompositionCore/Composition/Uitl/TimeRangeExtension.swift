@@ -10,15 +10,16 @@ import AVFoundation
 
 extension CMTimeRange {
     
-    /// 将两个 time range 根据重合部分切割成多个 time range
-    /// 1.考虑一个 timeRange 包含了另一个 timeRange 的情况
-    /// 2. 左边/右边重合
-    /// 3. 完全重合
+    /// Slice two time tanges into multiple time ranges, base on their intersection part
+    /// They maybe have 3 cases
+    /// 1. One timeRange contains the other timeRange
+    /// 2. They have intersection timeRange partly
+    /// 3. They are same value
     ///
     /// - Parameters:
-    ///   - timeRange1: 第一个 time range
-    ///   - timeRange2:  第二个 time range
-    /// - Returns:  切割后的 time range 数组
+    ///   - timeRange1: first time range
+    ///   - timeRange2:  second time range
+    /// - Returns:  sliced time range array
     static func sliceTimeRanges(for timeRange1: CMTimeRange, timeRange2: CMTimeRange) -> [CMTimeRange] {
         var timeRanges: [CMTimeRange] = []
         let instersectionTimeRange = timeRange1.intersection(timeRange2)

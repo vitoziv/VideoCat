@@ -59,6 +59,7 @@
 		5F901CC0210564280003BA4B /* ImageGeneratorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F901CBF210564280003BA4B /* ImageGeneratorExtension.swift */; };
 		5F901CC2210780130003BA4B /* PHAssetImageResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F901CC1210780130003BA4B /* PHAssetImageResource.swift */; };
 		5F901CC721080C280003BA4B /* AnimatablePHAssetImageResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F901CC621080C280003BA4B /* AnimatablePHAssetImageResource.swift */; };
+		5F901CC9210A960B0003BA4B /* ImageResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F901CC8210A960B0003BA4B /* ImageResource.swift */; };
 		5F977C351F8B4CF90029156E /* AudioSampleOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F977C341F8B4CF90029156E /* AudioSampleOperation.swift */; };
 		5F9DBECD202752E900E8BFC4 /* AVPlayerSeeker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9DBECC202752E900E8BFC4 /* AVPlayerSeeker.swift */; };
 		5F9DBECF2029F41300E8BFC4 /* VideoCompositor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F9DBECE2029F41300E8BFC4 /* VideoCompositor.swift */; };
@@ -158,6 +159,7 @@
 		5F901CBF210564280003BA4B /* ImageGeneratorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGeneratorExtension.swift; sourceTree = "<group>"; };
 		5F901CC1210780130003BA4B /* PHAssetImageResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHAssetImageResource.swift; sourceTree = "<group>"; };
 		5F901CC621080C280003BA4B /* AnimatablePHAssetImageResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatablePHAssetImageResource.swift; sourceTree = "<group>"; };
+		5F901CC8210A960B0003BA4B /* ImageResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageResource.swift; sourceTree = "<group>"; };
 		5F977C341F8B4CF90029156E /* AudioSampleOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioSampleOperation.swift; sourceTree = "<group>"; };
 		5F9DBECC202752E900E8BFC4 /* AVPlayerSeeker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVPlayerSeeker.swift; sourceTree = "<group>"; };
 		5F9DBECE2029F41300E8BFC4 /* VideoCompositor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCompositor.swift; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 				5F29D2321F73F25B00D41F50 /* TrackItem.swift */,
 				5F29D2341F73F41900D41F50 /* TrackConfiguration.swift */,
 				5F29D2361F73FEE200D41F50 /* Resource.swift */,
+				5F901CC8210A960B0003BA4B /* ImageResource.swift */,
 				5F901CC1210780130003BA4B /* PHAssetImageResource.swift */,
 				5F29D2381F740D9300D41F50 /* AVAssetTrackResource.swift */,
 				5F01B00D1F77EDD30049CD3A /* PHAssetTrackResource.swift */,
@@ -781,6 +784,7 @@
 				5F977C351F8B4CF90029156E /* AudioSampleOperation.swift in Sources */,
 				5FB72CF52100219300532CA7 /* ImagePool.swift in Sources */,
 				5F28752820F0BA0E00E51F85 /* EditToolView.swift in Sources */,
+				5F901CC9210A960B0003BA4B /* ImageResource.swift in Sources */,
 				5F01B0041F779BEF0049CD3A /* AssetCell.swift in Sources */,
 				5F01B0351F7D334D0049CD3A /* WaveformScrollView.swift in Sources */,
 				5F01B0131F7949080049CD3A /* VIPlayerView.swift in Sources */,

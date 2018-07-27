@@ -8,17 +8,14 @@
 
 import Photos
 
-class PHAssetTrackResource: TrackResource {
+class PHAssetTrackResource: AVAssetTrackResource {
     
-    var identifier: String = ""
-    var asset: PHAsset?
-    fileprivate var avasset: AVAsset?
+    var phasset: PHAsset?
     
-    init(asset: PHAsset) {
+    init(phasset: PHAsset) {
         super.init()
-        identifier = asset.localIdentifier
-        self.asset = asset
-        let duration = CMTimeMake(Int64(asset.duration * 600), 600)
+        self.phasset = phasset
+        let duration = CMTimeMake(Int64(phasset.duration * 600), 600)
         selectedTimeRange = CMTimeRangeMake(kCMTimeZero, duration)
     }
     
@@ -27,48 +24,36 @@ class PHAssetTrackResource: TrackResource {
     }
     
     // MARK: - Load
-    override func prepare(completion: @escaping (ResourceStatus, Error?) -> Void) {
-        if let asset = self.avasset {
-            asset.loadValuesAsynchronously(forKeys: ["tracks", "duration"], completionHandler: { [weak self] in
-                guard let strongSelf = self else { return }
-                defer {
-                    strongSelf.duration = asset.duration
-                    completion(strongSelf.status, strongSelf.statusError)
-                }
-                
-                var error: NSError?
-                let tracksStatus = asset.statusOfValue(forKey: "tracks", error: &error)
-                if tracksStatus != .loaded {
-                    Log.error("Failed to load tracks, status: \(tracksStatus), error: \(String(describing: error))")
-                    return
-                }
-                let durationStatus = asset.statusOfValue(forKey: "duration", error: &error)
-                if durationStatus != .loaded {
-                    Log.error("Failed to duration tracks, status: \(tracksStatus), error: \(String(describing: error))")
-                    return
-                }
-                strongSelf.status = .avaliable
-            })
-            return
+    @discardableResult
+    open override func prepare(progressHandler:((Double) -> Void)? = nil, completion: @escaping (ResourceStatus, Error?) -> Void) -> ResourceTask? {
+        if self.asset != nil {
+            return super.prepare(progressHandler: progressHandler, completion: completion)
         }
         
-        if asset == nil {
-            asset = PHAsset.fetchAssets(withBurstIdentifier: identifier, options: nil).lastObject
-        }
-        
-        guard let asset = asset else {
+        guard let phasset = phasset else {
             completion(status, nil)
-            return
+            return nil
         }
         let options = PHVideoRequestOptions()
         options.isNetworkAccessAllowed = true
         options.version = .current
         options.deliveryMode = .highQualityFormat
-        PHImageManager.default().requestAVAsset(forVideo: asset, options: options) { [weak self] (asset, audioMix, info) in
+        options.progressHandler = { (progress, error, stop, info) in
+            if let b = info?[PHImageCancelledKey] as? NSNumber, b.boolValue {
+                return
+            }
+            if error != nil {
+                return
+            }
+            DispatchQueue.main.async {
+                progressHandler?(progress)
+            }
+        }
+        let requestID = PHImageManager.default().requestAVAsset(forVideo: phasset, options: options) { [weak self] (asset, audioMix, info) in
             guard let strongSelf = self else { return }
             if let asset = asset {
                 strongSelf.duration = asset.duration
-                strongSelf.avasset = asset
+                strongSelf.asset = asset
                 if let track = asset.tracks(withMediaType: .video).first {
                     strongSelf.size = track.naturalSize.applying(track.preferredTransform)
                 }
@@ -80,23 +65,9 @@ class PHAssetTrackResource: TrackResource {
                 completion(strongSelf.status, nil)
             }
         }
-    }
-    
-    // MARK: - Content provider
-    
-    open override func numberOfTracks(for mediaType: AVMediaType) -> Int {
-        if let asset = avasset {
-            return asset.tracks(withMediaType: mediaType).count
-        }
-        return 0
-    }
-    
-    open override func track(at index: Int, mediaType: AVMediaType) -> AVAssetTrack? {
-        guard let asset = avasset else {
-            return nil
-        }
-        let tracks = asset.tracks(withMediaType: mediaType)
-        return tracks[index]
+        return ResourceTask.init(cancel: {
+            PHImageManager.default().cancelImageRequest(requestID)
+        })
     }
     
     // MARK: - NSCopying
@@ -104,8 +75,7 @@ class PHAssetTrackResource: TrackResource {
     override func copy(with zone: NSZone? = nil) -> Any {
         let resource = super.copy(with: zone) as! PHAssetTrackResource
         resource.asset = asset
-        resource.avasset = avasset
-        resource.identifier = identifier
+        resource.phasset = phasset
         
         return resource
     }

@@ -9,12 +9,6 @@
 import AVFoundation
 import CoreImage
 
-
-public enum ResourceStatus: Int {
-    case unavaliable
-    case avaliable
-}
-
 open class Resource: NSObject, NSCopying {
 
     required override public init() {
@@ -29,6 +23,37 @@ open class Resource: NSObject, NSCopying {
     /// Natural frame size of this resource
     open var size: CGSize = .zero
     
+    
+    /// Provide tracks for specific media type
+    ///
+    /// - Parameter type: specific media type, currently only support AVMediaTypeVideo and AVMediaTypeAudio
+    /// - Returns: tracks
+    open func tracks(for type: AVMediaType) -> [AVAssetTrack] {
+        return []
+    }
+    
+    // MARK: - Load content
+    
+    public enum ResourceStatus: Int {
+        case unavaliable
+        case avaliable
+    }
+    
+    /// Resource's status, indicate weather the tracks are avaiable. Default is avaliable
+    public var status: ResourceStatus = .unavaliable
+    public var statusError: Error?
+    
+    /// Load content makes it available to get tracks. When use load resource from PHAsset or internet resource, it's your responsibility to determinate when and where to load the content.
+    ///
+    /// - Parameters:
+    ///   - progressHandler: loading progress
+    ///   - completion: load completion
+    @discardableResult
+    open func prepare(progressHandler:((Double) -> Void)? = nil, completion: @escaping (ResourceStatus, Error?) -> Void) -> ResourceTask? {
+        completion(status, statusError)
+        return nil
+    }
+    
     // MARK: - NSCopying
     open func copy(with zone: NSZone? = nil) -> Any {
         let resource = type(of: self).init()
@@ -39,49 +64,14 @@ open class Resource: NSObject, NSCopying {
     
 }
 
-open class ImageResource: Resource {
+public class ResourceTask {
+    var cancelHandler: (() -> Void)?
     
-    public var image: CIImage? = nil
-    
-    open func image(at time: CMTime, renderSize: CGSize) -> CIImage? {
-        return image
+    init(cancel: (() -> Void)? = nil) {
+        self.cancelHandler = cancel
     }
     
-    // MARK: - NSCopying
-    open override func copy(with zone: NSZone? = nil) -> Any {
-        let resource = super.copy(with: zone) as! ImageResource
-        resource.image = image
-        return resource
-    }
-}
-
-open class TrackResource: Resource {
-    
-    // MARK: - Load Media before use resource
-    
-    public var status: ResourceStatus = .unavaliable
-    public var statusError: Error?
-    
-    open func prepare(completion: @escaping (ResourceStatus, Error?) -> Void) {
-        status = .unavaliable
-        statusError = NSError.init(domain: "com.resource.status", code: 0, userInfo: [NSLocalizedDescriptionKey: NSLocalizedString("Empty resource", comment: "")])
-        completion(status, statusError)
-    }
-    
-    // MARK: - Content provider
-    
-    open func numberOfTracks(for mediaType: AVMediaType) -> Int {
-        fatalError("Should implemented by subclass")
-    }
-    open func track(at index: Int, mediaType: AVMediaType) -> AVAssetTrack? {
-        fatalError("Should implemented by subclass")
-    }
-    
-    // MARK: - NSCopying
-    open override func copy(with zone: NSZone? = nil) -> Any {
-        let resource = super.copy(with: zone) as! TrackResource
-        resource.status = status
-        resource.statusError = statusError
-        return resource
+    func cancel() {
+        cancelHandler?()
     }
 }

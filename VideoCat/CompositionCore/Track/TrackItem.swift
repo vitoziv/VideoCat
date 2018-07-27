@@ -38,15 +38,18 @@ public class TrackItem: NSObject, NSCopying {
 }
 
 public extension TrackItem {
+    
     func reloadTimelineDuration() {
         let duration = resource.selectedTimeRange.duration
         var timeRange = configuration.timelineTimeRange
         timeRange.duration = duration
         configuration.timelineTimeRange = timeRange
     }
+    
 }
 
 extension TrackItem: CompositionTimeRangeProvider {
+    
     public var timeRange: CMTimeRange {
         get {
             return configuration.timelineTimeRange
@@ -55,36 +58,29 @@ extension TrackItem: CompositionTimeRangeProvider {
             configuration.timelineTimeRange = newValue
         }
     }
+    
 }
 
-extension TrackItem: VideoCompositionTrackProvider {
+// MARK: - TransitionableVideoProvider
+
+extension TrackItem: TransitionableVideoProvider {
+    
     public func numberOfVideoTracks() -> Int {
-        if let resource = resource as? TrackResource {
-            return resource.numberOfTracks(for: .video)
-        } else if resource.isKind(of: ImageResource.self) {
-            return 1
-        }
-        
-        return 0
+        return resource.tracks(for: .video).count
     }
     
     public func videoCompositionTrack(for composition: AVMutableComposition, at index: Int, preferredTrackID: Int32) -> AVCompositionTrack? {
-        let videoTrack: AVAssetTrack? = {
-            if let resource = resource as? TrackResource {
-                return resource.track(at: index, mediaType: .video)
-            } else if resource.isKind(of: ImageResource.self) {
-                return TrackItem.emptyAsset.tracks(withMediaType: .video).first
-            }
-            return nil
-        }()
-        guard let track = videoTrack else {
-            return nil
-        }
+        let track = resource.tracks(for: .video)[index]
         
         let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: preferredTrackID)
         if let compositionTrack = compositionTrack {
             compositionTrack.preferredTransform = track.preferredTransform
             do {
+                /*
+                 Special logic for ImageResource, because of it provides a placeholder track,
+                 Maybe not enough to fill the selectedTimeRange.
+                 But ImageResource usually support unlimited time.
+                 */
                 if resource.isKind(of: ImageResource.self) {
                     let emptyDuration = CMTime(value: 1, 30)
                     let range = CMTimeRangeMake(kCMTimeZero, emptyDuration)
@@ -99,50 +95,6 @@ extension TrackItem: VideoCompositionTrackProvider {
         }
         return compositionTrack
     }
-    
-    private static let emptyAsset: AVAsset = {
-        let url = Bundle.main.url(forResource: "black_empty", withExtension: "mp4")!
-        let asset = AVAsset(url: url)
-        return asset
-    }()
-    
-}
-
-extension TrackItem: AudioCompositionTrackProvider {
-    public func numberOfAudioTracks() -> Int {
-        if let resource = resource as? TrackResource {
-            return resource.numberOfTracks(for: .audio)
-        }
-        
-        return 0
-    }
-    
-    public func audioCompositionTrack(for composition: AVMutableComposition, at index: Int, preferredTrackID: Int32) -> AVCompositionTrack? {
-        let audioTrack: AVAssetTrack? = {
-            if let resource = resource as? TrackResource {
-                return resource.track(at: index, mediaType: .audio)
-            }
-            return nil
-        }()
-        guard let track = audioTrack else {
-            return nil
-        }
-        
-        let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: preferredTrackID)
-        if let compositionTrack = compositionTrack {
-            do {
-                try compositionTrack.insertTimeRange(resource.selectedTimeRange, of: track, at: timeRange.start)
-            } catch {
-                Log.error(#function + error.localizedDescription)
-            }
-        }
-        return compositionTrack
-    }
-    
-    
-}
-
-extension TrackItem: VideoCompositionProvider {
     
     public func applyEffect(to sourceImage: CIImage, at time: CMTime, renderSize: CGSize) -> CIImage {
         var finalImage: CIImage = {
@@ -176,29 +128,45 @@ extension TrackItem: VideoCompositionProvider {
     
 }
 
-extension TrackItem: AudioProvider {
+// MARK: - TransitionableAudioProvider
+extension TrackItem: TransitionableAudioProvider {
+    
+    public func numberOfAudioTracks() -> Int {
+        return resource.tracks(for: .audio).count
+    }
+    
+    public func audioCompositionTrack(for composition: AVMutableComposition, at index: Int, preferredTrackID: Int32) -> AVCompositionTrack? {
+        let track = resource.tracks(for: .audio)[index]
+        let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: preferredTrackID)
+        if let compositionTrack = compositionTrack {
+            do {
+                try compositionTrack.insertTimeRange(resource.selectedTimeRange, of: track, at: timeRange.start)
+            } catch {
+                Log.error(#function + error.localizedDescription)
+            }
+        }
+        return compositionTrack
+    }
+    
     public func configure(audioMixParameters: AVMutableAudioMixInputParameters) {
         let volume = configuration.audioConfiguration.volume
         audioMixParameters.setVolumeRamp(fromStartVolume: volume, toEndVolume: volume, timeRange: configuration.timelineTimeRange)
         audioMixParameters.audioProcessingTapHolder = configuration.audioConfiguration.audioTapHolder
     }
-}
-
-extension TrackItem: TransitionableVideoProvider {
-    
-}
-extension TrackItem: TransitionableAudioProvider {
     
 }
 
 private extension CIImage {
+    
     func flipYCoordinate() -> CIImage {
         let flipYTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: extent.origin.y * 2 + extent.height)
         return transformed(by: flipYTransform)
     }
+    
 }
 
 extension TrackItem {
+    
     func generateFullRangeImageGenerator(size: CGSize = .zero) -> AVAssetImageGenerator? {
         let item = self.copy() as! TrackItem
         let imageGenerator = AVAssetImageGenerator.createFullRangeGenerator(from: item, renderSize: size)
@@ -218,5 +186,5 @@ extension TrackItem {
         let playerItem = generator.buildPlayerItem()
         return playerItem
     }
+    
 }
-
