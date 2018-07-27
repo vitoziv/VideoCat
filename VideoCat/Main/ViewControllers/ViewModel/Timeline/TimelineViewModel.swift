@@ -51,13 +51,13 @@ class TimelineViewModel {
         var startTime = kCMTimeZero
         for i in (0..<index) {
             let trackItem = trackItems[i]
-            startTime = CMTimeAdd(startTime, trackItem.resource.selectedTimeRange.duration)
+            startTime = CMTimeAdd(startTime, trackItem.resourceSelectedTimeRange.duration)
         }
         if index >= trackItems.count {
             return CMTimeRangeMake(startTime, kCMTimeZero)
         }
         let trackItem = trackItems[index]
-        return trackItem.resource.selectedTimeRange
+        return trackItem.resourceSelectedTimeRange
     }
     
     func reloadPlayerItem() {

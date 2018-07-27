@@ -39,11 +39,8 @@ public class TrackItem: NSObject, NSCopying {
 
 public extension TrackItem {
     
-    func reloadTimelineDuration() {
-        let duration = resource.selectedTimeRange.duration
-        var timeRange = configuration.timelineTimeRange
-        timeRange.duration = duration
-        configuration.timelineTimeRange = timeRange
+    public func reloadTimelineDuration() {
+        configuration.timelineTimeRange.duration = resourceSelectedTimeRange.duration
     }
     
 }
@@ -56,6 +53,25 @@ extension TrackItem: CompositionTimeRangeProvider {
         }
         set {
             configuration.timelineTimeRange = newValue
+        }
+    }
+    
+    /// Resource's selected time range that mix with speed
+    public var resourceSelectedTimeRange: CMTimeRange {
+        get {
+            var timeRange = resource.selectedTimeRange
+            timeRange.start = CMTime.init(value: Int64(Float(timeRange.start.value) / configuration.speed),
+                                          timeRange.start.timescale)
+            timeRange.duration = CMTime.init(value: Int64(Float(timeRange.duration.value) / configuration.speed),
+                                             timeRange.duration.timescale)
+            return timeRange
+        }
+        set {
+            let start = CMTime.init(value: Int64(Float(newValue.start.value) * configuration.speed),
+                                    newValue.start.timescale)
+            let duration = CMTime.init(value: Int64(Float(newValue.duration.value) * configuration.speed),
+                                    newValue.duration.timescale)
+            resource.selectedTimeRange = CMTimeRange.init(start: start, duration: duration)
         }
     }
     
@@ -85,9 +101,12 @@ extension TrackItem: TransitionableVideoProvider {
                     let emptyDuration = CMTime(value: 1, 30)
                     let range = CMTimeRangeMake(kCMTimeZero, emptyDuration)
                     try compositionTrack.insertTimeRange(range, of: track, at: timeRange.start)
-                    compositionTrack.scaleTimeRange(CMTimeRangeMake(timeRange.start, emptyDuration), toDuration: resource.selectedTimeRange.duration)
+                    compositionTrack.scaleTimeRange(CMTimeRange(start: timeRange.start, duration: emptyDuration),
+                                                    toDuration: resourceSelectedTimeRange.duration)
                 } else {
                     try compositionTrack.insertTimeRange(resource.selectedTimeRange, of: track, at: timeRange.start)
+                    compositionTrack.scaleTimeRange(CMTimeRange(start: timeRange.start, duration: resource.selectedTimeRange.duration),
+                                                    toDuration: resourceSelectedTimeRange.duration)
                 }
             } catch {
                 Log.error(#function + error.localizedDescription)
@@ -141,6 +160,8 @@ extension TrackItem: TransitionableAudioProvider {
         if let compositionTrack = compositionTrack {
             do {
                 try compositionTrack.insertTimeRange(resource.selectedTimeRange, of: track, at: timeRange.start)
+                compositionTrack.scaleTimeRange(CMTimeRange(start: timeRange.start, duration: resource.selectedTimeRange.duration),
+                                                toDuration: resourceSelectedTimeRange.duration)
             } catch {
                 Log.error(#function + error.localizedDescription)
             }
@@ -165,19 +186,25 @@ private extension CIImage {
     
 }
 
-extension TrackItem {
+public extension TrackItem {
     
-    func generateFullRangeImageGenerator(size: CGSize = .zero) -> AVAssetImageGenerator? {
+    public func makeFullRangeCopy() -> TrackItem {
         let item = self.copy() as! TrackItem
-        let imageGenerator = AVAssetImageGenerator.createFullRangeGenerator(from: item, renderSize: size)
+        item.resource.selectedTimeRange = CMTimeRange.init(start: kCMTimeZero, duration: item.resource.duration)
+        item.reloadTimelineDuration()
+        item.timeRange.start = kCMTimeZero
+        return item
+    }
+    
+    public func generateFullRangeImageGenerator(size: CGSize = .zero) -> AVAssetImageGenerator? {
+        let item = makeFullRangeCopy()
+        let imageGenerator = AVAssetImageGenerator.create(from: [item], renderSize: size)
         imageGenerator?.updateAspectFitSize(size)
         return imageGenerator
     }
     
-    func generateFullRangePlayerItem(size: CGSize = .zero) -> AVPlayerItem? {
-        let item = self.copy() as! TrackItem
-        item.resource.selectedTimeRange = CMTimeRange.init(start: kCMTimeZero, duration: item.resource.duration)
-        item.timeRange = CMTimeRange.init(start: kCMTimeZero, duration: item.resource.duration)
+    public func generateFullRangePlayerItem(size: CGSize = .zero) -> AVPlayerItem? {
+        let item = makeFullRangeCopy()
         let timeline = Timeline()
         timeline.videoChannel = [item]
         timeline.audioChannel = [item]

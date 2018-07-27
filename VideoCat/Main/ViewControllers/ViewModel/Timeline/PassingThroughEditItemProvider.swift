@@ -107,6 +107,9 @@ extension PassingThroughEditItemProvider: AssetsViewControllerDelegate {
         guard let context = self.context else {return}
         let index = context.timelineView.nextRangeViewIndex
         let trackItem = TrackItem(resource: resource)
+        if resource.isKind(of: AVAssetTrackResource.self) {
+            trackItem.configuration.speed = 2.0
+        }
         let transition = CrossDissolveTransition()
         transition.duration = CMTime(value: 3, timescale: 2)
         trackItem.videoTransition = transition

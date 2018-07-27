@@ -21,13 +21,6 @@ extension AVAssetImageGenerator {
         return imageGenerator
     }
     
-    static func createFullRangeGenerator(from item: TrackItem, renderSize: CGSize) -> AVAssetImageGenerator? {
-        item.resource.selectedTimeRange = CMTimeRange.init(start: kCMTimeZero, duration: item.resource.duration)
-        item.reloadTimelineDuration()
-        item.timeRange = CMTimeRange.init(start: kCMTimeZero, duration: item.resource.duration)
-        return create(from: [item], renderSize: renderSize)
-    }
-    
     static func create(fromAsset asset: AVAsset) -> AVAssetImageGenerator {
         let ge = ImageGenerator(asset: asset)
         ge.requestedTimeToleranceBefore = kCMTimeZero
