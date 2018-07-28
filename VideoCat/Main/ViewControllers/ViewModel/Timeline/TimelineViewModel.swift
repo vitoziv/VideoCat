@@ -74,6 +74,12 @@ class TimelineViewModel {
         timeline.audioChannel = trackItems
     }
     
+    func buildTimeline() -> Timeline {
+        let timeline = TimelineManager.current.timeline
+        reloadTimeline(timeline)
+        return timeline
+    }
+    
 }
 
 // MARK: - Reload Timeline

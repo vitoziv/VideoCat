@@ -8,44 +8,71 @@
 
 import AVFoundation
 
-class CompositionGenerator {
+public class CompositionGenerator {
     
     // MARK: - Public
-    var timeline: Timeline
-    var renderSize: CGSize?
+    public var timeline: Timeline {
+        didSet {
+            needRebuildComposition = true
+            needRebuildVideoComposition = true
+            needRebuildAudioMix = true
+        }
+    }
+    public var renderSize: CGSize? {
+        didSet {
+            needRebuildVideoComposition = true
+        }
+    }
     
-    init(timeline: Timeline) {
+    private var composition: AVComposition?
+    private var videoComposition: AVVideoComposition?
+    private var audioMix: AVAudioMix?
+    
+    private var needRebuildComposition: Bool = true
+    private var needRebuildVideoComposition: Bool = true
+    private var needRebuildAudioMix: Bool = true
+    
+    public init(timeline: Timeline) {
         self.timeline = timeline
     }
     
-    func buildPlayerItem() -> AVPlayerItem {
+    public func buildPlayerItem() -> AVPlayerItem {
         let composition = buildComposition()
         let playerItem = AVPlayerItem(asset: composition)
-        playerItem.videoComposition = buildVideoComposition(with: composition)
-        playerItem.audioMix = buildAudioMix(with: composition)
+        playerItem.videoComposition = buildVideoComposition()
+        playerItem.audioMix = buildAudioMix()
         return playerItem
     }
     
-    func buildImageGenerator() -> AVAssetImageGenerator {
+    public func buildImageGenerator() -> AVAssetImageGenerator {
         let composition = buildComposition()
         let imageGenerator = AVAssetImageGenerator(asset: composition)
-        imageGenerator.videoComposition = buildVideoComposition(with: composition)
+        imageGenerator.videoComposition = buildVideoComposition()
         
         return imageGenerator
     }
     
-    func buildExportSession() -> AVAssetExportSession? {
-        // TODO: 导出
+    public func buildExportSession(presetName: String) -> AVAssetExportSession? {
         let composition = buildComposition()
-        let exportSession = AVAssetExportSession.init(asset: composition, presetName: "")
-        exportSession?.videoComposition = buildVideoComposition(with: composition)
-        exportSession?.audioMix = buildAudioMix(with: composition)
+        let exportSession = AVAssetExportSession.init(asset: composition, presetName: presetName)
+        exportSession?.videoComposition = buildVideoComposition()
+        exportSession?.audioMix = buildAudioMix()
+        exportSession?.outputURL = {
+            let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last!
+            let filename = ProcessInfo.processInfo.globallyUniqueString + ".mp4"
+            return documentDirectory.appendingPathComponent(filename)
+        }()
+        exportSession?.outputFileType = AVFileType.mp4
         return exportSession
     }
     
     // MARK: - Build Composition
     
-    private func buildComposition() -> AVMutableComposition {
+    public func buildComposition() -> AVComposition {
+        if let composition = self.composition, !needRebuildComposition {
+            return composition
+        }
+        
         resetSetupInfo()
         
         let composition = AVMutableComposition(urlAssetInitializationOptions: [AVURLAssetPreferPreciseDurationAndTimingKey: true])
@@ -99,7 +126,12 @@ class CompositionGenerator {
         return composition
     }
     
-    fileprivate func buildVideoComposition(with composition: AVComposition) -> AVMutableVideoComposition? {
+    public func buildVideoComposition() -> AVVideoComposition? {
+        if let videoComposition = self.videoComposition, !needRebuildVideoComposition {
+            return videoComposition
+        }
+        
+        let composition = buildComposition()
         let videoTracks = composition.tracks(withMediaType: .video)
         
         var layerInstructions: [VideoCompositionLayerInstruction] = []
@@ -119,7 +151,8 @@ class CompositionGenerator {
             }
         }
         
-        // 创建多个 instruction，每个 instruction 保存当前时间所有的 layerInstruction，在渲染的时候可以直接拿到对应时间点所需要的 layerInstruction。
+        // Create multiple instructions，each instructions contains layerInstructions whose time range have insection with instruction，
+        // When rendering the frame, the instruction can quickly find layerInstructions
         let layerInstructionsSlices = calculateSlices(for: layerInstructions)
         let mainTrackIDs = mainVideoTrackInfo.keys.map({ $0.trackID })
         let instructions: [VideoCompositionInstruction] = layerInstructionsSlices.map({ (slice) in
@@ -150,7 +183,12 @@ class CompositionGenerator {
         return videoComposition
     }
     
-    fileprivate func buildAudioMix(with composition: AVComposition) -> AVMutableAudioMix? {
+    public func buildAudioMix() -> AVAudioMix? {
+        if let audioMix = self.audioMix, !needRebuildAudioMix {
+            return audioMix
+        }
+        
+        let composition = buildComposition()
         var audioParameters = [AVMutableAudioMixInputParameters]()
         let audioTracks = composition.tracks(withMediaType: .audio)
         

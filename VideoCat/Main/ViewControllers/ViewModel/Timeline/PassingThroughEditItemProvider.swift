@@ -107,13 +107,10 @@ extension PassingThroughEditItemProvider: AssetsViewControllerDelegate {
         guard let context = self.context else {return}
         let index = context.timelineView.nextRangeViewIndex
         let trackItem = TrackItem(resource: resource)
-        if resource.isKind(of: AVAssetTrackResource.self) {
-            trackItem.configuration.speed = 2.0
-        }
         let transition = CrossDissolveTransition()
-        transition.duration = CMTime(value: 3, timescale: 2)
+        transition.duration = CMTime(value: 900, timescale: 600)
         trackItem.videoTransition = transition
-        let audioTransition = FadeInOutAudioTransition(duration: transition.duration)
+        let audioTransition = FadeInOutAudioTransition(duration: CMTime(value: 66150, timescale: 44100))
         trackItem.audioTransition = audioTransition
         let audioTapHolder = AudioProcessingTapHolder()
         trackItem.configuration.audioConfiguration.audioTapHolder = audioTapHolder
