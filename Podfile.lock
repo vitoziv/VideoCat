@@ -1,4 +1,5 @@
 PODS:
+  - Cabbage (0.1)
   - MBProgressHUD (1.0.0)
   - RxCocoa (4.0.0):
     - RxSwift (~> 4.0)
@@ -6,6 +7,7 @@ PODS:
   - TinyConstraints (3.0.1)
 
 DEPENDENCIES:
+  - Cabbage (from `../Cabbage`)
   - MBProgressHUD (~> 1.0.0)
   - RxCocoa (~> 4.0.0)
   - RxSwift (~> 4.0.0)
@@ -18,12 +20,17 @@ SPEC REPOS:
     - RxSwift
     - TinyConstraints
 
+EXTERNAL SOURCES:
+  Cabbage:
+    :path: "../Cabbage"
+
 SPEC CHECKSUMS:
+  Cabbage: 9f2d02d197a79314c83a11e4d9f613c92691a8c7
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   RxCocoa: d62846ca96495d862fa4c59ea7d87e5031d7340e
   RxSwift: fd680d75283beb5e2559486f3c0ff852f0d35334
   TinyConstraints: 77cb4735982941687268bb6f324badd0ae29ad46
 
-PODFILE CHECKSUM: bb416050cae65099d0142176a940a26a046fc61c
+PODFILE CHECKSUM: 2a2c11290402ccac725513922a826633a3442232
 
 COCOAPODS: 1.5.3

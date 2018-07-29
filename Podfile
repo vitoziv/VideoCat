@@ -11,4 +11,6 @@ target 'VideoCat' do
     pod 'RxCocoa', '~> 4.0.0'
     pod 'TinyConstraints', '~> 3.0.1'
     
+    pod 'Cabbage', :path => '../Cabbage'
+    
 end

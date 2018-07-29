@@ -11,7 +11,6 @@ import CoreMedia
 
 class PrepareVideoViewController: UIViewController {
     
-    var trackItem: TrackItem!
 
     @IBOutlet weak var playerView: VIPlayerView!
     @IBOutlet weak var timeRangePickerView: TimeRangePickerView!

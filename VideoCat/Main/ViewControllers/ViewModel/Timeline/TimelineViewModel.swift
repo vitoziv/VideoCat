@@ -8,6 +8,7 @@
 
 import UIKit
 import AVFoundation
+import Cabbage
 
 class TimelineManager {
     static let current = TimelineManager()

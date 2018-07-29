@@ -9,6 +9,7 @@
 import Foundation
 import Photos
 import MBProgressHUD
+import Cabbage
 
 class PassingThroughEditItemProvider: ItemsProvider {
     var items: [EditItem] = []

@@ -1,6 +1,6 @@
 //
 //  CMTimeExtensition.swift
-//  VideoCat
+//  Cabbage
 //
 //  Created by Vito on 2018/7/19.
 //  Copyright © 2018 Vito. All rights reserved.
@@ -10,24 +10,10 @@ import CoreMedia
 
 // MARK: Initialization
 public extension CMTime {
-    public init(value: Int64, _ timescale: Int = 1) {
-        self = CMTimeMake(value, Int32(timescale))
-    }
-    public init(value: Int64, _ timescale: Int32 = 1) {
-        self = CMTimeMake(value, timescale)
-    }
-    public init(seconds: Float64, preferredTimeScale: Int32 = 600) {
-        self = CMTimeMakeWithSeconds(seconds, preferredTimeScale)
-    }
-    public init(seconds: Float, preferredTimeScale: Int32 = 600) {
-        self = CMTime(seconds: Float64(seconds), preferredTimeScale: preferredTimeScale)
-    }
     public func xd_time(preferredTimeScale: Int32 = 600) -> CMTime {
         return CMTime(seconds: seconds, preferredTimescale: preferredTimeScale)
     }
 }
-
-// MARK: - Arithmetic Protocol
 
 // MARK: Add
 func + (left: CMTime, right: CMTime) -> CMTime {

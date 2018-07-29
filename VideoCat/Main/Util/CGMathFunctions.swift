@@ -1,6 +1,6 @@
 //
 //  CGMathFunctions.swift
-//  VideoCat
+//  Cabbage
 //
 //  Created by Vito on 28/02/2018.
 //  Copyright © 2018 Vito. All rights reserved.

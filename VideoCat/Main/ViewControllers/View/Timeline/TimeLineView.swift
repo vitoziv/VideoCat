@@ -10,6 +10,7 @@ import UIKit
 import AVFoundation
 import RxCocoa
 import RxSwift
+import Cabbage
 
 class TimeLineView: UIView {
 

@@ -8,6 +8,7 @@
 
 import UIKit
 import TinyConstraints
+import Cabbage
 
 protocol ItemsProvider: class {
     var items: [EditItem] { get }
