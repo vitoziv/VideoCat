@@ -10,7 +10,7 @@ import UIKit
 import AVFoundation
 import RxCocoa
 import RxSwift
-import Cabbage
+import VFCabbage
 
 class TimeLineView: UIView {
 
@@ -174,7 +174,7 @@ class TimeLineView: UIView {
                 if trackItem.resource.isMember(of: ImageResource.self) {
                     contentView.supportUnlimitTime = true
                 }
-                let timeRange = trackItem.resourceSelectedTimeRange
+                let timeRange = trackItem.resourceTargetTimeRange
                 contentView.loadImageQueue = loadImageQueue
                 if let renderSize = editContext?.viewModel.renderSize, let imageGenerator = trackItem.generateFullRangeImageGenerator(size: renderSize) {
                     contentView.imageGenerator = ImageGenerator.createFrom(imageGenerator)
@@ -571,7 +571,7 @@ extension TimeLineView: VideoRangeViewDelegate {
             let timeRange = CMTimeRangeFromTimeToTime(view.contentView.startTime, view.contentView.endTime)
             if track.timeRange.start != timeRange.start || track.timeRange.duration != timeRange.duration {
                 
-                track.resourceSelectedTimeRange = timeRange
+                track.resourceTargetTimeRange = timeRange
                 if let context = editContext {
                     context.viewModel.reloadTimelineTimeRange()
                     context.viewModel.reloadPlayerItem()

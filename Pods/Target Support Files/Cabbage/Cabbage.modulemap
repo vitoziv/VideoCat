@@ -1,6 +1,0 @@
-framework module Cabbage {
-  umbrella header "Cabbage-umbrella.h"
-
-  export *
-  module * { export * }
-}

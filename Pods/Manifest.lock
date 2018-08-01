@@ -1,17 +1,17 @@
 PODS:
-  - Cabbage (0.1)
   - MBProgressHUD (1.0.0)
   - RxCocoa (4.0.0):
     - RxSwift (~> 4.0)
   - RxSwift (4.0.0)
   - TinyConstraints (3.0.1)
+  - VFCabbage (0.1)
 
 DEPENDENCIES:
-  - Cabbage (from `../Cabbage`)
   - MBProgressHUD (~> 1.0.0)
   - RxCocoa (~> 4.0.0)
   - RxSwift (~> 4.0.0)
   - TinyConstraints (~> 3.0.1)
+  - VFCabbage (from `https://github.com/VideoFlint/Cabbage.git`, commit `40a1cd92886fbe31710f6dd572cc6e105ae34810`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -21,16 +21,22 @@ SPEC REPOS:
     - TinyConstraints
 
 EXTERNAL SOURCES:
-  Cabbage:
-    :path: "../Cabbage"
+  VFCabbage:
+    :commit: 40a1cd92886fbe31710f6dd572cc6e105ae34810
+    :git: https://github.com/VideoFlint/Cabbage.git
+
+CHECKOUT OPTIONS:
+  VFCabbage:
+    :commit: 40a1cd92886fbe31710f6dd572cc6e105ae34810
+    :git: https://github.com/VideoFlint/Cabbage.git
 
 SPEC CHECKSUMS:
-  Cabbage: 9f2d02d197a79314c83a11e4d9f613c92691a8c7
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   RxCocoa: d62846ca96495d862fa4c59ea7d87e5031d7340e
   RxSwift: fd680d75283beb5e2559486f3c0ff852f0d35334
   TinyConstraints: 77cb4735982941687268bb6f324badd0ae29ad46
+  VFCabbage: 28deab247d07531d0a8cdc38ad7a609f7f7d69d2
 
-PODFILE CHECKSUM: 2a2c11290402ccac725513922a826633a3442232
+PODFILE CHECKSUM: 1e83bc27e3e82e377e88adccbf5d4fea24191891
 
 COCOAPODS: 1.5.3

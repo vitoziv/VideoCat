@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double CabbageVersionNumber;
-FOUNDATION_EXPORT const unsigned char CabbageVersionString[];
+FOUNDATION_EXPORT double VFCabbageVersionNumber;
+FOUNDATION_EXPORT const unsigned char VFCabbageVersionString[];
 

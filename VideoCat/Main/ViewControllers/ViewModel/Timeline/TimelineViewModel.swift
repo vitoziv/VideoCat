@@ -8,7 +8,7 @@
 
 import UIKit
 import AVFoundation
-import Cabbage
+import VFCabbage
 
 class TimelineManager {
     static let current = TimelineManager()
@@ -52,13 +52,13 @@ class TimelineViewModel {
         var startTime = kCMTimeZero
         for i in (0..<index) {
             let trackItem = trackItems[i]
-            startTime = CMTimeAdd(startTime, trackItem.resourceSelectedTimeRange.duration)
+            startTime = CMTimeAdd(startTime, trackItem.resourceTargetTimeRange.duration)
         }
         if index >= trackItems.count {
             return CMTimeRangeMake(startTime, kCMTimeZero)
         }
         let trackItem = trackItems[index]
-        return trackItem.resourceSelectedTimeRange
+        return trackItem.resourceTargetTimeRange
     }
     
     func reloadPlayerItem() {

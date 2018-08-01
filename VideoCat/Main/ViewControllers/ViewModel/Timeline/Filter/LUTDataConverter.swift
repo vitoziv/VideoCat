@@ -9,7 +9,7 @@
 import CoreGraphics
 import UIKit
 import CoreImage
-import Cabbage
+import VFCabbage
 
 class LUTDataConverter {
     

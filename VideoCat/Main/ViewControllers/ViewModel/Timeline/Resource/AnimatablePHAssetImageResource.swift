@@ -9,7 +9,7 @@
 import AVFoundation
 import Photos
 import CoreImage
-import Cabbage
+import VFCabbage
 
 class AnimatablePHAssetImageResource: PHAssetImageResource {
     open override func image(at time: CMTime, renderSize: CGSize) -> CIImage? {

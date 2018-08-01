@@ -11,6 +11,6 @@ target 'VideoCat' do
     pod 'RxCocoa', '~> 4.0.0'
     pod 'TinyConstraints', '~> 3.0.1'
     
-    pod 'Cabbage', :path => '../Cabbage'
+    pod 'VFCabbage',  :git => 'https://github.com/VideoFlint/Cabbage.git', :commit => '40a1cd92886fbe31710f6dd572cc6e105ae34810'
     
 end

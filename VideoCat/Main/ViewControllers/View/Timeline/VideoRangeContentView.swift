@@ -8,7 +8,7 @@
 
 import UIKit
 import AVFoundation
-import Cabbage
+import VFCabbage
 
 class VideoRangeContentView: RangeContentView {
     

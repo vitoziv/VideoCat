@@ -11,7 +11,7 @@ import AVFoundation
 import Photos
 import MobileCoreServices
 import MBProgressHUD
-import Cabbage
+import VFCabbage
 
 class ExportViewController: UIViewController {
 
