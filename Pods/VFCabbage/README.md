@@ -1,4 +1,4 @@
-# Cabbage 
+![](https://ws1.sinaimg.cn/large/6ca4705bgy1ftvakl767wj215o07st9r.jpg)
 
 [中文说明](https://github.com/VideoFlint/Cabbage/wiki/中文说明)
 
@@ -21,6 +21,10 @@ A high-level video composition framework build on top of AVFoundation. It's simp
 
 - iOS 9.0+
 - Swift 4.x
+
+## Projects using Cabbage
+
+- [VideoCat](https://github.com/vitoziv/VideoCat): A demo project demonstrates how to use Cabbage.
 
 ## Usage
 
@@ -143,3 +147,7 @@ $ git submodule add https://github.com/VideoFlint/Cabbage.git
 ## LICENSE
 
 Under MIT
+
+## Special Thanks
+
+- Icon designed by [熊猫先生](https://dribbble.com/viennaong)

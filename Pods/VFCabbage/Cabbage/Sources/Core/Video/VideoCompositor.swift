@@ -11,7 +11,7 @@ import CoreImage
 
 open class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
     
-    static let ciContext: CIContext = CIContext()
+    public static var ciContext: CIContext = CIContext()
     private let renderContextQueue: DispatchQueue = DispatchQueue(label: "cabbage.videocore.rendercontextqueue")
     private let renderingQueue: DispatchQueue = DispatchQueue(label: "cabbage.videocore.renderingqueue")
     private var renderContextDidChange = false
@@ -34,7 +34,7 @@ open class VideoCompositor: NSObject, AVFoundation.AVVideoCompositing  {
         })
     }
     
-    enum PixelBufferRequestError: Error {
+    public enum PixelBufferRequestError: Error {
         case newRenderedPixelBufferForRequestFailure
     }
     

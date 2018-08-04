@@ -80,9 +80,15 @@ open class TrackItem: NSObject, NSCopying, TransitionableVideoProvider, Transiti
     open func videoCompositionTrack(for composition: AVMutableComposition, at index: Int, preferredTrackID: Int32) -> AVCompositionTrack? {
         let track = resource.tracks(for: .video)[index]
         
-        let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: preferredTrackID)
+        let compositionTrack: AVMutableCompositionTrack? = {
+            if let track = composition.track(withTrackID: preferredTrackID) {
+                return track
+            }
+            return composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: preferredTrackID)
+        }()
+        
         if let compositionTrack = compositionTrack {
-            compositionTrack.preferredTransform = track.preferredTransform
+            compositionTrack.preferredTransforms[timeRange.vf_identifier] = track.preferredTransform
             do {
                 /*
                  Special logic for ImageResource, because of it provides a placeholder track,
@@ -149,7 +155,12 @@ open class TrackItem: NSObject, NSCopying, TransitionableVideoProvider, Transiti
     
     open func audioCompositionTrack(for composition: AVMutableComposition, at index: Int, preferredTrackID: Int32) -> AVCompositionTrack? {
         let track = resource.tracks(for: .audio)[index]
-        let compositionTrack = composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: preferredTrackID)
+        let compositionTrack: AVMutableCompositionTrack? = {
+            if let track = composition.track(withTrackID: preferredTrackID) {
+                return track
+            }
+            return composition.addMutableTrack(withMediaType: track.mediaType, preferredTrackID: preferredTrackID)
+        }()
         if let compositionTrack = compositionTrack {
             do {
                 try compositionTrack.insertTimeRange(resource.selectedTimeRange, of: track, at: timeRange.start)
@@ -165,7 +176,12 @@ open class TrackItem: NSObject, NSCopying, TransitionableVideoProvider, Transiti
     open func configure(audioMixParameters: AVMutableAudioMixInputParameters) {
         let volume = configuration.audioConfiguration.volume
         audioMixParameters.setVolumeRamp(fromStartVolume: volume, toEndVolume: volume, timeRange: configuration.timelineTimeRange)
-        audioMixParameters.audioProcessingTapHolder = configuration.audioConfiguration.audioTapHolder
+        if configuration.audioConfiguration.nodes.count > 0 {
+            if audioMixParameters.audioProcessingTapHolder == nil {
+                audioMixParameters.audioProcessingTapHolder = AudioProcessingTapHolder()
+            }
+            audioMixParameters.audioProcessingTapHolder?.audioProcessingChain.nodes.append(contentsOf: configuration.audioConfiguration.nodes)
+        }
     }
     
     

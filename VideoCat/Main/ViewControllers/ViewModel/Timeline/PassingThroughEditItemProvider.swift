@@ -113,8 +113,6 @@ extension PassingThroughEditItemProvider: AssetsViewControllerDelegate {
         trackItem.videoTransition = transition
         let audioTransition = FadeInOutAudioTransition(duration: CMTime(value: 66150, timescale: 44100))
         trackItem.audioTransition = audioTransition
-        let audioTapHolder = AudioProcessingTapHolder()
-        trackItem.configuration.audioConfiguration.audioTapHolder = audioTapHolder
         if resource.isKind(of: ImageResource.self) {
             trackItem.configuration.videoConfiguration.baseContentMode = .custom
         } else {
