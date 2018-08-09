@@ -16,18 +16,12 @@ public extension CMTime {
 }
 
 // MARK: Add
-func + (left: CMTime, right: CMTime) -> CMTime {
-    return CMTimeAdd(left, right).xd_time()
-}
 func += ( left: inout CMTime, right: CMTime) -> CMTime {
     left = left + right
     return left
 }
 
 // MARK: Subtract
-func - (minuend: CMTime, subtrahend: CMTime) -> CMTime {
-    return CMTimeSubtract(minuend, subtrahend).xd_time()
-}
 func -= ( minuend: inout CMTime, subtrahend: CMTime) -> CMTime {
     minuend = minuend - subtrahend
     return minuend
@@ -72,14 +66,6 @@ func / (time: CMTime, divisor: Int32) -> CMTime {
 func /= ( time: inout CMTime, divisor: Int32) -> CMTime {
     time = time / divisor
     return time
-}
-
-// MARK: - Comparable protocol
-public func == (time1: CMTime, time2: CMTime) -> Bool {
-    return CMTimeCompare(time1, time2) == 0
-}
-public func < (time1: CMTime, time2: CMTime) -> Bool {
-    return CMTimeCompare(time1, time2) < 0
 }
 
 // MARK: - Convenience methods

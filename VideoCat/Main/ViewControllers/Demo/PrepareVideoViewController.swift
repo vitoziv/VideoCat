@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreMedia
+import VIPlayer
 
 class PrepareVideoViewController: UIViewController {
     

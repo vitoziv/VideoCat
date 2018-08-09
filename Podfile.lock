@@ -5,6 +5,7 @@ PODS:
   - RxSwift (4.0.0)
   - TinyConstraints (3.0.1)
   - VFCabbage (0.2)
+  - VIPlayer (0.1)
 
 DEPENDENCIES:
   - MBProgressHUD (~> 1.0.0)
@@ -12,6 +13,7 @@ DEPENDENCIES:
   - RxSwift (~> 4.0.0)
   - TinyConstraints (~> 3.0.1)
   - VFCabbage (from `https://github.com/VideoFlint/Cabbage.git`, commit `012120d`)
+  - VIPlayer (from `https://github.com/VideoFlint/VIPlayer.git`, commit `7b49099`)
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
@@ -24,11 +26,17 @@ EXTERNAL SOURCES:
   VFCabbage:
     :commit: 012120d
     :git: https://github.com/VideoFlint/Cabbage.git
+  VIPlayer:
+    :commit: 7b49099
+    :git: https://github.com/VideoFlint/VIPlayer.git
 
 CHECKOUT OPTIONS:
   VFCabbage:
     :commit: 012120d
     :git: https://github.com/VideoFlint/Cabbage.git
+  VIPlayer:
+    :commit: 7b49099
+    :git: https://github.com/VideoFlint/VIPlayer.git
 
 SPEC CHECKSUMS:
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
@@ -36,7 +44,8 @@ SPEC CHECKSUMS:
   RxSwift: fd680d75283beb5e2559486f3c0ff852f0d35334
   TinyConstraints: 77cb4735982941687268bb6f324badd0ae29ad46
   VFCabbage: 88b8b58671af2c6f9e4a7ed85a0150e759ab1ecf
+  VIPlayer: 609b8b4f3a68169aa88426d84187fb7f6f1ddef9
 
-PODFILE CHECKSUM: fcdd796ceea4c5fdd4e8555e460a42f8c022423a
+PODFILE CHECKSUM: 6e287304c86f812857da7116303661e82f5f98d5
 
 COCOAPODS: 1.5.3

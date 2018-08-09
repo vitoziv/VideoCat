@@ -8,6 +8,7 @@
 
 import UIKit
 import AVFoundation
+import VIPlayer
 
 class VideoView: UIView {
     

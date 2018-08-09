@@ -1,6 +1,6 @@
 //
 //  VIPlayer.swift
-//  VideoCat
+//  VIPlayer
 //
 //  Created by Vito on 25/09/2017.
 //  Copyright © 2017 Vito. All rights reserved.
@@ -8,7 +8,7 @@
 
 import AVFoundation
 
-protocol VIPlayerDelegate: class {
+public protocol VIPlayerDelegate: class {
     func playerReadyToPlayer(_ player: VIPlayer)
     
     func player(_ player: VIPlayer, timeDidChange time: TimeInterval)
@@ -20,7 +20,7 @@ protocol VIPlayerDelegate: class {
     func player(_ player: VIPlayer, isPlaybackBufferEmpty: Bool)
 }
 
-extension VIPlayerDelegate {
+public extension VIPlayerDelegate {
     func playerReadyToPlayer(_ player: VIPlayer) {}
     
     func player(_ player: VIPlayer, timeDidChange time: TimeInterval) {}
@@ -32,24 +32,24 @@ extension VIPlayerDelegate {
     func player(_ player: VIPlayer, isPlaybackBufferEmpty: Bool) {}
 }
 
-class VIPlayer: NSObject {
+public class VIPlayer: NSObject {
     
-    enum PauseReason {
+    public enum PauseReason {
         case unstart
         case manual
         case reachEnd
     }
     
-    enum PlayerStatus {
+    public enum PlayerStatus {
         case playing
         case loading(AVPlayer.WaitingReason)
         case pause(PauseReason)
     }
     
-    @objc let player = AVPlayer()
-    let playerView = VIPlayerView()
-    weak var delegate: VIPlayerDelegate?
-    private(set) var status: PlayerStatus = .pause(.unstart)
+    @objc public let player = AVPlayer()
+    public let playerView = VIPlayerView()
+    public weak var delegate: VIPlayerDelegate?
+    private(set) public var status: PlayerStatus = .pause(.unstart)
     
     private var currentPlayerItemChangedObserve: NSKeyValueObservation?
     
@@ -68,7 +68,7 @@ class VIPlayer: NSObject {
         removePlayerObserve()
     }
     
-    init(playerItem: AVPlayerItem? = nil) {
+    public init(playerItem: AVPlayerItem? = nil) {
         super.init()
         addOPlayerObserve()
         playerView.player = player
@@ -77,17 +77,17 @@ class VIPlayer: NSObject {
         }
     }
     
-    convenience init(asset: AVAsset) {
+    convenience public init(asset: AVAsset) {
         let playerItem = AVPlayerItem(asset: asset)
         self.init(playerItem: playerItem)
     }
     
-    convenience init(url: URL) {
+    convenience public init(url: URL) {
         let asset = AVAsset(url: url)
         self.init(asset: asset)
     }
     
-    func replaceCurrentItem(_ playerItem: AVPlayerItem) {
+    public func replaceCurrentItem(_ playerItem: AVPlayerItem) {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: player.currentItem)
         player.replaceCurrentItem(with: playerItem)
         NotificationCenter.default.addObserver(self, selector: #selector(playerDidFinishPlaying(notification:)),
@@ -97,15 +97,15 @@ class VIPlayer: NSObject {
     
     // MARK: - Actions
     
-    func play() {
+    public func play() {
         player.play()
     }
     
-    func seek(to time: CMTime, completion: @escaping (Bool) -> Void) {
+    public func seek(to time: CMTime, completion: @escaping (Bool) -> Void) {
         player.seek(to: time, completionHandler: completion)
     }
     
-    func seek(to percent: Double, completion: @escaping (Bool) -> Void) {
+    public func seek(to percent: Double, completion: @escaping (Bool) -> Void) {
         guard let duration = player.currentItem?.duration else {
             completion(false)
             return
@@ -115,11 +115,11 @@ class VIPlayer: NSObject {
         player.seek(to: time, completionHandler: completion)
     }
     
-    func pause() {
+    public func pause() {
         player.pause()
     }
     
-    func reset() {
+    public func reset() {
         player.pause()
         player.seek(to: kCMTimeZero)
     }
@@ -150,7 +150,7 @@ class VIPlayer: NSObject {
         }
     }
     
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+    override public func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         guard context == &VIPlayer.observerContext else {
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
             return
@@ -211,6 +211,6 @@ class VIPlayer: NSObject {
 
 // MARK: - Helper
 
-extension AVPlayer.WaitingReason {
-    static let noReason = AVPlayer.WaitingReason(rawValue: "noReason")
+public extension AVPlayer.WaitingReason {
+    static public let noReason = AVPlayer.WaitingReason(rawValue: "noReason")
 }
