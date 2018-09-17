@@ -12,7 +12,7 @@ DEPENDENCIES:
   - RxCocoa (~> 4.0.0)
   - RxSwift (~> 4.0.0)
   - TinyConstraints (~> 3.0.1)
-  - VFCabbage (from `https://github.com/VideoFlint/Cabbage.git`, commit `012120d`)
+  - VFCabbage (from `https://github.com/VideoFlint/Cabbage.git`, commit `aa95b17`)
   - VIPlayer (from `https://github.com/VideoFlint/VIPlayer.git`, commit `7b49099`)
 
 SPEC REPOS:
@@ -24,7 +24,7 @@ SPEC REPOS:
 
 EXTERNAL SOURCES:
   VFCabbage:
-    :commit: 012120d
+    :commit: aa95b17
     :git: https://github.com/VideoFlint/Cabbage.git
   VIPlayer:
     :commit: 7b49099
@@ -32,7 +32,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   VFCabbage:
-    :commit: 012120d
+    :commit: aa95b17
     :git: https://github.com/VideoFlint/Cabbage.git
   VIPlayer:
     :commit: 7b49099
@@ -46,6 +46,6 @@ SPEC CHECKSUMS:
   VFCabbage: 88b8b58671af2c6f9e4a7ed85a0150e759ab1ecf
   VIPlayer: 609b8b4f3a68169aa88426d84187fb7f6f1ddef9
 
-PODFILE CHECKSUM: 6e287304c86f812857da7116303661e82f5f98d5
+PODFILE CHECKSUM: 28426e9fd17aff35b794dc3db4aec0b3010be04f
 
 COCOAPODS: 1.5.3

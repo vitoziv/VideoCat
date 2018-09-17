@@ -15,7 +15,7 @@ target 'VideoCat' do
 #    pod 'VIPlayer', :path => '../VIPlayer'
     
     pod 'VIPlayer', :git => 'https://github.com/VideoFlint/VIPlayer.git', :commit => '7b49099'
-    pod 'VFCabbage',  :git => 'https://github.com/VideoFlint/Cabbage.git', :commit => '012120d'
+    pod 'VFCabbage',  :git => 'https://github.com/VideoFlint/Cabbage.git', :commit => 'aa95b17'
 
 end
 
